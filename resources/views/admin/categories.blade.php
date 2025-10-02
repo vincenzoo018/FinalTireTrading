@@ -14,9 +14,10 @@
 
     <div class="content-card">
         <div class="table-controls">
-            <div class="search-wrapper">
+            <div class="search-wrapper" style="display: flex; align-items: center;">
                 <i class="fas fa-search search-icon"></i>
-                <input type="text" class="search-input" placeholder="Search categories...">
+                <input type="text" id="liveSearchInput" name="search" class="search-input" placeholder="Search categories..." value="{{ request('search') }}" autocomplete="off">
+            </div>
             </div>
 
             <div class="filter-wrapper">
@@ -57,158 +58,38 @@
                         </th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td><input type="checkbox" class="row-checkbox"></td>
-                        <td class="supplier-id">1</td>
-                        <td class="supplier-name">Hair Care</td>
-                        <td><span class="payment-badge status-active">Active</span></td>
-                        <td>Jan 15, 2024</td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-edit" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn-icon btn-view" title="View">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><input type="checkbox" class="row-checkbox"></td>
-                        <td class="supplier-id">2</td>
-                        <td class="supplier-name">Skin Care</td>
-                        <td><span class="payment-badge status-active">Active</span></td>
-                        <td>Jan 20, 2024</td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-edit" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn-icon btn-view" title="View">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><input type="checkbox" class="row-checkbox"></td>
-                        <td class="supplier-id">3</td>
-                        <td class="supplier-name">Makeup</td>
-                        <td><span class="payment-badge status-active">Active</span></td>
-                        <td>Feb 05, 2024</td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-edit" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn-icon btn-view" title="View">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><input type="checkbox" class="row-checkbox"></td>
-                        <td class="supplier-id">4</td>
-                        <td class="supplier-name">Nail Care</td>
-                        <td><span class="payment-badge status-active">Active</span></td>
-                        <td>Feb 12, 2024</td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-edit" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn-icon btn-view" title="View">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><input type="checkbox" class="row-checkbox"></td>
-                        <td class="supplier-id">5</td>
-                        <td class="supplier-name">Hair Color</td>
-                        <td><span class="payment-badge status-active">Active</span></td>
-                        <td>Mar 01, 2024</td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-edit" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn-icon btn-view" title="View">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><input type="checkbox" class="row-checkbox"></td>
-                        <td class="supplier-id">6</td>
-                        <td class="supplier-name">Fragrances</td>
-                        <td><span class="payment-badge status-active">Active</span></td>
-                        <td>Mar 10, 2024</td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-edit" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn-icon btn-view" title="View">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><input type="checkbox" class="row-checkbox"></td>
-                        <td class="supplier-id">7</td>
-                        <td class="supplier-name">Hair Styling</td>
-                        <td><span class="payment-badge status-active">Active</span></td>
-                        <td>Mar 18, 2024</td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-edit" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn-icon btn-view" title="View">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><input type="checkbox" class="row-checkbox"></td>
-                        <td class="supplier-id">8</td>
-                        <td class="supplier-name">Body Care</td>
-                        <td><span class="payment-badge status-inactive">Inactive</span></td>
-                        <td>Apr 02, 2024</td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-edit" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn-icon btn-view" title="View">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><input type="checkbox" class="row-checkbox"></td>
-                        <td class="supplier-id">9</td>
-                        <td class="supplier-name">Hair Treatment</td>
-                        <td><span class="payment-badge status-active">Active</span></td>
-                        <td>Apr 15, 2024</td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-edit" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn-icon btn-view" title="View">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><input type="checkbox" class="row-checkbox"></td>
-                        <td class="supplier-id">10</td>
-                        <td class="supplier-name">Spa & Massage</td>
-                        <td><span class="payment-badge status-active">Active</span></td>
-                        <td>Apr 22, 2024</td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-edit" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn-icon btn-view" title="View">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-                </tbody>
+                <tbody id="categoriesTableBody">
+    @forelse($categories as $category)
+        <tr>
+            <td><input type="checkbox" class="row-checkbox"></td>
+            <td class="supplier-id">{{ $category->category_id }}</td>
+            <td class="supplier-name">{{ $category->category_name }}</td>
+            <td>
+                <span class="payment-badge {{ $category->status === 'active' ? 'status-active' : 'status-inactive' }}">
+                    {{ ucfirst($category->status) }}
+                </span>
+            </td>
+            <td>{{ $category->created_at->format('M d, Y') }}</td>
+            <td class="actions-cell">
+                <form method="POST" action="{{ route('admin.categories.destroy', $category->category_id) }}" style="display:inline-block;">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn-icon btn-delete" title="Delete" onclick="return confirm('Mark this category as inactive?')">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </form>
+                <button type="button" class="btn-icon btn-edit" title="Edit" data-id="{{ $category->category_id }}" data-name="{{ $category->category_name }}" data-status="{{ $category->status }}" onclick="openEditCategoryModal(this)">
+                    <i class="fas fa-edit"></i>
+                </button>
+            </td>
+        </tr>
+    @empty
+        <tr>
+            <td colspan="6" class="text-center">No categories found.</td>
+        </tr>
+    @endforelse
+</tbody>
+
             </table>
         </div>
 
@@ -242,41 +123,38 @@
             <p class="required-text">Fields marked with an asterisk <span class="asterisk">(*)</span> are required.</p>
         </div>
 
-        <form id="categoryForm">
-            <div class="modal-body">
-                <div class="form-grid" style="grid-template-columns: 1fr;">
-                    <div class="form-group">
-                        <label class="form-label">
-                            Category Name <span class="required">*</span>
-                        </label>
-                        <input type="text" class="form-input" placeholder="Enter category name" required>
-                    </div>
+        <form id="categoryForm" method="POST" action="{{ route('admin.categories.store') }}">
+    @csrf
 
-                    <div class="form-group">
-                        <label class="form-label">
-                            Status <span class="required">*</span>
-                        </label>
-                        <select class="form-select" required>
-                            <option value="">Select status</option>
-                            <option value="active" selected>Active</option>
-                            <option value="inactive">Inactive</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">
-                            Description
-                        </label>
-                        <textarea class="form-textarea" placeholder="Enter category description (optional)"></textarea>
-                    </div>
-                </div>
+    <div class="modal-body">
+        <div class="form-grid" style="grid-template-columns: 1fr;">
+            <div class="form-group">
+                <label class="form-label">
+                    Category Name <span class="required">*</span>
+                </label>
+                <input type="text" name="category_name" class="form-input" placeholder="Enter category name" required>
             </div>
 
-            <div class="modal-footer">
-                <button type="button" class="btn-cancel" onclick="closeCategoryModal()">Cancel</button>
-                <button type="submit" class="btn-save">Save Category</button>
+            <div class="form-group">
+                <label class="form-label">
+                    Status <span class="required">*</span>
+                </label>
+                <select name="status" class="form-select" required>
+                    <option value="">Select status</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                </select>
             </div>
-        </form>
+
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn-cancel" onclick="closeCategoryModal()">Cancel</button>
+        <button type="submit" class="btn-save">Save Category</button>
+    </div>
+</form>
+
     </div>
 </div>
 
@@ -482,20 +360,31 @@ document.getElementById('categoryModal').addEventListener('click', function(e) {
     }
 });
 
-// Handle form submission
-document.getElementById('categoryForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-
-    // You can add your AJAX submission here
-    alert('Category saved successfully!');
-    closeCategoryModal();
-});
-
 // Close modal with ESC key
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
         closeCategoryModal();
     }
+});
+
+// Live search for categories
+document.getElementById('liveSearchInput').addEventListener('input', function() {
+    var search = this.value;
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', '{{ route('admin.categories.index') }}?search=' + encodeURIComponent(search), true);
+    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            // Extract only the table body from the response
+            var parser = new DOMParser();
+            var doc = parser.parseFromString(xhr.responseText, 'text/html');
+            var newTbody = doc.getElementById('categoriesTableBody');
+            if (newTbody) {
+                document.getElementById('categoriesTableBody').innerHTML = newTbody.innerHTML;
+            }
+        }
+    };
+    xhr.send();
 });
 </script>
 @endsection

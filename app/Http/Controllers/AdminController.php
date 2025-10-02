@@ -26,6 +26,11 @@ class AdminController extends Controller
     {
         return view('admin.inventory');
     }
+    public function stockadjustments()
+    {
+        return view('admin.stockadjustments');
+    }
+
 
     public function supplier()
     {

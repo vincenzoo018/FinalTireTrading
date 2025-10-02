@@ -8,7 +8,7 @@
         <h1 class="page-title">Inventory Management</h1>
         <button class="btn-add-supplier" onclick="openStockModal()">
             <i class="fas fa-plus"></i>
-            Stock Update
+            Add Stock
         </button>
     </div>
 
@@ -288,11 +288,11 @@
     </div>
 </div>
 
-<!-- Stock Update Modal -->
+<!-- Stock Add Modal -->
 <div class="modal-overlay" id="stockModal">
     <div class="modal-content">
         <div class="modal-header">
-            <h2>Update Stock</h2>
+            <h2>Add Stock</h2>
             <p class="required-text">Fields marked with an asterisk <span class="asterisk">(*)</span> are required.</p>
         </div>
 
@@ -326,10 +326,24 @@
 
                     <div class="form-group">
                         <label class="form-label">
-                            Current Quantity
-                            <i class="fas fa-info-circle info-icon" title="Current stock on hand"></i>
+                            Unit Price <span class="required">*</span>
+                            <i class="fas fa-info-circle info-icon" title="Price per unit"></i>
                         </label>
-                        <input type="number" class="form-input" placeholder="0" readonly style="background: #f8fafc;">
+                        <div class="input-group">
+                            <input type="number" class="form-input" placeholder="500" step="0.01" min="0" required>
+                            <div class="input-addon">PHP</div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Selling Price <span class="required">*</span>
+                            <i class="fas fa-info-circle info-icon" title="Price to customers"></i>
+                        </label>
+                        <div class="input-group">
+                            <input type="number" class="form-input" placeholder="0.00" step="0.01" min="0" required>
+                            <div class="input-addon">PHP</div>
+                        </div>
                     </div>
 
                     <div class="form-group">
@@ -364,16 +378,7 @@
                         </select>
                     </div>
 
-                    <div class="form-group">
-                        <label class="form-label">
-                            Unit Price <span class="required">*</span>
-                            <i class="fas fa-info-circle info-icon" title="Price per unit"></i>
-                        </label>
-                        <div class="input-group">
-                            <input type="number" class="form-input" placeholder="500" step="0.01" min="0" required>
-                            <div class="input-addon">PHP</div>
-                        </div>
-                    </div>
+                    
 
                     <div class="form-group">
                         <label class="form-label">
@@ -401,7 +406,7 @@
 
                     <div class="form-group full-width">
                         <label class="form-label">
-                            Notes
+                            Description 
                         </label>
                         <textarea class="form-textarea" placeholder="Add any notes about this stock update (optional)"></textarea>
                     </div>

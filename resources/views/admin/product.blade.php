@@ -56,15 +56,16 @@
                     </tr>
                 </thead>
                 <tbody>
+                @forelse($products as $product)
                     <tr>
                         <td><input type="checkbox" class="row-checkbox"></td>
-                        <td class="supplier-id">1</td>
-                        <td class="supplier-name">L'Oréal Professional Shampoo</td>
-                        <td>Hair Care</td>
-                        <td>L'Oréal</td>
-                        <td>₱450.00</td>
-                        <td>₱650.00</td>
-                        <td><span class="stock-badge stock-high">48</span></td>
+                        <td class="supplier-id">{{ $product->product_id }}</td>
+                        <td class="supplier-name">{{ $product->product_name }}</td>
+                        <td>{{ $product->category ? $product->category->category_name : '' }}</td>
+                        <td>{{ $product->brand }}</td>
+                        <td>₱{{ number_format($product->base_price, 2) }}</td>
+                        <td>₱{{ number_format($product->selling_price, 2) }}</td>
+                        <td>{{ $product->inventory ? $product->inventory->stock : '-' }}</td>
                         <td><span class="payment-badge status-active">Active</span></td>
                         <td class="actions-cell">
                             <button class="btn-icon btn-edit" title="Edit">
@@ -75,177 +76,11 @@
                             </button>
                         </td>
                     </tr>
+                @empty
                     <tr>
-                        <td><input type="checkbox" class="row-checkbox"></td>
-                        <td class="supplier-id">2</td>
-                        <td class="supplier-name">Kerastase Hair Mask</td>
-                        <td>Hair Care</td>
-                        <td>Kerastase</td>
-                        <td>₱1,200.00</td>
-                        <td>₱1,800.00</td>
-                        <td><span class="stock-badge stock-medium">15</span></td>
-                        <td><span class="payment-badge status-active">Active</span></td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-edit" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn-icon btn-view" title="View">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
+                        <td colspan="10" class="text-center">No products found.</td>
                     </tr>
-                    <tr>
-                        <td><input type="checkbox" class="row-checkbox"></td>
-                        <td class="supplier-id">3</td>
-                        <td class="supplier-name">OPI Nail Polish</td>
-                        <td>Nail Care</td>
-                        <td>OPI</td>
-                        <td>₱280.00</td>
-                        <td>₱450.00</td>
-                        <td><span class="stock-badge stock-high">72</span></td>
-                        <td><span class="payment-badge status-active">Active</span></td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-edit" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn-icon btn-view" title="View">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><input type="checkbox" class="row-checkbox"></td>
-                        <td class="supplier-id">4</td>
-                        <td class="supplier-name">Cetaphil Gentle Cleanser</td>
-                        <td>Skin Care</td>
-                        <td>Cetaphil</td>
-                        <td>₱380.00</td>
-                        <td>₱550.00</td>
-                        <td><span class="stock-badge stock-low">8</span></td>
-                        <td><span class="payment-badge status-active">Active</span></td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-edit" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn-icon btn-view" title="View">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><input type="checkbox" class="row-checkbox"></td>
-                        <td class="supplier-id">5</td>
-                        <td class="supplier-name">Revlon ColorStay Foundation</td>
-                        <td>Makeup</td>
-                        <td>Revlon</td>
-                        <td>₱520.00</td>
-                        <td>₱780.00</td>
-                        <td><span class="stock-badge stock-medium">22</span></td>
-                        <td><span class="payment-badge status-active">Active</span></td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-edit" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn-icon btn-view" title="View">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><input type="checkbox" class="row-checkbox"></td>
-                        <td class="supplier-id">6</td>
-                        <td class="supplier-name">Wella Koleston Hair Color</td>
-                        <td>Hair Color</td>
-                        <td>Wella</td>
-                        <td>₱350.00</td>
-                        <td>₱550.00</td>
-                        <td><span class="stock-badge stock-high">56</span></td>
-                        <td><span class="payment-badge status-active">Active</span></td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-edit" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn-icon btn-view" title="View">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><input type="checkbox" class="row-checkbox"></td>
-                        <td class="supplier-id">7</td>
-                        <td class="supplier-name">Bioderma Micellar Water</td>
-                        <td>Skin Care</td>
-                        <td>Bioderma</td>
-                        <td>₱680.00</td>
-                        <td>₱950.00</td>
-                        <td><span class="stock-badge stock-medium">18</span></td>
-                        <td><span class="payment-badge status-active">Active</span></td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-edit" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn-icon btn-view" title="View">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><input type="checkbox" class="row-checkbox"></td>
-                        <td class="supplier-id">8</td>
-                        <td class="supplier-name">Maybelline Mascara</td>
-                        <td>Makeup</td>
-                        <td>Maybelline</td>
-                        <td>₱220.00</td>
-                        <td>₱350.00</td>
-                        <td><span class="stock-badge stock-out">0</span></td>
-                        <td><span class="payment-badge status-inactive">Out of Stock</span></td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-edit" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn-icon btn-view" title="View">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><input type="checkbox" class="row-checkbox"></td>
-                        <td class="supplier-id">9</td>
-                        <td class="supplier-name">Moroccan Oil Treatment</td>
-                        <td>Hair Care</td>
-                        <td>Moroccanoil</td>
-                        <td>₱1,500.00</td>
-                        <td>₱2,200.00</td>
-                        <td><span class="stock-badge stock-medium">12</span></td>
-                        <td><span class="payment-badge status-active">Active</span></td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-edit" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn-icon btn-view" title="View">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><input type="checkbox" class="row-checkbox"></td>
-                        <td class="supplier-id">10</td>
-                        <td class="supplier-name">The Ordinary Niacinamide</td>
-                        <td>Skin Care</td>
-                        <td>The Ordinary</td>
-                        <td>₱450.00</td>
-                        <td>₱680.00</td>
-                        <td><span class="stock-badge stock-high">34</span></td>
-                        <td><span class="payment-badge status-active">Active</span></td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-edit" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn-icon btn-view" title="View">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
+                @endforelse
                 </tbody>
             </table>
         </div>
@@ -280,33 +115,26 @@
             <p class="required-text">Fields marked with an asterisk <span class="asterisk">(*)</span> are required.</p>
         </div>
 
-        <form id="productForm">
+        <form id="productForm" method="POST" action="{{ route('admin.products.store') }}">
+            @csrf
             <div class="modal-body">
                 <div class="form-grid">
                     <div class="form-group">
                         <label class="form-label">
                             Product Name <span class="required">*</span>
                         </label>
-                        <div class="input-with-icon">
-                            <i class="fas fa-search input-icon"></i>
-                            <input type="text" class="form-input" placeholder="Search or enter product name" required>
-                        </div>
+                        <input type="text" name="product_name" class="form-input" placeholder="Enter product name" required>
                     </div>
 
                     <div class="form-group">
                         <label class="form-label">
                             Supplier Company <span class="required">*</span>
                         </label>
-                        <select class="form-select" required>
+                        <select name="supplier_id" class="form-select" required>
                             <option value="">Select supplier</option>
-                            <option value="loreal">L'Oréal Professional</option>
-                            <option value="kerastase">Kérastase</option>
-                            <option value="wella">Wella</option>
-                            <option value="moroccanoil">Moroccanoil</option>
-                            <option value="opi">OPI</option>
-                            <option value="cetaphil">Cetaphil</option>
-                            <option value="bioderma">Bioderma</option>
-                            <option value="ordinary">The Ordinary</option>
+                            @foreach($suppliers as $supplier)
+                                <option value="{{ $supplier->id }}">{{ $supplier->name ?? $supplier->company_name ?? 'Supplier' }}</option>
+                            @endforeach
                         </select>
                     </div>
 
@@ -314,86 +142,66 @@
                         <label class="form-label">
                             Category <span class="required">*</span>
                         </label>
-                        <select class="form-select" required>
+                        <select name="category_id" class="form-select" required>
                             <option value="">Select category</option>
-                            <option value="hair-care">Hair Care</option>
-                            <option value="skin-care">Skin Care</option>
-                            <option value="makeup">Makeup</option>
-                            <option value="nail-care">Nail Care</option>
-                            <option value="hair-color">Hair Color</option>
-                            <option value="hair-styling">Hair Styling</option>
-                            <option value="fragrances">Fragrances</option>
+                            @foreach($categories as $category)
+                                <option value="{{ $category->category_id }}">{{ $category->category_name }}</option>
+                            @endforeach
                         </select>
                     </div>
 
                     <div class="form-group">
                         <label class="form-label">
-                            Brand <span class="required">*</span>
+                            Brand
                         </label>
-                        <input type="text" class="form-input" placeholder="Enter brand name" required>
+                        <input type="text" name="brand" class="form-input" placeholder="Enter brand name">
                     </div>
 
                     <div class="form-group">
                         <label class="form-label">
-                            Quantity <span class="required">*</span>
-                            <i class="fas fa-info-circle info-icon" title="Initial stock quantity"></i>
+                            Size
                         </label>
-                        <select class="form-select" required>
-                            <option value="">Select quantity</option>
-                            <option value="10">10</option>
-                            <option value="25">25</option>
-                            <option value="50">50</option>
-                            <option value="100">100</option>
-                            <option value="250">250</option>
-                            <option value="500">500</option>
-                            <option value="999">999</option>
-                        </select>
+                        <input type="text" name="size" class="form-input" placeholder="Enter size">
                     </div>
 
                     <div class="form-group">
                         <label class="form-label">
-                            Unit of Measure <span class="required">*</span>
-                            <i class="fas fa-info-circle info-icon" title="How the product is measured"></i>
+                            Length
                         </label>
-                        <select class="form-select" required>
-                            <option value="">Select unit</option>
-                            <option value="pcs">pcs (pieces)</option>
-                            <option value="ml">ml (milliliters)</option>
-                            <option value="g">g (grams)</option>
-                            <option value="oz">oz (ounces)</option>
-                            <option value="kg">kg (kilograms)</option>
-                            <option value="l">l (liters)</option>
-                        </select>
+                        <input type="text" name="length" class="form-input" placeholder="Enter length">
                     </div>
 
                     <div class="form-group">
                         <label class="form-label">
-                            Base Price <span class="required">*</span>
-                            <i class="fas fa-info-circle info-icon" title="Cost price from supplier"></i>
+                            Width
                         </label>
-                        <div class="input-group">
-                            <input type="number" class="form-input" placeholder="0.00" step="0.01" min="0" required>
-                            <div class="input-addon">PHP</div>
-                        </div>
+                        <input type="text" name="width" class="form-input" placeholder="Enter width">
                     </div>
 
                     <div class="form-group">
                         <label class="form-label">
-                            Selling Price <span class="required">*</span>
-                            <i class="fas fa-info-circle info-icon" title="Price to customers"></i>
+                            Serial Number
                         </label>
-                        <div class="input-group">
-                            <input type="number" class="form-input" placeholder="0.00" step="0.01" min="0" required>
-                            <div class="input-addon">PHP</div>
-                        </div>
+                        <input type="text" name="serial_number" class="form-input" placeholder="XXXXXXXXX">
                     </div>
 
                     <div class="form-group full-width">
                         <label class="form-label">
                             Product Description
                         </label>
-                        <textarea class="form-textarea" placeholder="Enter product description (optional)"></textarea>
+                        <textarea name="description" class="form-textarea" placeholder="Enter product description (optional)"></textarea>
                     </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Base Price <span class="required">*</span></label>
+                        <input type="number" name="base_price" class="form-input" placeholder="Enter base price" min="0" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Selling Price <span class="required">*</span></label>
+                        <input type="number" name="selling_price" class="form-input" placeholder="Enter selling price" min="0" step="0.01" required>
+                    </div>
+
+                    
                 </div>
             </div>
 
