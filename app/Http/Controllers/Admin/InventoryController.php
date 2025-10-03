@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
-
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Inventory;
@@ -16,6 +16,11 @@ class InventoryController extends Controller
     // Display paginated, searchable inventory
     public function index(Request $request)
     {
+        // Only allow authenticated admins (role_id == 1 or 2)
+        if (!\Auth::check() || !in_array(Auth::user()->role_id, [1, 2])) {
+            return redirect()->route('auth.login')->withErrors(['auth' => 'Please login as an admin to access this page.']);
+        }
+
         $query = Inventory::with(['product.supplier', 'product.category'])
             ->orderBy('last_updated', 'desc');
 
@@ -48,7 +53,7 @@ class InventoryController extends Controller
 
         foreach ($previewRows as $row) {
             // Validate each row
-            $validated = \Validator::make($row, [
+            $validated = Validator::make($row, [
                 'productId'   => 'required|exists:products,product_id',
                 'supplierText'=> 'required|string',
                 'categoryText'=> 'required|string',

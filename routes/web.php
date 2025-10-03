@@ -42,6 +42,9 @@ Route::prefix('customer')->name('customer.')->group(function () {
 });
 
 
+Route::get('/customer/home', [App\Http\Controllers\Customer\HomeController::class, 'index'])->name('customer.home');
+
+
 
 // routes/web.php
 

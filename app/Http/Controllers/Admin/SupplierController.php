@@ -5,12 +5,18 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Supplier;
+use Illuminate\Support\Facades\Auth;
 
 class SupplierController extends Controller
 {
     // Display all suppliers
     public function index()
     {
+        // Only allow authenticated admins (role_id == 1 or 2)
+        if (!auth()->check() || !in_array(auth()->user()->role_id, [1, 2])) {
+            return redirect()->route('auth.login')->withErrors(['auth' => 'Please login as an admin to view this page.']);
+        }
+
         $suppliers = Supplier::orderBy('created_at', 'desc')->get();
         return view('admin.supplier', compact('suppliers'));
     }
@@ -18,6 +24,11 @@ class SupplierController extends Controller
     // Store new supplier
     public function store(Request $request)
     {
+        // Only allow authenticated admins (role_id == 1 or 2)
+        if (!auth()->check() || !in_array(auth()->user()->role_id, [1, 2])) {
+            return redirect()->route('auth.login')->withErrors(['auth' => 'Please login as an admin to add suppliers.']);
+        }
+
         $validated = $request->validate([
             'supplier_name' => 'required|string|max:255',
             'company_name' => 'required|string|max:255',

@@ -7,12 +7,18 @@ use App\Models\Product;
 use App\Models\Category;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ProductController extends Controller
 {
     // Display all products
     public function index(Request $request)
     {
+        // Only allow authenticated admins (role_id == 1 or 2)
+        if (!Auth::check() || !in_array(Auth::user()->role_id, [1, 2])) {
+            return redirect()->route('auth.login')->withErrors(['auth' => 'Please login as an admin to view products.']);
+        }
+
         $query = Product::with(['category', 'supplier', 'inventory'])->orderBy('created_at', 'desc');
 
         if ($request->has('search') && $request->search !== '') {
@@ -33,6 +39,11 @@ class ProductController extends Controller
     // Store the product in the database
     public function store(Request $request)
     {
+        // Only allow authenticated admins (role_id == 1 or 2)
+        if (!Auth::check() || !in_array(Auth::user()->role_id, [1, 2])) {
+            return redirect()->route('auth.login')->withErrors(['auth' => 'Please login as an admin to add products.']);
+        }
+
         $request->validate([
             'category_id' => 'required|exists:categories,category_id',
             'supplier_id' => 'required|exists:suppliers,supplier_id',

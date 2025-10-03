@@ -25,57 +25,9 @@
 @endsection
 
 @section('content')
-<!-- Enhanced Hero Section -->
-<section class="hero-section text-center">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-lg-8">
-                <h1 class="hero-title">Quality Tires & Professional Services</h1>
-                <p class="hero-subtitle">Your trusted partner for all your automotive needs. Experience excellence in every mile.</p>
-                <div class="mt-4">
-                    <a href="{{ route('customer.products') }}" class="btn btn-primary btn-lg me-3">
-                        <i class="fas fa-shopping-cart me-2"></i>Shop Tires
-                    </a>
-                    <a href="{{ route('customer.booking') }}" class="btn btn-outline-primary btn-lg">
-                        <i class="fas fa-calendar-check me-2"></i>Book Service
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
 
-<!-- Quick Stats -->
-<section class="py-4">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-3">
-                <div class="stats-counter fade-in">
-                    <span class="stat-number" data-count="5000">0</span>
-                    <span class="stat-label">Happy Customers</span>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stats-counter fade-in" style="animation-delay: 0.2s">
-                    <span class="stat-number" data-count="100">0</span>
-                    <span class="stat-label">Quality Products</span>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stats-counter fade-in" style="animation-delay: 0.4s">
-                    <span class="stat-number" data-count="50">0</span>
-                    <span class="stat-label">Expert Services</span>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stats-counter fade-in" style="animation-delay: 0.6s">
-                    <span class="stat-number" data-count="15">0</span>
-                    <span class="stat-label">Years Experience</span>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+
+
 
 <!-- Featured Products -->
 <section class="py-5">
@@ -83,32 +35,34 @@
         <h2 class="section-title">Featured Products</h2>
         <p class="lead text-center mb-5">Discover our premium selection of tires for ultimate performance</p>
         <div class="row">
-            @foreach([1, 2, 3] as $product)
+            @forelse($products as $product)
             <div class="col-lg-4 col-md-6 mb-4">
                 <div class="card product-card">
                     <span class="featured-badge">BEST SELLER</span>
-                    <img src="/images/tire-{{ $product }}.jpg" class="card-img-top product-img" alt="Premium Tire">
+                    <img src="{{ asset($product->image ?? 'images/default-product.png') }}" class="card-img-top product-img" alt="{{ $product->product_name }}">
                     <div class="card-body">
-                        <h5 class="product-title">Premium Performance Tire</h5>
-                        <p class="card-text text-muted">Engineered for superior grip, durability, and smooth riding experience in all conditions.</p>
+                        <h5 class="product-title">{{ $product->product_name }}</h5>
+                        <p class="card-text text-muted">{{ $product->description }}</p>
                         <div class="product-features mb-3">
-                            <small class="text-muted"><i class="fas fa-check text-success me-1"></i> All-Weather Traction</small><br>
-                            <small class="text-muted"><i class="fas fa-check text-success me-1"></i> 60,000 km Warranty</small><br>
-                            <small class="text-muted"><i class="fas fa-check text-success me-1"></i> Fuel Efficient</small>
+                            <small class="text-muted"><i class="fas fa-check text-success me-1"></i>{{ $product->brand }}</small>
                         </div>
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <span class="product-price">P{{ number_format(2500 + ($product * 700), 2) }}</span>
+                                <span class="product-price">P{{ number_format($product->selling_price, 2) }}</span>
                                 <small class="text-muted d-block">per tire</small>
                             </div>
-                            <button class="btn btn-primary btn-sm" onclick="addToCart({{ $product }}, 'Premium Tire {{ $product }}', {{ 2500 + ($product * 700) }})">
-                                <i class="fas fa-cart-plus me-1"></i> Add to Cart
-                            </button>
+                            <a href="{{ route('customer.products') }}" class="btn btn-primary btn-sm">
+                                <i class="fas fa-cart-plus me-1"></i> View
+                            </a>
                         </div>
                     </div>
                 </div>
             </div>
-            @endforeach
+            @empty
+            <div class="col-12">
+                <div class="alert alert-info text-center">No featured products available.</div>
+            </div>
+            @endforelse
         </div>
         <div class="text-center mt-4">
             <a href="{{ route('customer.products') }}" class="btn btn-outline-primary btn-lg">
@@ -124,23 +78,23 @@
         <h2 class="section-title">Our Services</h2>
         <p class="lead text-center mb-5">Professional automotive services to keep your vehicle in perfect condition</p>
         <div class="row">
-            @foreach([
-                ['icon' => 'fa-cogs', 'title' => 'Wheel Alignment', 'desc' => 'Precision alignment for better handling', 'price' => 800],
-                ['icon' => 'fa-tools', 'title' => 'Tire Replacement', 'desc' => 'Professional mounting and balancing', 'price' => 200],
-                ['icon' => 'fa-car', 'title' => 'Brake Service', 'desc' => 'Complete inspection and repair', 'price' => 1200]
-            ] as $service)
+            @forelse($services as $service)
             <div class="col-lg-4 col-md-6 mb-4">
                 <div class="card service-card text-center h-100">
                     <div class="card-body">
                         <div class="service-icon mb-3">
-                            <i class="fas {{ $service['icon'] }}"></i>
+                            @if($service->image)
+                                <img src="{{ asset($service->image) }}" alt="{{ $service->service_name }}" style="width:60px;height:60px;object-fit:cover;border-radius:50%;">
+                            @else
+                                <i class="fas fa-cogs fa-2x"></i>
+                            @endif
                         </div>
-                        <h5 class="card-title">{{ $service['title'] }}</h5>
-                        <p class="card-text text-muted">{{ $service['desc'] }} and extended vehicle life.</p>
-                        <p class="price">Starting at P{{ number_format($service['price'], 2) }}</p>
+                        <h5 class="card-title">{{ $service->service_name }}</h5>
+                        <p class="card-text text-muted">{{ $service->description }}</p>
+                        <p class="price">Starting at P{{ number_format($service->service_price, 2) }}</p>
                         <div class="mb-3">
                             <span class="badge bg-success">
-                                <i class="fas fa-clock me-1"></i>30-45 mins
+                                <i class="fas fa-user me-1"></i>{{ $service->employee->name ?? 'N/A' }}
                             </span>
                         </div>
                         <a href="{{ route('customer.booking') }}" class="btn btn-primary">
@@ -149,7 +103,11 @@
                     </div>
                 </div>
             </div>
-            @endforeach
+            @empty
+            <div class="col-12">
+                <div class="alert alert-info text-center">No services available at the moment.</div>
+            </div>
+            @endforelse
         </div>
     </div>
 </section>

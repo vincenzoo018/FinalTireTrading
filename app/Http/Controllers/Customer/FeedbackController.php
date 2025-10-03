@@ -5,18 +5,17 @@ namespace App\Http\Controllers\Customer;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Service;
 
-class ServiceController extends Controller
+class FeedbackController extends Controller
 {
     public function index(Request $request)
     {
         // Only allow authenticated customers (role_id == 3)
         if (!Auth::check() || Auth::user()->role_id != 3) {
-            return redirect()->route('auth.login')->withErrors(['auth' => 'Please login as a customer to view services.']);
+            return redirect()->route('auth.login')->withErrors(['auth' => 'Please login as a customer to view feedback.']);
         }
 
-        $services = Service::with('employee')->get();
-        return view('customer.services', compact('services'));
+        // You can fetch feedback data here if needed
+        return view('customer.feedback');
     }
 }

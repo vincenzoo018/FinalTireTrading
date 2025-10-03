@@ -6,11 +6,17 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Service;
 use App\Models\Employee;
+use Illuminate\Support\Facades\Auth;
 
 class ServiceController extends Controller
 {
     public function index()
     {
+        // Only allow authenticated admins (role_id == 1 or 2)
+        if (!Auth::check() || !in_array(Auth::user()->role_id, [1, 2])) {
+            return redirect()->route('auth.login')->withErrors(['auth' => 'Please login as an admin to view services.']);
+        }
+
         $services = Service::with('employee')->get();
         $employees = Employee::all();
         return view('admin.services', compact('services', 'employees'));
@@ -18,6 +24,11 @@ class ServiceController extends Controller
 
     public function store(Request $request)
     {
+        // Only allow authenticated admins (role_id == 1 or 2)
+        if (!Auth::check() || !in_array(Auth::user()->role_id, [1, 2])) {
+            return redirect()->route('auth.login')->withErrors(['auth' => 'Please login as an admin to add services.']);
+        }
+
         $validated = $request->validate([
             'service_name' => 'required|string|max:255',
             'service_price' => 'required|numeric',
