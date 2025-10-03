@@ -5,17 +5,28 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\Category;
-use App\Models\Supplier; // Assuming you have a Supplier model
+use App\Models\Supplier;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
     // Display all products
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::with('category')->orderBy('created_at', 'desc')->get();
+        $query = Product::with(['category', 'supplier', 'inventory'])->orderBy('created_at', 'desc');
+
+        if ($request->has('search') && $request->search !== '') {
+            $search = $request->search;
+            $query->where('product_name', 'like', "%" . $search . "%");
+        }
+        $products = $query->get();
         $categories = Category::all();
         $suppliers = Supplier::all();
+
+        if ($request->ajax()) {
+            return view('admin._productTable', compact('products'))->render();
+        }
+
         return view('admin.product', compact('products', 'categories', 'suppliers'));
     }
 
@@ -24,15 +35,15 @@ class ProductController extends Controller
     {
         $request->validate([
             'category_id' => 'required|exists:categories,category_id',
-            'supplier_id' => 'required|exists:suppliers,id', // Assuming supplier id is 'id'
+            'supplier_id' => 'required|exists:suppliers,supplier_id',
             'product_name' => 'required|string|max:255',
             'brand' => 'nullable|string|max:255',
             'size' => 'nullable|string|max:255',
             'length' => 'nullable|string|max:255',
             'width' => 'nullable|string|max:255',
             'description' => 'nullable|string',
-            'base_price' => 'required|numeric',
-            'selling_price' => 'required|numeric',
+            'base_price' => 'required|numeric|min:0',
+            'selling_price' => 'required|numeric|min:0',
             'serial_number' => 'nullable|string|max:255',
         ]);
 

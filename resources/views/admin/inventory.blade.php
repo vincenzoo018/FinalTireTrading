@@ -13,6 +13,7 @@
     </div>
 
     <div class="stats-grid">
+        <!-- Your stat cards here -->
         <div class="stat-card">
             <div class="stat-icon" style="background: #e74c3c;">
                 <i class="fas fa-exclamation-triangle"></i>
@@ -22,7 +23,6 @@
                 <p>Low Stock Items</p>
             </div>
         </div>
-
         <div class="stat-card">
             <div class="stat-icon" style="background: #f39c12;">
                 <i class="fas fa-box-open"></i>
@@ -32,7 +32,6 @@
                 <p>Out of Stock</p>
             </div>
         </div>
-
         <div class="stat-card">
             <div class="stat-icon" style="background: #27ae60;">
                 <i class="fas fa-check-circle"></i>
@@ -50,7 +49,6 @@
                 <i class="fas fa-search search-icon"></i>
                 <input type="text" class="search-input" placeholder="Search inventory...">
             </div>
-
             <div class="filter-wrapper">
                 <select class="btn-filter" style="padding-right: 2rem;">
                     <option>All Status</option>
@@ -81,8 +79,20 @@
                             Product Name
                             <i class="fas fa-sort"></i>
                         </th>
-                        <th>Category</th>
+                        <th class="sortable">
+                            Supplier Name
+                            <i class="fas fa-sort"></i>
+                        </th>
+                        <th class="sortable">
+                            Category
+                            <i class="fas fa-sort"></i>
+                        </th>
+                        <th>Brand</th>
+                        <th>Base Price</th>
+                        <th>Selling Price</th>
+                        <th>Size</th>
                         <th>Quantity On Hand</th>
+                        <th>Description</th>
                         <th>Last Updated</th>
                         <th>Status</th>
                         <th class="actions-header">
@@ -92,14 +102,26 @@
                     </tr>
                 </thead>
                 <tbody>
+                    @foreach($inventories as $inv)
                     <tr>
                         <td><input type="checkbox" class="row-checkbox"></td>
-                        <td class="supplier-id">INV001</td>
-                        <td class="supplier-name">L'Oréal Professional Shampoo</td>
-                        <td>Hair Care</td>
-                        <td><span class="stock-badge stock-high">48</span></td>
-                        <td>Oct 01, 2024</td>
-                        <td><span class="payment-badge status-active">In Stock</span></td>
+                        <td class="supplier-id">INV{{ str_pad($inv->inventory_id, 3, '0', STR_PAD_LEFT) }}</td>
+                        <td class="supplier-name">{{ $inv->product->product_name }}</td>
+                        <td>{{ $inv->product->supplier ? $inv->product->supplier->company_name : 'N/A' }}</td>
+                        <td>{{ $inv->product->category ? $inv->product->category->category_name : 'N/A' }}</td>
+                        <td>{{ $inv->product->brand }}</td>
+                        <td>₱{{ number_format($inv->product->base_price, 2) }}</td>
+                        <td>₱{{ number_format($inv->product->selling_price, 2) }}</td>
+                        <td>{{ $inv->product->size ?? '-' }}</td>
+                        <td><span class="stock-badge">{{ $inv->quantity_on_hand }}</span></td>
+                        <td>{{ \Carbon\Carbon::parse($inv->last_updated)->format('M d, Y') }}</td>
+                        <td>
+                            @if($inv->quantity_on_hand < 10)
+                                <span class="payment-badge status-pending">Low Stock</span>
+                            @else
+                                <span class="payment-badge status-active">In Stock</span>
+                            @endif
+                        </td>
                         <td class="actions-cell">
                             <button class="btn-icon btn-edit" title="Update Stock">
                                 <i class="fas fa-edit"></i>
@@ -109,180 +131,17 @@
                             </button>
                         </td>
                     </tr>
-                    <tr>
-                        <td><input type="checkbox" class="row-checkbox"></td>
-                        <td class="supplier-id">INV002</td>
-                        <td class="supplier-name">Kerastase Hair Mask</td>
-                        <td>Hair Care</td>
-                        <td><span class="stock-badge stock-medium">15</span></td>
-                        <td>Oct 02, 2024</td>
-                        <td><span class="payment-badge status-pending">Low Stock</span></td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-edit" title="Update Stock">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn-icon btn-view" title="View History">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><input type="checkbox" class="row-checkbox"></td>
-                        <td class="supplier-id">INV003</td>
-                        <td class="supplier-name">OPI Nail Polish</td>
-                        <td>Nail Care</td>
-                        <td><span class="stock-badge stock-high">72</span></td>
-                        <td>Sep 30, 2024</td>
-                        <td><span class="payment-badge status-active">In Stock</span></td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-edit" title="Update Stock">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn-icon btn-view" title="View History">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><input type="checkbox" class="row-checkbox"></td>
-                        <td class="supplier-id">INV004</td>
-                        <td class="supplier-name">Cetaphil Gentle Cleanser</td>
-                        <td>Skin Care</td>
-                        <td><span class="stock-badge stock-low">8</span></td>
-                        <td>Oct 01, 2024</td>
-                        <td><span class="payment-badge status-pending">Low Stock</span></td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-edit" title="Update Stock">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn-icon btn-view" title="View History">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><input type="checkbox" class="row-checkbox"></td>
-                        <td class="supplier-id">INV005</td>
-                        <td class="supplier-name">Revlon ColorStay Foundation</td>
-                        <td>Makeup</td>
-                        <td><span class="stock-badge stock-medium">22</span></td>
-                        <td>Sep 28, 2024</td>
-                        <td><span class="payment-badge status-active">In Stock</span></td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-edit" title="Update Stock">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn-icon btn-view" title="View History">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><input type="checkbox" class="row-checkbox"></td>
-                        <td class="supplier-id">INV006</td>
-                        <td class="supplier-name">Wella Koleston Hair Color</td>
-                        <td>Hair Color</td>
-                        <td><span class="stock-badge stock-high">56</span></td>
-                        <td>Oct 02, 2024</td>
-                        <td><span class="payment-badge status-active">In Stock</span></td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-edit" title="Update Stock">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn-icon btn-view" title="View History">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><input type="checkbox" class="row-checkbox"></td>
-                        <td class="supplier-id">INV007</td>
-                        <td class="supplier-name">Bioderma Micellar Water</td>
-                        <td>Skin Care</td>
-                        <td><span class="stock-badge stock-medium">18</span></td>
-                        <td>Sep 29, 2024</td>
-                        <td><span class="payment-badge status-active">In Stock</span></td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-edit" title="Update Stock">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn-icon btn-view" title="View History">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><input type="checkbox" class="row-checkbox"></td>
-                        <td class="supplier-id">INV008</td>
-                        <td class="supplier-name">Maybelline Mascara</td>
-                        <td>Makeup</td>
-                        <td><span class="stock-badge stock-out">0</span></td>
-                        <td>Sep 25, 2024</td>
-                        <td><span class="payment-badge status-inactive">Out of Stock</span></td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-edit" title="Update Stock">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn-icon btn-view" title="View History">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><input type="checkbox" class="row-checkbox"></td>
-                        <td class="supplier-id">INV009</td>
-                        <td class="supplier-name">Moroccan Oil Treatment</td>
-                        <td>Hair Care</td>
-                        <td><span class="stock-badge stock-medium">12</span></td>
-                        <td>Oct 01, 2024</td>
-                        <td><span class="payment-badge status-pending">Low Stock</span></td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-edit" title="Update Stock">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn-icon btn-view" title="View History">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><input type="checkbox" class="row-checkbox"></td>
-                        <td class="supplier-id">INV010</td>
-                        <td class="supplier-name">The Ordinary Niacinamide</td>
-                        <td>Skin Care</td>
-                        <td><span class="stock-badge stock-high">34</span></td>
-                        <td>Sep 30, 2024</td>
-                        <td><span class="payment-badge status-active">In Stock</span></td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-edit" title="Update Stock">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn-icon btn-view" title="View History">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
+                    @endforeach
                 </tbody>
             </table>
         </div>
 
         <div class="table-footer">
             <div class="showing-info">
-                Showing <strong>1-10</strong> of <strong>1,302</strong>
+                Showing <strong>{{ $inventories->total() }}</strong> items
             </div>
-
             <div class="pagination">
-                <button class="page-btn page-prev" disabled>
-                    <i class="fas fa-chevron-left"></i>
-                </button>
-                <button class="page-btn active">1</button>
-                <button class="page-btn">2</button>
-                <button class="page-btn">3</button>
-                <button class="page-btn">4</button>
-                <button class="page-btn">5</button>
-                <button class="page-btn page-next">
-                    <i class="fas fa-chevron-right"></i>
-                </button>
+                {{ $inventories->links() }}
             </div>
         </div>
     </div>
@@ -293,65 +152,83 @@
     <div class="modal-content">
         <div class="modal-header">
             <h2>Add Stock</h2>
-            <p class="required-text">Fields marked with an asterisk <span class="asterisk">(*)</span> are required.</p>
+            <p class="required-text">
+                Fields marked with an asterisk <span class="asterisk">(*)</span> are required.
+            </p>
         </div>
 
-        <form id="stockForm">
+        <form id="stockForm" method="POST" action="{{ route('admin.inventory.store') }}">
+            @csrf
             <div class="modal-body">
                 <div class="form-grid">
-                    <div class="form-group">
-                        <label class="form-label">
-                            Product Name <span class="required">*</span>
-                        </label>
+                    <!-- Product Search/Input Field -->
+                    <div class="form-group full-width">
+                        <label class="form-label">Product Name <span class="required">*</span></label>
                         <div class="input-with-icon">
                             <i class="fas fa-search input-icon"></i>
-                            <input type="text" class="form-input" placeholder="Search product..." required>
+                            <select name="product_id" id="product_id" class="form-select" required>
+                                <option value="">Select product...</option>
+                                @foreach($products as $product)
+                                    <option value="{{ $product->product_id }}">{{ $product->product_name }}</option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
 
+                    <!-- Auto-fill fields (existing product data) -->
                     <div class="form-group">
-                        <label class="form-label">
-                            Product Category <span class="required">*</span>
-                        </label>
-                        <select class="form-select" required>
+                        <label class="form-label">Product Category <span class="required">*</span></label>
+                        <select name="category_id" id="category_id" class="form-select" required>
                             <option value="">Select category</option>
-                            <option value="hair-care">Hair Care</option>
-                            <option value="skin-care">Skin Care</option>
-                            <option value="makeup">Makeup</option>
-                            <option value="nail-care">Nail Care</option>
-                            <option value="hair-color">Hair Color</option>
-                            <option value="hair-styling">Hair Styling</option>
+                            @foreach($categories as $category)
+                            <option value="{{ $category->category_id }}">{{ $category->category_name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Supplier Company Name <span class="required">*</span></label>
+                        <select name="supplier_id" id="supplier_id" class="form-select" required>
+                            <option value="">Select supplier</option>
+                            @foreach($suppliers as $supplier)
+                            <option value="{{ $supplier->supplier_id }}">{{ $supplier->company_name }}</option>
+                            @endforeach
                         </select>
                     </div>
 
+                    <!-- Other product details input -->
                     <div class="form-group">
-                        <label class="form-label">
-                            Unit Price <span class="required">*</span>
-                            <i class="fas fa-info-circle info-icon" title="Price per unit"></i>
-                        </label>
-                        <div class="input-group">
-                            <input type="number" class="form-input" placeholder="500" step="0.01" min="0" required>
-                            <div class="input-addon">PHP</div>
-                        </div>
+                        <label class="form-label">Brand</label>
+                        <input type="text" name="brand" id="brand" class="form-input" placeholder="Enter brand name">
                     </div>
-
                     <div class="form-group">
-                        <label class="form-label">
-                            Selling Price <span class="required">*</span>
-                            <i class="fas fa-info-circle info-icon" title="Price to customers"></i>
-                        </label>
-                        <div class="input-group">
-                            <input type="number" class="form-input" placeholder="0.00" step="0.01" min="0" required>
-                            <div class="input-addon">PHP</div>
-                        </div>
+                        <label class="form-label">Size</label>
+                        <input type="text" name="size" id="size" class="form-input" placeholder="Enter size">
                     </div>
-
                     <div class="form-group">
-                        <label class="form-label">
-                            Quantity <span class="required">*</span>
-                            <i class="fas fa-info-circle info-icon" title="Amount to add or subtract"></i>
+                        <label class="form-label">Length</label>
+                        <input type="text" name="length" id="length" class="form-input" placeholder="Enter length">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Width</label>
+                        <input type="text" name="width" id="width" class="form-input" placeholder="Enter width">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Base Price <span class="required">*</span></label>
+                        <input type="number" name="base_price" id="base_price" class="form-input" placeholder="Enter base price" min="0" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Selling Price <span class="required">*</span></label>
+                        <input type="number" name="selling_price" id="selling_price" class="form-input" placeholder="Enter selling price" min="0" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Serial Number</label>
+                        <input type="text" name="serial_number" id="serial_number" class="form-input" placeholder="XXXXXXXXX">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Quantity <span class="required">*</span>
+                            <i class="fas fa-info-circle info-icon" title="Amount to add"></i>
                         </label>
-                        <select class="form-select" required>
+                        <select name="quantity" id="quantity" class="form-select" required>
                             <option value="">Select quantity</option>
                             <option value="10">10</option>
                             <option value="25">25</option>
@@ -364,59 +241,59 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">
-                            Unit of Measure <span class="required">*</span>
-                        </label>
-                        <select class="form-select" required>
-                            <option value="">Select unit</option>
-                            <option value="pcs">pcs (pieces)</option>
-                            <option value="ml">ml (milliliters)</option>
-                            <option value="g">g (grams)</option>
-                            <option value="oz">oz (ounces)</option>
-                            <option value="kg">kg (kilograms)</option>
-                            <option value="l">l (liters)</option>
+                        <label class="form-label">Date <span class="required">*</span></label>
+                        <input type="date" name="date" id="date" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Status <span class="required">*</span></label>
+                        <select name="status" id="status" class="form-select" required>
+                            <option value="In Stock">In Stock</option>
+                            <option value="Low Stock">Low Stock</option>
+                            <option value="Out of Stock">Out of Stock</option>
                         </select>
                     </div>
-
-                    
-
-                    <div class="form-group">
-                        <label class="form-label">
-                            Supplier Company Name <span class="required">*</span>
-                        </label>
-                        <select class="form-select" required>
-                            <option value="">Select supplier</option>
-                            <option value="loreal">L'Oréal Professional</option>
-                            <option value="kerastase">Kérastase</option>
-                            <option value="wella">Wella</option>
-                            <option value="moroccanoil">Moroccanoil</option>
-                            <option value="opi">OPI</option>
-                            <option value="cetaphil">Cetaphil</option>
-                            <option value="bioderma">Bioderma</option>
-                            <option value="ordinary">The Ordinary</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">
-                            Serial Number <span class="required">*</span>
-                        </label>
-                        <input type="text" class="form-input" placeholder="XXXXXXXXX" required>
-                    </div>
-
                     <div class="form-group full-width">
-                        <label class="form-label">
-                            Description 
-                        </label>
-                        <textarea class="form-textarea" placeholder="Add any notes about this stock update (optional)"></textarea>
+                        <label class="form-label">Product Description</label>
+                        <textarea name="description" id="description" class="form-textarea" placeholder="Enter product description (optional)"></textarea>
                     </div>
                 </div>
-            </div>
+
+                <!-- Button to preview the entered data -->
+                <div style="margin: 1rem 0;">
+                    <button type="button" id="previewBtn" class="btn-save" style="background:#1e3a8a;">Preview Data</button>
+                </div>
+
+                <!-- Preview Table -->
+                <div class="table-responsive" style="margin-top:1rem;">
+                    <table class="supplier-table" id="previewTable">
+                        <thead>
+                            <tr>
+                                <th>Product Name</th>
+                                <th>Category</th>
+                                <th>Supplier</th>
+                                <th>Brand</th>
+                                <th>Size</th>
+                                <th>Length</th>
+                                <th>Width</th>
+                                <th>Base Price</th>
+                                <th>Selling Price</th>
+                                <th>Serial Number</th>
+                                <th>Quantity</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Preview rows will be appended here -->
+                        </tbody>
+                    </table>
+                </div>
+
 
             <div class="modal-footer">
                 <button type="button" class="btn-cancel" onclick="closeStockModal()">Cancel</button>
                 <button type="submit" class="btn-save">Save Stock</button>
             </div>
+            <input type="hidden" name="preview_rows" id="preview_rows">
         </form>
     </div>
 </div>
@@ -644,38 +521,142 @@
 </style>
 
 <script>
+// Open/Close modal functions (existing)
 function openStockModal() {
     document.getElementById('stockModal').classList.add('active');
     document.body.style.overflow = 'hidden';
 }
-
 function closeStockModal() {
     document.getElementById('stockModal').classList.remove('active');
     document.body.style.overflow = '';
     document.getElementById('stockForm').reset();
+    document.querySelector("#previewTable tbody").innerHTML = '';
+    previewRows = [];
+}
+document.getElementById('stockModal').addEventListener('click', function(e) {
+    if (e.target === this) { closeStockModal(); }
+});
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') { closeStockModal(); }
+});
+
+// Auto-fill fields when a product is selected
+document.getElementById('product_id').addEventListener('change', function() {
+    var productId = this.value;
+    if (!productId) return;
+
+    var products = @json($products);
+    var product = products.find(p => p.product_id == productId);
+
+    if (product) {
+        document.getElementById('category_id').value = product.category_id || '';
+        document.getElementById('supplier_id').value = product.supplier_id || '';
+        document.getElementById('brand').value = product.brand || '';
+        document.getElementById('size').value = product.size || '';
+        document.getElementById('length').value = product.length || '';
+        document.getElementById('width').value = product.width || '';
+        document.getElementById('base_price').value = product.base_price || '';
+        document.getElementById('selling_price').value = product.selling_price || '';
+        document.getElementById('serial_number').value = product.serial_number || '';
+        document.getElementById('description').value = product.description || '';
+    } else {
+        document.getElementById('category_id').value = '';
+        document.getElementById('supplier_id').value = '';
+        document.getElementById('brand').value = '';
+        document.getElementById('size').value = '';
+        document.getElementById('length').value = '';
+        document.getElementById('width').value = '';
+        document.getElementById('base_price').value = '';
+        document.getElementById('selling_price').value = '';
+        document.getElementById('serial_number').value = '';
+        document.getElementById('description').value = '';
+    }
+});
+
+// Store preview rows in an array
+let previewRows = [];
+
+// Add product to preview table (multi-row support)
+document.getElementById('previewBtn').addEventListener('click', function(){
+    var productSelect = document.getElementById('product_id');
+    var productId = productSelect.value;
+    var productName = productSelect.options[productSelect.selectedIndex].text;
+
+    if (!productId) {
+        alert('Please select a product.');
+        return;
+    }
+
+    var categorySelect = document.getElementById('category_id');
+    var categoryText = categorySelect.options[categorySelect.selectedIndex].text;
+    var supplierSelect = document.getElementById('supplier_id');
+    var supplierText = supplierSelect.options[supplierSelect.selectedIndex].text;
+    var brand = document.getElementById('brand').value;
+    var size = document.getElementById('size').value;
+    var length = document.getElementById('length').value;
+    var width = document.getElementById('width').value;
+    var basePrice = document.getElementById('base_price').value;
+    var sellingPrice = document.getElementById('selling_price').value;
+    var serialNumber = document.getElementById('serial_number').value;
+    var quantity = document.getElementById('quantity').value;
+    var description = document.getElementById('description').value;
+
+    // Validate required fields
+    if (!categorySelect.value || !supplierSelect.value || !basePrice || !sellingPrice || !quantity) {
+        alert('Please fill all required fields.');
+        return;
+    }
+
+    // Add to previewRows array
+    previewRows.push({
+        productId, productName, categoryText, supplierText, brand, size, length, width,
+        basePrice, sellingPrice, serialNumber, quantity, description
+    });
+
+    renderPreviewTable();
+    // Optionally, reset fields for next entry
+    document.getElementById('stockForm').reset();
+});
+
+// Render preview table with all rows
+function renderPreviewTable() {
+    var tbody = document.querySelector("#previewTable tbody");
+    tbody.innerHTML = '';
+    previewRows.forEach(function(row, idx){
+        var tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${row.productName}</td>
+            <td>${row.categoryText}</td>
+            <td>${row.supplierText}</td>
+            <td>${row.brand}</td>
+            <td>${row.size}</td>
+            <td>${row.length}</td>
+            <td>${row.width}</td>
+            <td>₱${parseFloat(row.basePrice || 0).toFixed(2)}</td>
+            <td>₱${parseFloat(row.sellingPrice || 0).toFixed(2)}</td>
+            <td>${row.serialNumber}</td>
+            <td>${row.quantity}</td>
+            <td>${row.description}</td>
+            <td><button type="button" class="btn-cancel" onclick="removePreviewRow(${idx})">Remove</button></td>
+        `;
+        tbody.appendChild(tr);
+    });
 }
 
-// Close modal when clicking outside
-document.getElementById('stockModal').addEventListener('click', function(e) {
-    if (e.target === this) {
-        closeStockModal();
-    }
-});
+// Remove a row from preview
+window.removePreviewRow = function(idx) {
+    previewRows.splice(idx, 1);
+    renderPreviewTable();
+};
 
-// Handle form submission
 document.getElementById('stockForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-
-    // You can add your AJAX submission here
-    alert('Stock updated successfully!');
-    closeStockModal();
-});
-
-// Close modal with ESC key
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-        closeStockModal();
+    // Only allow submit if there is at least one preview row
+    if (previewRows.length === 0) {
+        alert('Please add at least one product to preview before saving.');
+        e.preventDefault();
+        return false;
     }
+    document.getElementById('preview_rows').value = JSON.stringify(previewRows);
 });
 </script>
 @endsection

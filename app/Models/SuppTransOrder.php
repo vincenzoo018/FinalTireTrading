@@ -19,4 +19,3 @@ class SuppTransOrder extends Model
         return $this->hasMany(SuppOrderProd::class, 'transaction_id');
     }
 }
-

@@ -8,7 +8,7 @@
 
             <!-- Dashboard -->
             <li class="nav-item">
-                <a href="{{ route('admin.dashboard') }}" 
+                <a href="{{ route('admin.dashboard') }}"
                    class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
                     <i class="fas fa-tachometer-alt"></i>
                     <span>Dashboard</span>
@@ -24,13 +24,13 @@
                 </a>
                 <ul class="dropdown-menu">
                     <li>
-                        <a href="{{ route('admin.categories.index') }}" 
+                        <a href="{{ route('admin.categories.index') }}"
                            class="{{ request()->routeIs('admin.categories.index') ? 'active' : '' }}">
                             Product Category
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('admin.products.index') }}" 
+                        <a href="{{ route('admin.products.index') }}"
                            class="{{ request()->routeIs('admin.products.index') ? 'active' : '' }}">
                             Product List
                         </a>
@@ -40,7 +40,7 @@
 
             <!-- Inventory -->
             <li class="nav-item dropdown">
-                <a href="#" 
+                <a href="#"
                    class="nav-link dropdown-toggle {{ request()->routeIs('admin.inventory') || request()->routeIs('admin.stockadjustments') ? 'active' : '' }}">
                     <i class="fas fa-warehouse"></i>
                     <span>Inventory</span>
@@ -48,13 +48,13 @@
                 </a>
                 <ul class="dropdown-menu">
                     <li>
-                        <a href="{{ route('admin.inventory') }}" 
-                           class="{{ request()->routeIs('admin.inventory') ? 'active' : '' }}">
+                        <a href="{{ route('admin.inventory.index') }}"
+                           class="{{ request()->routeIs('admin.inventory.index') ? 'active' : '' }}">
                             Inventory List
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('admin.stockadjustments') }}" 
+                        <a href="{{ route('admin.stockadjustments') }}"
                            class="{{ request()->routeIs('admin.stockadjustments') ? 'active' : '' }}">
                             Stock Adjustments
                         </a>
@@ -71,13 +71,13 @@
                 </a>
                 <ul class="dropdown-menu">
                     <li>
-                        <a href="{{ route('admin.suppliers.index') }}" 
+                        <a href="{{ route('admin.suppliers.index') }}"
                            class="{{ request()->routeIs('admin.suppliers.index') ? 'active' : '' }}">
                             Supplier List
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('admin.transactions') }}" 
+                        <a href="{{ route('admin.transactions') }}"
                            class="{{ request()->routeIs('admin.transactions') ? 'active' : '' }}">
                             Supplier Transaction
                         </a>
@@ -87,7 +87,7 @@
 
             <!-- Services -->
             <li class="nav-item">
-                <a href="{{ route('admin.services') }}" 
+                <a href="{{ route('admin.services') }}"
                    class="nav-link {{ request()->routeIs('admin.services') ? 'active' : '' }}">
                     <i class="fas fa-concierge-bell"></i>
                     <span>Services</span>
@@ -96,7 +96,7 @@
 
             <!-- Booking -->
             <li class="nav-item">
-                <a href="{{ route('admin.bookings') }}" 
+                <a href="{{ route('admin.bookings') }}"
                    class="nav-link {{ request()->routeIs('admin.bookings') ? 'active' : '' }}">
                     <i class="fas fa-calendar-alt"></i>
                     <span>Booking</span>
@@ -105,7 +105,7 @@
 
             <!-- Orders -->
             <li class="nav-item">
-                <a href="{{ route('admin.orders') }}" 
+                <a href="{{ route('admin.orders') }}"
                    class="nav-link {{ request()->routeIs('admin.orders') ? 'active' : '' }}">
                     <i class="fas fa-shopping-cart"></i>
                     <span>Orders</span>
@@ -114,7 +114,7 @@
 
             <!-- Sales -->
             <li class="nav-item">
-                <a href="{{ route('admin.sales') }}" 
+                <a href="{{ route('admin.sales') }}"
                    class="nav-link {{ request()->routeIs('admin.sales') ? 'active' : '' }}">
                     <i class="fas fa-chart-line"></i>
                     <span>Sales</span>
@@ -123,7 +123,7 @@
 
             <!-- Customers -->
             <li class="nav-item">
-                <a href="{{ route('admin.customers') }}" 
+                <a href="{{ route('admin.customers') }}"
                    class="nav-link {{ request()->routeIs('admin.customers') ? 'active' : '' }}">
                     <i class="fas fa-users"></i>
                     <span>Customer</span>
@@ -132,7 +132,7 @@
 
             <!-- Employees -->
             <li class="nav-item">
-                <a href="{{ route('admin.employee') }}" 
+                <a href="{{ route('admin.employee') }}"
                    class="nav-link {{ request()->routeIs('admin.employee') ? 'active' : '' }}">
                     <i class="fas fa-user-tie"></i>
                     <span>Employee</span>

@@ -9,7 +9,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/categories', [AdminController::class, 'categories'])->name('categories');
     Route::get('/product', [\App\Http\Controllers\Admin\ProductController::class, 'index'])->name('products.index');
     Route::post('/product', [\App\Http\Controllers\Admin\ProductController::class, 'store'])->name('products.store');
-    Route::get('/inventory', [AdminController::class, 'inventory'])->name('inventory');
+    Route::get('/inventory', [\App\Http\Controllers\Admin\InventoryController::class, 'index'])->name('inventory.index');
+    Route::post('/inventory', [\App\Http\Controllers\Admin\InventoryController::class, 'store'])->name('inventory.store');
     Route::get('/stockadjustments', [AdminController::class, 'stockadjustments'])->name('stockadjustments');
     Route::get('/suppliers', [\App\Http\Controllers\Admin\SupplierController::class, 'index'])->name('suppliers.index');
     Route::post('/suppliers', [\App\Http\Controllers\Admin\SupplierController::class, 'store'])->name('suppliers.store');

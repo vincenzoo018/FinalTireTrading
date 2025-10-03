@@ -16,9 +16,8 @@
         <div class="table-controls">
             <div class="search-wrapper">
                 <i class="fas fa-search search-icon"></i>
-                <input type="text" class="search-input" placeholder="Search products...">
+                <input type="text" id="productSearchInput" class="search-input" placeholder="Search products...">
             </div>
-
             <div class="filter-wrapper">
                 <button class="btn-filter">
                     <i class="fas fa-filter"></i>
@@ -43,11 +42,14 @@
                             Product Name
                             <i class="fas fa-sort"></i>
                         </th>
+                        <th class="sortable">
+                            Supplier Name
+                            <i class="fas fa-sort"></i>
+                        </th>
                         <th>Category</th>
                         <th>Brand</th>
                         <th>Base Price</th>
                         <th>Selling Price</th>
-                        <th>Stock</th>
                         <th>Status</th>
                         <th class="actions-header">
                             Actions
@@ -55,17 +57,17 @@
                         </th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="productsTableBody">
                 @forelse($products as $product)
                     <tr>
                         <td><input type="checkbox" class="row-checkbox"></td>
-                        <td class="supplier-id">{{ $product->product_id }}</td>
-                        <td class="supplier-name">{{ $product->product_name }}</td>
-                        <td>{{ $product->category ? $product->category->category_name : '' }}</td>
+                        <td>{{ $product->product_id }}</td>
+                        <td>{{ $product->product_name }}</td>
+                        <td>{{ $product->supplier ? $product->supplier->company_name : 'N/A' }}</td>
+                        <td>{{ $product->category ? $product->category->category_name : 'N/A' }}</td>
                         <td>{{ $product->brand }}</td>
                         <td>₱{{ number_format($product->base_price, 2) }}</td>
                         <td>₱{{ number_format($product->selling_price, 2) }}</td>
-                        <td>{{ $product->inventory ? $product->inventory->stock : '-' }}</td>
                         <td><span class="payment-badge status-active">Active</span></td>
                         <td class="actions-cell">
                             <button class="btn-icon btn-edit" title="Edit">
@@ -133,7 +135,7 @@
                         <select name="supplier_id" class="form-select" required>
                             <option value="">Select supplier</option>
                             @foreach($suppliers as $supplier)
-                                <option value="{{ $supplier->id }}">{{ $supplier->name ?? $supplier->company_name ?? 'Supplier' }}</option>
+                                <option value="{{ $supplier->supplier_id }}">{{ $supplier->company_name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -179,6 +181,15 @@
                     </div>
 
                     <div class="form-group">
+                        <label class="form-label">Base Price <span class="required">*</span></label>
+                        <input type="number" name="base_price" class="form-input" placeholder="Enter base price" min="0" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Selling Price <span class="required">*</span></label>
+                        <input type="number" name="selling_price" class="form-input" placeholder="Enter selling price" min="0" step="0.01" required>
+                    </div>
+
+                    <div class="form-group">
                         <label class="form-label">
                             Serial Number
                         </label>
@@ -191,17 +202,6 @@
                         </label>
                         <textarea name="description" class="form-textarea" placeholder="Enter product description (optional)"></textarea>
                     </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Base Price <span class="required">*</span></label>
-                        <input type="number" name="base_price" class="form-input" placeholder="Enter base price" min="0" step="0.01" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Selling Price <span class="required">*</span></label>
-                        <input type="number" name="selling_price" class="form-input" placeholder="Enter selling price" min="0" step="0.01" required>
-                    </div>
-
-                    
                 </div>
             </div>
 
@@ -436,6 +436,25 @@
 </style>
 
 <script>
+// Live Search for Products
+document.getElementById('productSearchInput').addEventListener('input', function() {
+    var search = this.value;
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', '{{ route("admin.products.index") }}?search=' + encodeURIComponent(search), true);
+    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            var parser = new DOMParser();
+            var doc = parser.parseFromString(xhr.responseText, 'text/html');
+            var newTbody = doc.getElementById('productsTableBody');
+            if (newTbody) {
+                document.getElementById('productsTableBody').innerHTML = newTbody.innerHTML;
+            }
+        }
+    };
+    xhr.send();
+});
+
 function openProductModal() {
     document.getElementById('productModal').classList.add('active');
     document.body.style.overflow = 'hidden';
@@ -452,15 +471,6 @@ document.getElementById('productModal').addEventListener('click', function(e) {
     if (e.target === this) {
         closeProductModal();
     }
-});
-
-// Handle form submission
-document.getElementById('productForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-
-    // You can add your AJAX submission here
-    alert('Product saved successfully!');
-    closeProductModal();
 });
 
 // Close modal with ESC key
