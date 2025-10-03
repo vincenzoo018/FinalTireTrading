@@ -53,3 +53,17 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::delete('/categories/{id}', [CategoriesController::class, 'destroy'])->name('categories.destroy');
 });
 
+
+
+use App\Http\Controllers\Admin\ServiceController;
+
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('/services', [ServiceController::class, 'index'])->name('services.index');
+    Route::post('/services', [ServiceController::class, 'store'])->name('services.store');
+});
+
+use App\Http\Controllers\Admin\EmployeeController;
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('/employee', [EmployeeController::class, 'index'])->name('employee.index');
+    Route::post('/employee', [EmployeeController::class, 'store'])->name('employee.store');
+});

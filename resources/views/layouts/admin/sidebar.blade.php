@@ -87,8 +87,8 @@
 
             <!-- Services -->
             <li class="nav-item">
-                <a href="{{ route('admin.services') }}"
-                   class="nav-link {{ request()->routeIs('admin.services') ? 'active' : '' }}">
+                <a href="{{ route('admin.services.index') }}"
+                   class="nav-link {{ request()->routeIs('admin.services.index') ? 'active' : '' }}">
                     <i class="fas fa-concierge-bell"></i>
                     <span>Services</span>
                 </a>
@@ -132,8 +132,8 @@
 
             <!-- Employees -->
             <li class="nav-item">
-                <a href="{{ route('admin.employee') }}"
-                   class="nav-link {{ request()->routeIs('admin.employee') ? 'active' : '' }}">
+                <a href="{{ route('admin.employee.index') }}"
+                   class="nav-link {{ request()->routeIs('admin.employee.index') ? 'active' : '' }}">
                     <i class="fas fa-user-tie"></i>
                     <span>Employee</span>
                 </a>

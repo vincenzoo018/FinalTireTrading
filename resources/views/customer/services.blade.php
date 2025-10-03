@@ -4,197 +4,354 @@
 <!-- Services Header -->
 <section class="py-5 bg-light">
     <div class="container">
-        <h1 class="section-title">Our Services</h1>
-        <p class="lead">Professional automotive services to keep your vehicle in top condition</p>
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="section-title text-start mb-2">Our Services</h1>
+                <p class="lead mb-0">Professional automotive services to keep your vehicle in top condition and ensure your safety on the road</p>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <a href="{{ route('customer.booking') }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-calendar-plus me-2"></i>Book Appointment
+                </a>
+            </div>
+        </div>
     </div>
 </section>
 
 <!-- Services Section -->
 <section class="py-5">
     <div class="container">
-        <!-- Filter Form -->
-        <form method="GET" action="#" class="row mb-4 g-2">
-            <div class="col-md-4">
-                <input type="text" name="search" class="form-control" placeholder="Search services...">
-            </div>
-            <div class="col-md-4">
-                <select name="sort" class="form-select">
-                    <option value="">Sort by: Featured</option>
-                    <option value="price_asc">Price: Low to High</option>
-                    <option value="price_desc">Price: High to Low</option>
-                    <option value="name_asc">Name: A to Z</option>
-                    <option value="name_desc">Name: Z to A</option>
-                </select>
-            </div>
-            <div class="col-md-4">
-                <button class="btn btn-primary w-100" type="submit">Filter</button>
-            </div>
-        </form>
-
-        <!-- Static Services Grid -->
-        <div class="row">
-            <!-- Example Service Card -->
-            <div class="col-md-4 mb-4">
-                <div class="card service-card text-center h-100">
-                    <div class="card-body">
-                        <div class="service-icon mb-2">
-                            <i class="fas fa-car-side fa-2x"></i>
+        <!-- Enhanced Filter Form -->
+        <div class="card mb-5">
+            <div class="card-body">
+                <form method="GET" action="#" class="row g-3">
+                    <div class="col-lg-5 col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text bg-primary text-white">
+                                <i class="fas fa-search"></i>
+                            </span>
+                            <input type="text" name="search" class="form-control" placeholder="Search services...">
                         </div>
-                        <h5 class="card-title">Wheel Alignment</h5>
-                        <p class="card-text">Ensure your wheels are properly aligned for smooth driving.</p>
-                        <p class="price">P1,200.00</p>
-                        <div class="mb-2">
-                            <span class="badge bg-success">Available</span>
-                        </div>
-                        <button class="btn btn-primary book-btn" 
-                            data-id="1"
-                            data-name="Wheel Alignment"
-                            data-price="1200"
-                            data-description="Ensure your wheels are properly aligned for smooth driving.">
-                            Book Now
-                        </button>
                     </div>
-                </div>
-            </div>
-
-            <!-- Another Example Service Card -->
-            <div class="col-md-4 mb-4">
-                <div class="card service-card text-center h-100">
-                    <div class="card-body">
-                        <div class="service-icon mb-2">
-                            <i class="fas fa-oil-can fa-2x"></i>
-                        </div>
-                        <h5 class="card-title">Oil Change</h5>
-                        <p class="card-text">Keep your engine running smoothly with fresh oil.</p>
-                        <p class="price">P800.00</p>
-                        <div class="mb-2">
-                            <span class="badge bg-success">Available</span>
-                        </div>
-                        <button class="btn btn-primary book-btn" 
-                            data-id="2"
-                            data-name="Oil Change"
-                            data-price="800"
-                            data-description="Keep your engine running smoothly with fresh oil.">
-                            Book Now
-                        </button>
+                    <div class="col-lg-5 col-md-6">
+                        <select name="sort" class="form-select">
+                            <option value="">Sort by: Featured</option>
+                            <option value="price_asc">Price: Low to High</option>
+                            <option value="price_desc">Price: High to Low</option>
+                            <option value="name_asc">Name: A to Z</option>
+                            <option value="name_desc">Name: Z to A</option>
+                        </select>
                     </div>
-                </div>
-            </div>
-
-            <!-- Another Example Service Card -->
-            <div class="col-md-4 mb-4">
-                <div class="card service-card text-center h-100">
-                    <div class="card-body">
-                        <div class="service-icon mb-2">
-                            <i class="fas fa-cogs fa-2x"></i>
-                        </div>
-                        <h5 class="card-title">Brake Inspection</h5>
-                        <p class="card-text">Ensure safety with our complete brake system inspection.</p>
-                        <p class="price">P1,500.00</p>
-                        <div class="mb-2">
-                            <span class="badge bg-secondary">Not Available</span>
-                        </div>
-                        <button class="btn btn-primary disabled" tabindex="-1" aria-disabled="true">
-                            Book Now
+                    <div class="col-lg-2 col-md-12">
+                        <button class="btn btn-primary w-100" type="submit">
+                            <i class="fas fa-filter me-2"></i>Filter
                         </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Booking Modal -->
-        <div class="modal fade" id="bookingModal" tabindex="-1" aria-labelledby="bookingModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <form id="bookingForm" method="POST" action="#">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="bookingModalLabel">Book Service</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <input type="hidden" name="service_id" id="modalServiceId">
-                            <div class="mb-3">
-                                <label for="modalServiceName" class="form-label">Service</label>
-                                <input type="text" class="form-control" id="modalServiceName" readonly>
-                            </div>
-                            <div class="mb-3">
-                                <label for="modalServicePrice" class="form-label">Price</label>
-                                <input type="text" class="form-control" id="modalServicePrice" readonly>
-                            </div>
-                            <div class="mb-3">
-                                <label for="modalServiceDescription" class="form-label">Description</label>
-                                <textarea class="form-control" id="modalServiceDescription" rows="2" readonly></textarea>
-                            </div>
-                            <div class="mb-3">
-                                <label for="customerName" class="form-label">Your Name</label>
-                                <input type="text" class="form-control" id="customerName" name="customer_name" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="customerContact" class="form-label">Contact Number</label>
-                                <input type="text" class="form-control" id="customerContact" name="customer_contact" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="bookingDate" class="form-label">Preferred Date</label>
-                                <input type="date" class="form-control" id="bookingDate" name="booking_date" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="vehicleInfo" class="form-label">Vehicle Info</label>
-                                <input type="text" class="form-control" id="vehicleInfo" name="vehicle_info" required>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn btn-primary">Submit Booking</button>
-                        </div>
                     </div>
                 </form>
             </div>
         </div>
 
-        <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            document.querySelectorAll('.book-btn').forEach(function (button) {
-                button.addEventListener('click', function () {
-                    document.getElementById('modalServiceId').value = this.getAttribute('data-id');
-                    document.getElementById('modalServiceName').value = this.getAttribute('data-name');
-                    document.getElementById('modalServicePrice').value = 'P' + parseFloat(this.getAttribute('data-price')).toFixed(2);
-                    document.getElementById('modalServiceDescription').value = this.getAttribute('data-description');
-                    var modal = new bootstrap.Modal(document.getElementById('bookingModal'));
-                    modal.show();
-                });
-            });
-        });
-        </script>
+        <!-- Services Grid -->
+        <div class="row">
+            @foreach([
+                [
+                    'icon' => 'fa-car-side',
+                    'title' => 'Wheel Alignment',
+                    'desc' => 'Ensure your wheels are properly aligned for smooth driving and extended tire life.',
+                    'price' => 1200,
+                    'duration' => '45-60 mins',
+                    'available' => true
+                ],
+                [
+                    'icon' => 'fa-oil-can',
+                    'title' => 'Oil Change',
+                    'desc' => 'Keep your engine running smoothly with fresh oil and filter replacement.',
+                    'price' => 800,
+                    'duration' => '30 mins',
+                    'available' => true
+                ],
+                [
+                    'icon' => 'fa-cogs',
+                    'title' => 'Brake Inspection',
+                    'desc' => 'Ensure safety with our complete brake system inspection and repair services.',
+                    'price' => 1500,
+                    'duration' => '60-90 mins',
+                    'available' => false
+                ],
+                [
+                    'icon' => 'fa-tire',
+                    'title' => 'Tire Rotation',
+                    'desc' => 'Extend tire life with professional rotation and balancing services.',
+                    'price' => 400,
+                    'duration' => '30 mins',
+                    'available' => true
+                ],
+                [
+                    'icon' => 'fa-battery-full',
+                    'title' => 'Battery Service',
+                    'desc' => 'Complete battery testing, replacement, and electrical system check.',
+                    'price' => 1200,
+                    'duration' => '30 mins',
+                    'available' => true
+                ],
+                [
+                    'icon' => 'fa-wind',
+                    'title' => 'AC Service',
+                    'desc' => 'Keep your cool with professional air conditioning system maintenance.',
+                    'price' => 1800,
+                    'duration' => '60 mins',
+                    'available' => true
+                ]
+            ] as $service)
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card service-card text-center h-100">
+                    <div class="card-body">
+                        <div class="service-icon mb-3">
+                            <i class="fas {{ $service['icon'] }}"></i>
+                        </div>
+                        <h5 class="card-title">{{ $service['title'] }}</h5>
+                        <p class="card-text text-muted">{{ $service['desc'] }}</p>
+
+                        <div class="service-details mb-3">
+                            <div class="row text-center">
+                                <div class="col-6">
+                                    <small class="text-muted d-block">Price</small>
+                                    <strong class="text-primary">P{{ number_format($service['price'], 2) }}</strong>
+                                </div>
+                                <div class="col-6">
+                                    <small class="text-muted d-block">Duration</small>
+                                    <strong>{{ $service['duration'] }}</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            @if($service['available'])
+                            <span class="badge bg-success">
+                                <i class="fas fa-check me-1"></i>Available Today
+                            </span>
+                            @else
+                            <span class="badge bg-secondary">
+                                <i class="fas fa-clock me-1"></i>Available Tomorrow
+                            </span>
+                            @endif
+                        </div>
+
+                        @if($service['available'])
+                        <button class="btn btn-primary book-btn w-100"
+                                data-id="{{ $loop->iteration }}"
+                                data-name="{{ $service['title'] }}"
+                                data-price="{{ $service['price'] }}"
+                                data-description="{{ $service['desc'] }}"
+                                data-duration="{{ $service['duration'] }}">
+                            <i class="fas fa-calendar-check me-2"></i>Book Now
+                        </button>
+                        @else
+                        <button class="btn btn-secondary w-100 disabled" tabindex="-1" aria-disabled="true">
+                            <i class="fas fa-clock me-2"></i>Check Availability
+                        </button>
+                        @endif
+                    </div>
+                </div>
+            </div>
+            @endforeach
+        </div>
     </div>
 </section>
+
+<!-- Booking Modal -->
+<div class="modal fade" id="bookingModal" tabindex="-1" aria-labelledby="bookingModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <form id="bookingForm" method="POST" action="#">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="bookingModalLabel">
+                        <i class="fas fa-calendar-plus me-2"></i>Book Service
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="service_id" id="modalServiceId">
+
+                    <!-- Service Summary -->
+                    <div class="card bg-light mb-4">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <h6 class="mb-1" id="modalServiceName">Service Name</h6>
+                                    <p class="text-muted mb-0" id="modalServiceDescription">Service description</p>
+                                    <small class="text-muted" id="modalServiceDuration">Duration: 30 mins</small>
+                                </div>
+                                <div class="col-md-4 text-end">
+                                    <h4 class="text-primary mb-0" id="modalServicePrice">P0.00</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="customerName" class="form-label">Your Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="customerName" name="customer_name" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="customerContact" class="form-label">Contact Number <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="customerContact" name="customer_contact" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="bookingDate" class="form-label">Preferred Date <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" id="bookingDate" name="booking_date" required min="{{ date('Y-m-d') }}">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="bookingTime" class="form-label">Preferred Time <span class="text-danger">*</span></label>
+                                <select class="form-select" id="bookingTime" name="booking_time" required>
+                                    <option value="">Select time</option>
+                                    <option value="08:00">8:00 AM</option>
+                                    <option value="09:00">9:00 AM</option>
+                                    <option value="10:00">10:00 AM</option>
+                                    <option value="11:00">11:00 AM</option>
+                                    <option value="13:00">1:00 PM</option>
+                                    <option value="14:00">2:00 PM</option>
+                                    <option value="15:00">3:00 PM</option>
+                                    <option value="16:00">4:00 PM</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="vehicleInfo" class="form-label">Vehicle Information <span class="text-danger">*</span></label>
+                        <div class="row g-2">
+                            <div class="col-md-4">
+                                <input type="text" class="form-control" placeholder="Make (e.g., Toyota)" required>
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control" placeholder="Model (e.g., Vios)" required>
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control" placeholder="Year" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="specialRequests" class="form-label">Special Requests</label>
+                        <textarea class="form-control" id="specialRequests" name="special_requests" rows="3" placeholder="Any additional information or special requirements..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-calendar-check me-2"></i>Confirm Booking
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
 
 <!-- Why Choose Us Section -->
 <section class="py-5 bg-light">
     <div class="container">
         <h2 class="section-title text-center">Why Choose Our Services?</h2>
+        <p class="lead text-center mb-5">We are committed to providing the highest quality automotive services</p>
         <div class="row">
-            <div class="col-md-4 text-center mb-4">
+            <div class="col-lg-3 col-md-6 text-center mb-4">
                 <div class="feature-icon mb-3">
-                    <i class="fas fa-certificate fa-3x text-primary"></i>
+                    <i class="fas fa-certificate"></i>
                 </div>
                 <h5>Certified Technicians</h5>
-                <p>Our team consists of certified and experienced automotive technicians.</p>
+                <p class="text-muted">Our team consists of certified and experienced automotive technicians with years of expertise.</p>
             </div>
-            <div class="col-md-4 text-center mb-4">
+            <div class="col-lg-3 col-md-6 text-center mb-4">
                 <div class="feature-icon mb-3">
-                    <i class="fas fa-tools fa-3x text-primary"></i>
+                    <i class="fas fa-tools"></i>
                 </div>
                 <h5>Quality Equipment</h5>
-                <p>We use state-of-the-art equipment for all our services.</p>
+                <p class="text-muted">We use state-of-the-art equipment and genuine parts for all our services and repairs.</p>
             </div>
-            <div class="col-md-4 text-center mb-4">
+            <div class="col-lg-3 col-md-6 text-center mb-4">
                 <div class="feature-icon mb-3">
-                    <i class="fas fa-shield-alt fa-3x text-primary"></i>
+                    <i class="fas fa-shield-alt"></i>
                 </div>
                 <h5>Warranty Included</h5>
-                <p>All our services come with a comprehensive warranty.</p>
+                <p class="text-muted">All our services come with a comprehensive warranty for your peace of mind.</p>
+            </div>
+            <div class="col-lg-3 col-md-6 text-center mb-4">
+                <div class="feature-icon mb-3">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <h5>Quick Service</h5>
+                <p class="text-muted">We value your time and strive to complete most services within 30-60 minutes.</p>
             </div>
         </div>
     </div>
 </section>
+
+<!-- CTA Section -->
+<section class="py-5 bg-primary text-white">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h3 class="mb-3">Need Emergency Service?</h3>
+                <p class="mb-0">We offer emergency repair services and roadside assistance. Contact us immediately!</p>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <a href="tel:+1234567890" class="btn btn-light btn-lg">
+                    <i class="fas fa-phone-alt me-2"></i>Call Now
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+@endsection
+
+@section('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Initialize booking modal
+    document.querySelectorAll('.book-btn').forEach(function (button) {
+        button.addEventListener('click', function () {
+            document.getElementById('modalServiceId').value = this.getAttribute('data-id');
+            document.getElementById('modalServiceName').textContent = this.getAttribute('data-name');
+            document.getElementById('modalServicePrice').textContent = 'P' + parseFloat(this.getAttribute('data-price')).toLocaleString('en-PH', {minimumFractionDigits: 2});
+            document.getElementById('modalServiceDescription').textContent = this.getAttribute('data-description');
+            document.getElementById('modalServiceDuration').textContent = 'Duration: ' + this.getAttribute('data-duration');
+
+            var modal = new bootstrap.Modal(document.getElementById('bookingModal'));
+            modal.show();
+        });
+    });
+
+    // Set minimum date to today
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('bookingDate').min = today;
+
+    // Form submission handling
+    document.getElementById('bookingForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        // Show success message
+        const modal = bootstrap.Modal.getInstance(document.getElementById('bookingModal'));
+        modal.hide();
+
+        // Show success notification
+        setTimeout(() => {
+            alert('Booking submitted successfully! We will contact you to confirm your appointment.');
+        }, 500);
+    });
+});
+</script>
 @endsection
