@@ -36,9 +36,9 @@ Route::prefix('customer')->name('customer.')->group(function () {
     Route::get('/cart', [CustomerController::class, 'cart'])->name('cart');
     Route::get('/checkout', [CustomerController::class, 'checkout'])->name('checkout');
     Route::get('/orders', [CustomerController::class, 'orders'])->name('orders');
-    Route::get('/profile', [CustomerController::class, 'profile'])->name('profile');
     Route::get('/feedback', [CustomerController::class, 'feedback'])->name('feedback');
     Route::get('/logout', [CustomerController::class, 'logout'])->name('logout');
+    Route::get('/profile', [\App\Http\Controllers\Customer\ProfileController::class, 'show'])->name('profile');
 });
 
 
@@ -67,3 +67,18 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/employee', [EmployeeController::class, 'index'])->name('employee.index');
     Route::post('/employee', [EmployeeController::class, 'store'])->name('employee.store');
 });
+
+use App\Http\Controllers\AuthController;
+
+Route::prefix('auth')->name('auth.')->group(function () {
+    Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
+
+Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
+Route::post('/register', [AuthController::class, 'register']);
+
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+});
+
+Route::get('/customer/products', [\App\Http\Controllers\Customer\ProductController::class, 'index'])->name('customer.products');
+Route::get('/customer/services', [App\Http\Controllers\Customer\ServiceController::class, 'index'])->name('customer.services');

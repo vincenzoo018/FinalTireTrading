@@ -45,9 +45,19 @@ class ProductController extends Controller
             'base_price' => 'required|numeric|min:0',
             'selling_price' => 'required|numeric|min:0',
             'serial_number' => 'nullable|string|max:255',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        Product::create($request->all());
+        $data = $request->all();
+
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '_' . $image->getClientOriginalName();
+            $image->move(public_path('images'), $imageName);
+            $data['image'] = 'images/' . $imageName; // Save as 'images/filename.png'
+        }
+
+        Product::create($data);
 
         return redirect()->route('admin.products.index')->with('success', 'Product created successfully.');
     }

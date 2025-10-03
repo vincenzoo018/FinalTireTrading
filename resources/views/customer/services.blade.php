@@ -53,108 +53,47 @@
 
         <!-- Services Grid -->
         <div class="row">
-            @foreach([
-                [
-                    'icon' => 'fa-car-side',
-                    'title' => 'Wheel Alignment',
-                    'desc' => 'Ensure your wheels are properly aligned for smooth driving and extended tire life.',
-                    'price' => 1200,
-                    'duration' => '45-60 mins',
-                    'available' => true
-                ],
-                [
-                    'icon' => 'fa-oil-can',
-                    'title' => 'Oil Change',
-                    'desc' => 'Keep your engine running smoothly with fresh oil and filter replacement.',
-                    'price' => 800,
-                    'duration' => '30 mins',
-                    'available' => true
-                ],
-                [
-                    'icon' => 'fa-cogs',
-                    'title' => 'Brake Inspection',
-                    'desc' => 'Ensure safety with our complete brake system inspection and repair services.',
-                    'price' => 1500,
-                    'duration' => '60-90 mins',
-                    'available' => false
-                ],
-                [
-                    'icon' => 'fa-tire',
-                    'title' => 'Tire Rotation',
-                    'desc' => 'Extend tire life with professional rotation and balancing services.',
-                    'price' => 400,
-                    'duration' => '30 mins',
-                    'available' => true
-                ],
-                [
-                    'icon' => 'fa-battery-full',
-                    'title' => 'Battery Service',
-                    'desc' => 'Complete battery testing, replacement, and electrical system check.',
-                    'price' => 1200,
-                    'duration' => '30 mins',
-                    'available' => true
-                ],
-                [
-                    'icon' => 'fa-wind',
-                    'title' => 'AC Service',
-                    'desc' => 'Keep your cool with professional air conditioning system maintenance.',
-                    'price' => 1800,
-                    'duration' => '60 mins',
-                    'available' => true
-                ]
-            ] as $service)
+            @forelse($services as $service)
             <div class="col-lg-4 col-md-6 mb-4">
                 <div class="card service-card text-center h-100">
                     <div class="card-body">
                         <div class="service-icon mb-3">
-                            <i class="fas {{ $service['icon'] }}"></i>
+                            @if($service->image)
+                                <img src="{{ asset($service->image) }}" alt="{{ $service->service_name }}" style="width:60px;height:60px;object-fit:cover;border-radius:50%;">
+                            @else
+                                <i class="fas fa-cogs fa-2x"></i>
+                            @endif
                         </div>
-                        <h5 class="card-title">{{ $service['title'] }}</h5>
-                        <p class="card-text text-muted">{{ $service['desc'] }}</p>
-
+                        <h5 class="card-title">{{ $service->service_name }}</h5>
+                        <p class="card-text text-muted">{{ $service->description }}</p>
                         <div class="service-details mb-3">
                             <div class="row text-center">
                                 <div class="col-6">
                                     <small class="text-muted d-block">Price</small>
-                                    <strong class="text-primary">P{{ number_format($service['price'], 2) }}</strong>
+                                    <strong class="text-primary">P{{ number_format($service->service_price, 2) }}</strong>
                                 </div>
                                 <div class="col-6">
-                                    <small class="text-muted d-block">Duration</small>
-                                    <strong>{{ $service['duration'] }}</strong>
+                                    <small class="text-muted d-block">Employee</small>
+                                    <strong>{{ $service->employee->name ?? 'N/A' }}</strong>
                                 </div>
                             </div>
                         </div>
-
-                        <div class="mb-3">
-                            @if($service['available'])
-                            <span class="badge bg-success">
-                                <i class="fas fa-check me-1"></i>Available Today
-                            </span>
-                            @else
-                            <span class="badge bg-secondary">
-                                <i class="fas fa-clock me-1"></i>Available Tomorrow
-                            </span>
-                            @endif
-                        </div>
-
-                        @if($service['available'])
                         <button class="btn btn-primary book-btn w-100"
-                                data-id="{{ $loop->iteration }}"
-                                data-name="{{ $service['title'] }}"
-                                data-price="{{ $service['price'] }}"
-                                data-description="{{ $service['desc'] }}"
-                                data-duration="{{ $service['duration'] }}">
+                                data-id="{{ $service->service_id }}"
+                                data-name="{{ $service->service_name }}"
+                                data-price="{{ $service->service_price }}"
+                                data-description="{{ $service->description }}"
+                                data-duration="N/A">
                             <i class="fas fa-calendar-check me-2"></i>Book Now
                         </button>
-                        @else
-                        <button class="btn btn-secondary w-100 disabled" tabindex="-1" aria-disabled="true">
-                            <i class="fas fa-clock me-2"></i>Check Availability
-                        </button>
-                        @endif
                     </div>
                 </div>
             </div>
-            @endforeach
+            @empty
+            <div class="col-12">
+                <div class="alert alert-info text-center">No services available at the moment.</div>
+            </div>
+            @endforelse
         </div>
     </div>
 </section>

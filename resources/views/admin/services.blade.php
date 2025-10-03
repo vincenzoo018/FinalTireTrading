@@ -40,12 +40,13 @@
                     <tr>
                         <th><input type="checkbox" class="checkbox-all"></th>
                         <th class="sortable">ID <i class="fas fa-sort"></i></th>
+                        <th>Image</th>
                         <th class="sortable">Service Name <i class="fas fa-sort"></i></th>
                         <th>Description</th>
                         <th>Assigned Employee</th>
                         <th>Price</th>
                         <th>Status</th>
-                        <th>Bookings</th>
+
                         <th class="actions-header">Actions <i class="fas fa-info-circle tooltip-icon"></i></th>
                     </tr>
                 </thead>
@@ -54,12 +55,19 @@
                         <tr>
                             <td><input type="checkbox" class="row-checkbox"></td>
                             <td>{{ $service->service_id }}</td>
+                            <td>
+                                @if($service->image)
+                                    <img src="{{ asset($service->image) }}" alt="Service Image" style="width: 50px; height: 50px; object-fit: cover; border-radius: 6px;">
+                                @else
+                                    <img src="{{ asset('images/default-service.png') }}" alt="Default Service Image" style="width: 50px; height: 50px; object-fit: cover; border-radius: 6px;">
+                                @endif
+                            </td>
                             <td>{{ $service->service_name }}</td>
                             <td>{{ $service->description ?? 'N/A' }}</td>
-                            <td>{{ $service->employee->name ?? 'N/A' }}</td>
+                            <td>{{ $service->employee->employee_name ?? 'N/A' }}</td>
                             <td>₱{{ number_format($service->service_price, 2) }}</td>
                             <td><span class="payment-badge status-active">Active</span></td>
-                            <td>{{ $service->bookings->count() }}</td>
+
                             <td class="actions-cell">
                                 <button class="btn-icon btn-edit" title="Edit">
                                     <i class="fas fa-edit"></i>
@@ -98,7 +106,7 @@
 <div id="addServiceModal" class="modal-overlay" style="display: none;">
     <div class="modal">
         <h2>Add New Service</h2>
-        <form action="{{ route('admin.services.store') }}" method="POST">
+        <form action="{{ route('admin.services.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="form-group">
                 <label for="service_name">Service Name *</label>
@@ -120,6 +128,13 @@
                         <option value="{{ $employee->employee_id }}">{{ $employee->name ?? 'Employee #' . $employee->employee_id }}</option>
                     @endforeach
                 </select>
+            </div>
+            <div class="form-group">
+                <label for="image">Service Image</label>
+                <input type="file" name="image" id="serviceImageInput" accept="image/*">
+                <div id="serviceImagePreview" style="margin-top:10px;">
+                    <!-- Image preview will appear here -->
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" onclick="closeModal()" class="btn btn-secondary">Cancel</button>
@@ -209,5 +224,28 @@
             closeModal();
         }
     };
+
+    // Image preview for service modal
+    document.addEventListener('DOMContentLoaded', function () {
+        var imageInput = document.getElementById('serviceImageInput');
+        if (imageInput) {
+            imageInput.addEventListener('change', function(event) {
+                const preview = document.getElementById('serviceImagePreview');
+                preview.innerHTML = '';
+                if (this.files && this.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.style.maxWidth = '100px';
+                        img.style.maxHeight = '100px';
+                        img.style.borderRadius = '8px';
+                        preview.appendChild(img);
+                    };
+                    reader.readAsDataURL(this.files[0]);
+                }
+            });
+        }
+    });
 </script>
 @endsection

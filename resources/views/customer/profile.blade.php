@@ -36,9 +36,9 @@
                                 <input type="file" id="photoUpload" class="d-none" accept="image/*">
                             </div>
                         </div>
-                        <h4 class="profile-name">Juan Dela Cruz</h4>
+                        <h4 class="profile-name">{{ $user->full_name ?? $user->username }}</h4>
                         <p class="text-muted mb-3">
-                            <i class="fas fa-map-marker-alt me-1 text-primary"></i>Cebu City, Philippines
+                            <i class="fas fa-map-marker-alt me-1 text-primary"></i>{{ $user->address ?? 'No address set' }}
                         </p>
                         <div class="member-badge mb-3">
                             <span class="badge bg-warning">
@@ -124,13 +124,13 @@
                                     <label for="firstName" class="form-label">
                                         <i class="fas fa-user me-1 text-primary"></i>First Name
                                     </label>
-                                    <input type="text" class="form-control" id="firstName" value="Juan" required>
+                                    <input type="text" class="form-control" id="firstName" value="{{ $user->fname }}" required>
                                 </div>
                                 <div class="col-md-6">
                                     <label for="lastName" class="form-label">
                                         <i class="fas fa-user me-1 text-primary"></i>Last Name
                                     </label>
-                                    <input type="text" class="form-control" id="lastName" value="Dela Cruz" required>
+                                    <input type="text" class="form-control" id="lastName" value="{{ $user->lname }}" required>
                                 </div>
                             </div>
 
@@ -139,7 +139,7 @@
                                     <label for="email" class="form-label">
                                         <i class="fas fa-envelope me-1 text-primary"></i>Email Address
                                     </label>
-                                    <input type="email" class="form-control" id="email" value="juan.delacruz@example.com" required>
+                                    <input type="email" class="form-control" id="email" value="{{ $user->email }}" required>
                                     <div class="form-text">
                                         <i class="fas fa-check-circle text-success me-1"></i>Email verified
                                     </div>
@@ -148,7 +148,7 @@
                                     <label for="phone" class="form-label">
                                         <i class="fas fa-phone me-1 text-primary"></i>Phone Number
                                     </label>
-                                    <input type="tel" class="form-control" id="phone" value="09123456789" required>
+                                    <input type="tel" class="form-control" id="phone" value="{{ $user->phone }}" required>
                                 </div>
                             </div>
 
@@ -156,7 +156,7 @@
                                 <label for="address" class="form-label">
                                     <i class="fas fa-map-marker-alt me-1 text-primary"></i>Address
                                 </label>
-                                <textarea class="form-control" id="address" rows="3" required>123 Sample Street, Cebu City, Cebu 6000</textarea>
+                                <textarea class="form-control" id="address" rows="3" required>{{ $user->address }}</textarea>
                             </div>
 
                             <div class="row mb-3">

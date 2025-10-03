@@ -38,6 +38,7 @@
                             ID
                             <i class="fas fa-sort"></i>
                         </th>
+                        <th>Image</th>
                         <th class="sortable">
                             Product Name
                             <i class="fas fa-sort"></i>
@@ -62,6 +63,13 @@
                     <tr>
                         <td><input type="checkbox" class="row-checkbox"></td>
                         <td>{{ $product->product_id }}</td>
+                        <td>
+                            @if($product->image)
+                                <img src="{{ asset($product->image) }}" alt="Product Image" style="width: 50px; height: 50px; object-fit: cover; border-radius: 6px;">
+                            @else
+                                <img src="{{ asset('images/default-product.png') }}" alt="Default Product Image" style="width: 50px; height: 50px; object-fit: cover; border-radius: 6px;">
+                            @endif
+                        </td>
                         <td>{{ $product->product_name }}</td>
                         <td>{{ $product->supplier ? $product->supplier->company_name : 'N/A' }}</td>
                         <td>{{ $product->category ? $product->category->category_name : 'N/A' }}</td>
@@ -80,9 +88,32 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="10" class="text-center">No products found.</td>
+                        <td colspan="11" class="text-center">No products found.</td>
                     </tr>
                 @endforelse
+
+                {{-- Display all images from public/images --}}
+                @php
+                    $imageFiles = [];
+                    $imagesPath = public_path('public/images');
+                    if (file_exists($imagesPath)) {
+                        $imageFiles = array_values(array_filter(scandir($imagesPath), function($file) use ($imagesPath) {
+                            return is_file($imagesPath . DIRECTORY_SEPARATOR . $file) &&
+                                preg_match('/\.(jpg|jpeg|png|gif|webp)$/i', $file);
+                        }));
+                    }
+                @endphp
+                @foreach($imageFiles as $img)
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td>
+                            <img src="{{ asset('images/' . $img) }}" alt="{{ $img }}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 6px;">
+                        </td>
+                        <td colspan="8"><span class="text-muted">Image: {{ $img }}</span></td>
+                    </tr>
+                @endforeach
+
                 </tbody>
             </table>
         </div>
@@ -117,7 +148,7 @@
             <p class="required-text">Fields marked with an asterisk <span class="asterisk">(*)</span> are required.</p>
         </div>
 
-        <form id="productForm" method="POST" action="{{ route('admin.products.store') }}">
+        <form id="productForm" method="POST" action="{{ route('admin.products.store') }}" enctype="multipart/form-data">
             @csrf
             <div class="modal-body">
                 <div class="form-grid">
@@ -194,6 +225,16 @@
                             Serial Number
                         </label>
                         <input type="text" name="serial_number" class="form-input" placeholder="XXXXXXXXX">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Product Image
+                        </label>
+                        <input type="file" name="image" class="form-input" accept="public/image*" id="productImageInput">
+                        <div id="imagePreview" style="margin-top:10px;">
+                            <!-- Image preview will appear here -->
+                        </div>
                     </div>
 
                     <div class="form-group full-width">
@@ -464,7 +505,31 @@ function closeProductModal() {
     document.getElementById('productModal').classList.remove('active');
     document.body.style.overflow = '';
     document.getElementById('productForm').reset();
+    document.getElementById('imagePreview').innerHTML = '';
 }
+
+// Image preview for product modal
+document.addEventListener('DOMContentLoaded', function () {
+    var imageInput = document.getElementById('productImageInput');
+    if (imageInput) {
+        imageInput.addEventListener('change', function(event) {
+            const preview = document.getElementById('imagePreview');
+            preview.innerHTML = '';
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.style.maxWidth = '100px';
+                    img.style.maxHeight = '100px';
+                    img.style.borderRadius = '8px';
+                    preview.appendChild(img);
+                };
+                reader.readAsDataURL(this.files[0]);
+            }
+        });
+    }
+});
 
 // Close modal when clicking outside
 document.getElementById('productModal').addEventListener('click', function(e) {

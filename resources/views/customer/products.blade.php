@@ -11,7 +11,7 @@
             </div>
             <div class="col-lg-4 text-lg-end">
                 <div class="d-flex align-items-center justify-content-lg-end">
-                    <span class="text-muted me-2">Showing 12 products</span>
+                    <span class="text-muted me-2">Showing {{ $products->count() }} of {{ $products->total() }} products</span>
                 </div>
             </div>
         </div>
@@ -76,78 +76,61 @@
 
         <div class="row">
             <!-- Product Cards -->
-            @for($i = 1; $i <= 6; $i++)
+            @forelse($products as $product)
             <div class="col-xl-4 col-lg-6 mb-4">
                 <div class="card product-card h-100">
-                    <span class="featured-badge">FEATURED</span>
-                    <img src="/images/tire-{{ ($i % 3) + 1 }}.jpg" class="card-img-top product-img" alt="Premium Tire {{ $i }}">
+                    @if($product->image)
+                        <img src="{{ asset($product->image) }}" class="card-img-top product-img" alt="{{ $product->product_name }}">
+                    @else
+                        <img src="{{ asset('images/default-product.png') }}" class="card-img-top product-img" alt="Default Product">
+                    @endif
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-start mb-2">
-                            <h5 class="product-title">Premium Tire Model {{ $i }}</h5>
+                            <h5 class="product-title">{{ $product->product_name }}</h5>
                             <span class="badge bg-success">
                                 <i class="fas fa-check me-1"></i>In Stock
                             </span>
                         </div>
-                        <p class="card-text text-muted">High-performance tire designed for excellent traction and durability in all weather conditions.</p>
-
+                        <p class="card-text text-muted">{{ $product->description ?? 'No description.' }}</p>
                         <div class="product-specs mb-3">
                             <div class="row text-center">
                                 <div class="col-4">
                                     <small class="text-muted d-block">Size</small>
-                                    <strong>205/55R16</strong>
+                                    <strong>{{ $product->size ?? '-' }}</strong>
                                 </div>
                                 <div class="col-4">
-                                    <small class="text-muted d-block">Warranty</small>
-                                    <strong>60,000 km</strong>
+                                    <small class="text-muted d-block">Brand</small>
+                                    <strong>{{ $product->brand ?? '-' }}</strong>
                                 </div>
                                 <div class="col-4">
-                                    <small class="text-muted d-block">Season</small>
-                                    <strong>All-Season</strong>
+                                    <small class="text-muted d-block">Category</small>
+                                    <strong>{{ $product->category->category_name ?? '-' }}</strong>
                                 </div>
                             </div>
                         </div>
-
-                        <div class="product-features mb-3">
-                            <small class="text-muted">
-                                <i class="fas fa-check text-success me-1"></i>Fuel Efficient<br>
-                                <i class="fas fa-check text-success me-1"></i>Wet Traction<br>
-                                <i class="fas fa-check text-success me-1"></i>Comfort Ride
-                            </small>
-                        </div>
-
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <span class="product-price">P{{ number_format(2500 + ($i * 300), 2) }}</span>
+                                <span class="product-price">₱{{ number_format($product->selling_price, 2) }}</span>
                                 <small class="text-muted d-block">per tire</small>
                             </div>
                             <button class="btn btn-primary"
-                                    onclick="addToCart({{ $i }}, 'Premium Tire Model {{ $i }}', {{ 2500 + ($i * 300) }})">
+                                    onclick="addToCart({{ $product->product_id }}, '{{ $product->product_name }}', {{ $product->selling_price }})">
                                 <i class="fas fa-cart-plus me-2"></i>Add to Cart
                             </button>
                         </div>
                     </div>
                 </div>
             </div>
-            @endfor
+            @empty
+            <div class="col-12">
+                <div class="alert alert-warning text-center">No products found.</div>
+            </div>
+            @endforelse
         </div>
 
         <!-- Pagination -->
         <nav aria-label="Product pagination" class="mt-5">
-            <ul class="pagination justify-content-center">
-                <li class="page-item disabled">
-                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">
-                        <i class="fas fa-chevron-left me-2"></i>Previous
-                    </a>
-                </li>
-                <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                <li class="page-item">
-                    <a class="page-link" href="#">
-                        Next<i class="fas fa-chevron-right ms-2"></i>
-                    </a>
-                </li>
-            </ul>
+            {{ $products->links('pagination::bootstrap-5') }}
         </nav>
     </div>
 </section>
@@ -179,4 +162,9 @@
         </div>
     </div>
 </section>
+
+{{-- Debug --}}
+@if(!isset($products))
+    <div style="color:red">ERROR: $products is not set!</div>
+@endif
 @endsection
