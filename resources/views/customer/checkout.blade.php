@@ -28,11 +28,11 @@
         <div class="row">
             <!-- Checkout Forms -->
             <div class="col-lg-8">
-                <!-- Shipping Information -->
+                <!-- Delivery Information -->
                 <div class="card checkout-card mb-4">
                     <div class="card-header bg-primary text-white">
                         <h5 class="mb-0">
-                            <i class="fas fa-truck me-2"></i>Shipping Information
+                            <i class="fas fa-truck me-2"></i>Delivery Information
                         </h5>
                     </div>
                     <div class="card-body">
@@ -63,6 +63,36 @@
                                     <input type="email" class="form-control" id="shippingEmail" value="{{ Auth::user()->email }}" readonly>
                                 </div>
                             </div>
+
+                            <!-- Delivery Vehicle Selection -->
+                            <div class="mb-3">
+                                <label for="deliveryVehicle" class="form-label">Select Delivery Vehicle</label>
+                                <select class="form-select" id="deliveryVehicle" name="delivery_vehicle_id" required>
+                                    <option value="">Choose vehicle...</option>
+                                    @foreach($vehicles as $vehicle)
+                                        <option value="{{ $vehicle->vehicle_id }}">
+                                            {{ $vehicle->vehicle_name }} ({{ $vehicle->vehicle_plate_number }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            @if($delivery)
+                                <div class="mb-3">
+                                    <label class="form-label">Latest Delivery Info</label>
+                                    <div class="p-3 bg-light rounded">
+                                        <strong>Receiving No:</strong> {{ $delivery->receiving_no }}<br>
+                                        <strong>Delivery Date:</strong> {{ \Carbon\Carbon::parse($delivery->delivery_date)->format('M d, Y') }}<br>
+                                        <strong>Shipping Fee:</strong> ₱{{ number_format($delivery->shipping_fee, 2) }}<br>
+                                        <strong>Vehicle(s):</strong>
+                                        <ul>
+                                            @foreach($delivery->vehicles as $v)
+                                                <li>{{ $v->vehicle_name }} ({{ $v->vehicle_plate_number }})</li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                </div>
+                            @endif
                         </form>
                     </div>
                 </div>
@@ -118,36 +148,7 @@
                             </div>
                         </div>
 
-                        <!-- Credit Card Form -->
-                        <div id="creditCardForm" class="payment-form">
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <label for="cardNumber" class="form-label">Card Number</label>
-                                    <input type="text" class="form-control" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19">
-                                    <div class="card-icons mt-2">
-                                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='25' viewBox='0 0 40 25'%3E%3Crect width='40' height='25' fill='%231a237e' rx='3'/%3E%3Ctext x='20' y='15' font-family='Arial' font-size='8' text-anchor='middle' fill='white'%3EVisa%3C/text%3E%3C/svg%3E" alt="Visa" class="me-1">
-                                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='25' viewBox='0 0 40 25'%3E%3Crect width='40' height='25' fill='%23ff5f00' rx='3'/%3E%3Ctext x='20' y='15' font-family='Arial' font-size='6' text-anchor='middle' fill='white'%3EMastercard%3C/text%3E%3C/svg%3E" alt="Mastercard">
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <label for="expiryDate" class="form-label">Expiry Date</label>
-                                    <input type="text" class="form-control" id="expiryDate" placeholder="MM/YY" maxlength="5">
-                                </div>
-                                <div class="col-md-3">
-                                    <label for="cvv" class="form-label">CVV</label>
-                                    <div class="input-group">
-                                        <input type="text" class="form-control" id="cvv" placeholder="123" maxlength="4">
-                                        <span class="input-group-text" data-bs-toggle="tooltip" title="3 or 4 digit security code">
-                                            <i class="fas fa-question-circle text-muted"></i>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <label for="cardName" class="form-label">Name on Card</label>
-                                <input type="text" class="form-control" id="cardName" placeholder="JUAN DELA CRUZ">
-                            </div>
-                        </div>
+
 
                         <!-- PayPal Form (Hidden by default) -->
                         <div id="paypalForm" class="payment-form" style="display: none;">
@@ -252,23 +253,7 @@
                 </div>
 
                 <!-- Support Card -->
-                <div class="card mt-4">
-                    <div class="card-body text-center">
-                        <div class="support-icon mb-3">
-                            <i class="fas fa-headset fa-2x text-primary"></i>
-                        </div>
-                        <h6>Need Help with Checkout?</h6>
-                        <p class="small text-muted mb-3">Our support team is ready to assist you</p>
-                        <div class="contact-options">
-                            <button class="btn btn-outline-primary btn-sm w-100 mb-2">
-                                <i class="fas fa-comment-dots me-1"></i>Live Chat
-                            </button>
-                            <a href="tel:+631234567890" class="btn btn-outline-primary btn-sm w-100">
-                                <i class="fas fa-phone me-1"></i>Call Support
-                            </a>
-                        </div>
-                    </div>
-                </div>
+
             </div>
         </div>
     </div>

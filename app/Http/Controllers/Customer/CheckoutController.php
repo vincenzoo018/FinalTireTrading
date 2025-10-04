@@ -18,8 +18,13 @@ class CheckoutController extends Controller
         }
 
         $cartItems = Cart::with('product')->where('user_id', Auth::id())->get();
+        $vehicles = \App\Models\DeliveryVehicle::all();
+        $delivery = \App\Models\Delivery::where('customer_id', Auth::id())
+            ->latest('delivery_date')
+            ->with('vehicles')
+            ->first();
 
-        return view('customer.checkout', compact('cartItems'));
+        return view('customer.checkout', compact('cartItems', 'vehicles', 'delivery'));
     }
 
     public function completePurchase(Request $request)

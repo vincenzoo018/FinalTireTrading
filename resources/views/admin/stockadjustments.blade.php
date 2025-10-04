@@ -275,23 +275,19 @@
             <p class="required-text">Fields marked with an asterisk <span class="asterisk">(*)</span> are required.</p>
         </div>
 
-        <form id="adjustmentForm">
+        <!-- Example Stock Adjustment Modal/Form -->
+        <form method="POST" action="{{ route('admin.stockadjustments.store') }}">
+            @csrf
             <div class="modal-body">
                 <div class="form-grid">
                     <div class="form-group">
                         <label class="form-label">
                             Product Name <span class="required">*</span>
                         </label>
-                        <select class="form-select" id="productSelect" required>
-                            <option value="">Select product</option>
-                            <option value="1" data-stock="48">L'Oréal Professional Shampoo (Stock: 48)</option>
-                            <option value="2" data-stock="15">Kerastase Hair Mask (Stock: 15)</option>
-                            <option value="3" data-stock="72">OPI Nail Polish (Stock: 72)</option>
-                            <option value="4" data-stock="8">Cetaphil Gentle Cleanser (Stock: 8)</option>
-                            <option value="5" data-stock="22">Revlon ColorStay Foundation (Stock: 22)</option>
-                            <option value="6" data-stock="56">Wella Koleston Hair Color (Stock: 56)</option>
-                            <option value="7" data-stock="18">Bioderma Micellar Water (Stock: 18)</option>
-                            <option value="8" data-stock="0">Maybelline Mascara (Stock: 0)</option>
+                        <select class="form-select" name="stock_prod_id" required>
+                            @foreach($inventories as $inv)
+                                <option value="{{ $inv->stock_prod_id }}">{{ $inv->product->product_name }} (Current: {{ $inv->quantity_on_hand }})</option>
+                            @endforeach
                         </select>
                     </div>
 
@@ -299,11 +295,11 @@
                         <label class="form-label">
                             Adjustment Type <span class="required">*</span>
                         </label>
-                        <select class="form-select" id="adjustmentType" required>
-                            <option value="">Select type</option>
-                            <option value="addition">Addition</option>
-                            <option value="subtraction">Subtraction</option>
+                        <select class="form-select" name="adjustment_type" required>
+                            <option value="add">Add</option>
+                            <option value="subtract">Subtract</option>
                             <option value="damage">Damage</option>
+                            <option value="missing">Missing</option>
                             <option value="return">Return</option>
                             <option value="correction">Correction</option>
                         </select>
@@ -314,25 +310,38 @@
                             Physical Count <span class="required">*</span>
                             <i class="fas fa-info-circle info-icon" title="Enter the quantity to adjust"></i>
                         </label>
-                        <input type="number" class="form-input" id="quantity" placeholder="Enter quantity" min="1" required>
+                        <input type="number" class="form-input" name="physical_count" min="0" placeholder="Enter quantity" required>
                     </div>
 
                     <div class="form-group">
                         <label class="form-label">
-                            Current Stock
-                            <i class="fas fa-info-circle info-icon" title="Current stock level"></i>
-                        </label>
-                        <input type="text" class="form-input" id="currentStock" placeholder="--" readonly style="background: #f1f5f9;">
-                    </div>
-
-                    <div class="form-group full-width">
-                        <label class="form-label">
                             Reason <span class="required">*</span>
                         </label>
-                        <textarea class="form-textarea" id="reason" placeholder="Enter reason for adjustment" required></textarea>
-                        <small style="color: #64748b; font-size: 0.75rem; margin-top: 0.25rem; display: block;">
-                            Example: "While performing a physical stock count, I found additional units of this product that were not previously recorded. To make sure the system reflects the actual number of items on hand, I am adding them into inventory."
-                        </small>
+                        <input type="text" class="form-input" name="reason" placeholder="Enter reason for adjustment" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            System Count <span class="required">*</span>
+                        </label>
+                        <input type="number" class="form-input" name="system_count" min="0" placeholder="Enter system count" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Adjustment Quantity <span class="required">*</span>
+                        </label>
+                        <input type="number" class="form-input" name="adjust_count" min="0" placeholder="Enter adjustment quantity" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Status <span class="required">*</span>
+                        </label>
+                        <select class="form-select" name="status" required>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
                     </div>
                 </div>
             </div>
@@ -525,7 +534,7 @@
     .form-grid {
         grid-template-columns: 1fr;
     }
-    
+
     #dateFilterPanel > div {
         grid-template-columns: 1fr;
     }
@@ -564,19 +573,19 @@ document.getElementById('productSelect').addEventListener('change', function() {
 // Handle form submission
 document.getElementById('adjustmentForm').addEventListener('submit', function(e) {
     e.preventDefault();
-    
+
     // Get form values
     const productId = document.getElementById('productSelect').value;
     const adjustmentType = document.getElementById('adjustmentType').value;
     const quantity = document.getElementById('quantity').value;
     const reason = document.getElementById('reason').value;
-    
+
     // Validate
     if (!productId || !adjustmentType || !quantity || !reason) {
         alert('Please fill in all required fields');
         return;
     }
-    
+
     // Here you would typically send this to your backend
     console.log({
         product_id: productId,
@@ -584,7 +593,7 @@ document.getElementById('adjustmentForm').addEventListener('submit', function(e)
         quantity: quantity,
         reason: reason
     });
-    
+
     alert('Stock adjustment submitted successfully!');
     closeAdjustmentModal();
 });
@@ -600,7 +609,7 @@ document.addEventListener('keydown', function(e) {
 document.getElementById('searchInput').addEventListener('keyup', function() {
     const searchTerm = this.value.toLowerCase();
     const tableRows = document.querySelectorAll('.supplier-table tbody tr');
-    
+
     tableRows.forEach(row => {
         const text = row.textContent.toLowerCase();
         row.style.display = text.includes(searchTerm) ? '' : 'none';
@@ -611,7 +620,7 @@ document.getElementById('searchInput').addEventListener('keyup', function() {
 document.getElementById('adjustmentTypeFilter').addEventListener('change', function() {
     const filterValue = this.value.toLowerCase();
     const tableRows = document.querySelectorAll('.supplier-table tbody tr');
-    
+
     tableRows.forEach(row => {
         if (!filterValue) {
             row.style.display = '';
@@ -633,12 +642,12 @@ function toggleDateFilter() {
 function applyDateFilter() {
     const dateFrom = document.getElementById('dateFrom').value;
     const dateTo = document.getElementById('dateTo').value;
-    
+
     if (!dateFrom && !dateTo) {
         alert('Please select at least one date');
         return;
     }
-    
+
     // Here you would typically send this to your backend for filtering
     console.log('Filtering from:', dateFrom, 'to:', dateTo);
     alert('Date filter applied: ' + dateFrom + ' to ' + dateTo);

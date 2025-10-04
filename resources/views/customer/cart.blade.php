@@ -122,11 +122,11 @@
                     </div>
                 </div>
 
-                <!-- Shipping Information -->
+                <!-- Delivery Information -->
                 <div class="card mt-4">
                     <div class="card-header bg-light">
                         <h6 class="mb-0">
-                            <i class="fas fa-shipping-fast me-2 text-primary"></i>Shipping Information
+                            <i class="fas fa-shipping-fast me-2 text-primary"></i>Delivery Information
                         </h6>
                     </div>
                     <div class="card-body">
@@ -197,16 +197,7 @@
                         </div>
 
                         <!-- Promo Code -->
-                        <div class="promo-section mb-4">
-                            <label for="promoCode" class="form-label small">Promo Code</label>
-                            <div class="input-group">
-                                <input type="text" class="form-control form-control-sm" id="promoCode" placeholder="Enter code">
-                                <button class="btn btn-outline-primary btn-sm" type="button" onclick="applyPromoCode()">
-                                    Apply
-                                </button>
-                            </div>
-                            <div id="promoMessage" class="mt-1 small"></div>
-                        </div>
+
 
                         <!-- Checkout Button -->
                         <div class="d-grid">
@@ -215,39 +206,11 @@
                             </a>
                         </div>
 
-                        <!-- Security Badges -->
-                        <div class="security-badges text-center mt-3">
-                            <small class="text-muted d-block mb-2">
-                                <i class="fas fa-shield-alt me-1 text-success"></i>
-                                Secure SSL Encryption
-                            </small>
-                            <div class="d-flex justify-content-center gap-3">
-                                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='25' viewBox='0 0 40 25'%3E%3Crect width='40' height='25' fill='%23f8f9fa' rx='3'/%3E%3Ctext x='20' y='15' font-family='Arial' font-size='10' text-anchor='middle' fill='%236c757d'%3EVisa%3C/text%3E%3C/svg%3E" alt="Visa">
-                                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='25' viewBox='0 0 40 25'%3E%3Crect width='40' height='25' fill='%23f8f9fa' rx='3'/%3E%3Ctext x='20' y='15' font-family='Arial' font-size='10' text-anchor='middle' fill='%236c757d'%3EMastercard%3C/text%3E%3C/svg%3E" alt="Mastercard">
-                                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='25' viewBox='0 0 40 25'%3E%3Crect width='40' height='25' fill='%23f8f9fa' rx='3'/%3E%3Ctext x='20' y='15' font-family='Arial' font-size='8' text-anchor='middle' fill='%236c757d'%3EPayPal%3C/text%3E%3C/svg%3E" alt="PayPal">
-                            </div>
-                        </div>
+
                     </div>
                 </div>
 
-                <!-- Customer Support -->
-                <div class="card mt-4">
-                    <div class="card-body text-center">
-                        <div class="support-icon mb-3">
-                            <i class="fas fa-headset fa-2x text-primary"></i>
-                        </div>
-                        <h6>Need Help?</h6>
-                        <p class="small text-muted mb-3">Our support team is here to assist you</p>
-                        <div class="contact-options">
-                            <button class="btn btn-outline-primary btn-sm w-100 mb-2">
-                                <i class="fas fa-comment-dots me-1"></i>Live Chat
-                            </button>
-                            <a href="tel:+631234567890" class="btn btn-outline-primary btn-sm w-100">
-                                <i class="fas fa-phone me-1"></i>Call Support
-                            </a>
-                        </div>
-                    </div>
-                </div>
+
 
                 <!-- Return Policy -->
                 <div class="card mt-4">

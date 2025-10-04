@@ -9,8 +9,7 @@ return new class extends Migration {
         Schema::create('stock_adjustments', function (Blueprint $table) {
             $table->id('stock_adjustment_id');
             $table->unsignedBigInteger('stock_prod_id');
-            $table->unsignedBigInteger('requested_by');
-            $table->unsignedBigInteger('reviewed_by')->nullable();
+
             $table->dateTime('reviewed_date')->nullable();
             $table->string('reason')->nullable();
             $table->enum('adjustment_type', ['increase', 'decrease']);
@@ -21,8 +20,7 @@ return new class extends Migration {
             $table->timestamps();
 
             $table->foreign('stock_prod_id')->references('stock_prod_id')->on('stock_prods')->onDelete('cascade');
-            $table->foreign('requested_by')->references('employee_id')->on('employees')->onDelete('cascade');
-            $table->foreign('reviewed_by')->references('employee_id')->on('employees')->onDelete('set null');
+
         });
     }
 

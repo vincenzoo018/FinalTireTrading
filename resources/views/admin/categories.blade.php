@@ -69,7 +69,9 @@
                     {{ ucfirst($category->status) }}
                 </span>
             </td>
-            <td>{{ $category->created_at->format('M d, Y') }}</td>
+            <td>
+    {{ $category->created_at ? $category->created_at->format('M d, Y') : 'N/A' }}
+</td>
             <td class="actions-cell">
                 <form method="POST" action="{{ route('admin.categories.destroy', $category->category_id) }}" style="display:inline-block;">
                     @csrf
