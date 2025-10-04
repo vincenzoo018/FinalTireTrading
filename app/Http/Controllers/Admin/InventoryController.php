@@ -53,7 +53,7 @@ class InventoryController extends Controller
 
         foreach ($previewRows as $row) {
             // Validate each row
-            $validated = Validator::make($row, [
+            $validated = \Validator::make($row, [
                 'productId'   => 'required|exists:products,product_id',
                 'supplierText'=> 'required|string',
                 'categoryText'=> 'required|string',

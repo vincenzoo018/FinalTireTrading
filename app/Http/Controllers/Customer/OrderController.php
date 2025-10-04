@@ -2,20 +2,20 @@
 
 namespace App\Http\Controllers\Customer;
 
-use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Order;
 
 class OrderController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
-        // Only allow authenticated customers (role_id == 3)
         if (!Auth::check() || Auth::user()->role_id != 3) {
-            return redirect()->route('auth.login')->withErrors(['auth' => 'Please login as a customer to view feedback.']);
+            return redirect()->route('auth.login')->withErrors(['auth' => 'Please login as a customer to view your orders.']);
         }
 
-        // You can fetch order data here if needed
-        return view('customer.orders');
+        $orders = \App\Models\Order::with(['cart.product'])->where('user_id', Auth::id())->get();
+
+        return view('customer.orders', compact('orders'));
     }
 }

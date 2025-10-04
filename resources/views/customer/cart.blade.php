@@ -11,7 +11,7 @@
             </div>
             <div class="col-lg-4 text-lg-end">
                 <div class="d-flex align-items-center justify-content-lg-end">
-                    <span class="badge bg-primary fs-6" id="cartItemCount">3 items</span>
+                    <span class="badge bg-primary fs-6" id="cartItemCount">{{ $cartItems->count() }} items</span>
                 </div>
             </div>
         </div>
@@ -30,20 +30,26 @@
                             <h5 class="mb-0">
                                 <i class="fas fa-shopping-cart me-2"></i>Cart Items
                             </h5>
-                            <span class="badge bg-light text-primary fs-6" id="cartCountDisplay">3 items</span>
+                            <span class="badge bg-light text-primary fs-6" id="cartCountDisplay">{{ $cartItems->count() }} items</span>
                         </div>
                     </div>
                     <div class="card-body">
-                        <!-- Cart Item -->
+                        @forelse($cartItems as $cart)
                         <div class="cart-item card mb-3">
                             <div class="card-body">
                                 <div class="row align-items-center">
                                     <div class="col-md-2">
-                                        <img src="/images/tire-1.jpg" alt="Premium Tire" class="img-fluid rounded product-thumbnail">
+                                        @if($cart->product && $cart->product->image)
+                                            <img src="{{ asset($cart->product->image) }}" alt="{{ $cart->product->product_name }}" class="img-fluid rounded product-thumbnail">
+                                        @else
+                                            <img src="{{ asset('images/default-product.png') }}" alt="Default Product" class="img-fluid rounded product-thumbnail">
+                                        @endif
                                     </div>
                                     <div class="col-md-4">
-                                        <h6 class="product-title mb-1">Premium All-Terrain Tire</h6>
-                                        <small class="text-muted">Size: 205/55R16 • All-Season</small>
+                                        <h6 class="product-title mb-1">{{ $cart->product->product_name ?? 'Unknown Product' }}</h6>
+                                        <small class="text-muted">
+                                            Size: {{ $cart->product->size ?? '-' }} • Brand: {{ $cart->product->brand ?? '-' }}
+                                        </small>
                                         <div class="mt-2">
                                             <span class="badge bg-success">
                                                 <i class="fas fa-check me-1"></i>In Stock
@@ -51,7 +57,7 @@
                                         </div>
                                     </div>
                                     <div class="col-md-2">
-                                        <span class="product-price">P2,500</span>
+                                        <span class="product-price">P{{ number_format($cart->product->selling_price ?? 0, 2) }}</span>
                                     </div>
                                     <div class="col-md-2">
                                         <div class="quantity-selector">
@@ -59,7 +65,7 @@
                                                 <button class="btn btn-outline-secondary" type="button" onclick="updateQuantity(this, -1)">
                                                     <i class="fas fa-minus"></i>
                                                 </button>
-                                                <input type="text" class="form-control text-center" value="2" readonly>
+                                                <input type="text" class="form-control text-center" value="{{ $cart->quantity ?? 1 }}" readonly>
                                                 <button class="btn btn-outline-secondary" type="button" onclick="updateQuantity(this, 1)">
                                                     <i class="fas fa-plus"></i>
                                                 </button>
@@ -68,62 +74,21 @@
                                     </div>
                                     <div class="col-md-2">
                                         <div class="d-flex align-items-center justify-content-end">
-                                            <span class="product-price me-3">P5,000</span>
-                                            <button class="btn btn-sm btn-outline-danger" onclick="removeItem(this)">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
+                                            <span class="product-price me-3">P{{ number_format(($cart->product->selling_price ?? 0) * ($cart->quantity ?? 1), 2) }}</span>
+                                            <form action="{{ route('customer.cart.remove', $cart->cart_id) }}" method="POST" style="display:inline;">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button class="btn btn-sm btn-outline-danger" type="submit">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Another Cart Item -->
-                        <div class="cart-item card mb-3">
-                            <div class="card-body">
-                                <div class="row align-items-center">
-                                    <div class="col-md-2">
-                                        <img src="/images/tire-2.jpg" alt="Performance Tire" class="img-fluid rounded product-thumbnail">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <h6 class="product-title mb-1">High-Performance Tire</h6>
-                                        <small class="text-muted">Size: 225/45R17 • Summer</small>
-                                        <div class="mt-2">
-                                            <span class="badge bg-warning">
-                                                <i class="fas fa-clock me-1"></i>Low Stock
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <span class="product-price">P3,200</span>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <div class="quantity-selector">
-                                            <div class="input-group input-group-sm">
-                                                <button class="btn btn-outline-secondary" type="button" onclick="updateQuantity(this, -1)">
-                                                    <i class="fas fa-minus"></i>
-                                                </button>
-                                                <input type="text" class="form-control text-center" value="1" readonly>
-                                                <button class="btn btn-outline-secondary" type="button" onclick="updateQuantity(this, 1)">
-                                                    <i class="fas fa-plus"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <div class="d-flex align-items-center justify-content-end">
-                                            <span class="product-price me-3">P3,200</span>
-                                            <button class="btn btn-sm btn-outline-danger" onclick="removeItem(this)">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Empty Cart State -->
-                        <div class="empty-cart text-center py-5 d-none">
+                        @empty
+                        <div class="empty-cart text-center py-5">
                             <i class="fas fa-shopping-cart fa-4x text-muted mb-3"></i>
                             <h5 class="text-muted">Your cart is empty</h5>
                             <p class="text-muted mb-4">Add some products to get started</p>
@@ -131,8 +96,10 @@
                                 <i class="fas fa-shopping-bag me-2"></i>Continue Shopping
                             </a>
                         </div>
+                        @endforelse
 
                         <!-- Cart Actions -->
+                        @if($cartItems->count())
                         <div class="cart-actions mt-4">
                             <div class="row">
                                 <div class="col-md-6">
@@ -141,12 +108,17 @@
                                     </a>
                                 </div>
                                 <div class="col-md-6 text-md-end">
-                                    <button class="btn btn-outline-danger" onclick="clearCart()">
-                                        <i class="fas fa-trash me-2"></i>Clear Cart
-                                    </button>
+                                    <form action="{{ route('customer.cart.clear') }}" method="POST" style="display:inline;">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button class="btn btn-outline-danger" type="submit">
+                                            <i class="fas fa-trash me-2"></i>Clear Cart
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
                         </div>
+                        @endif
                     </div>
                 </div>
 
@@ -191,27 +163,36 @@
                         </h5>
                     </div>
                     <div class="card-body">
+                        @php
+                            $subtotal = $cartItems->sum(function($cart) {
+                                return ($cart->product->selling_price ?? 0) * ($cart->quantity ?? 1);
+                            });
+                            $shipping = 0;
+                            $tax = round($subtotal * 0.12);
+                            $discount = 0;
+                            $total = $subtotal + $shipping + $tax - $discount;
+                        @endphp
                         <div class="order-details">
                             <div class="d-flex justify-content-between mb-3">
-                                <span>Subtotal (2 items):</span>
-                                <span id="subtotalAmount">P8,200</span>
+                                <span>Subtotal ({{ $cartItems->count() }} items):</span>
+                                <span id="subtotalAmount">P{{ number_format($subtotal, 2) }}</span>
                             </div>
                             <div class="d-flex justify-content-between mb-3">
                                 <span>Shipping:</span>
-                                <span id="shippingAmount">P0</span>
+                                <span id="shippingAmount">Free</span>
                             </div>
                             <div class="d-flex justify-content-between mb-3">
                                 <span>Tax (12%):</span>
-                                <span id="taxAmount">P984</span>
+                                <span id="taxAmount">P{{ number_format($tax, 2) }}</span>
                             </div>
                             <div class="d-flex justify-content-between mb-3">
                                 <span class="text-success">Discount:</span>
-                                <span class="text-success" id="discountAmount">-P0</span>
+                                <span class="text-success" id="discountAmount">-P{{ number_format($discount, 2) }}</span>
                             </div>
                             <hr>
                             <div class="d-flex justify-content-between mb-4">
                                 <strong class="fs-5">Total:</strong>
-                                <strong class="fs-5 text-primary" id="totalAmount">P9,184</strong>
+                                <strong class="fs-5 text-primary" id="totalAmount">P{{ number_format($total, 2) }}</strong>
                             </div>
                         </div>
 
@@ -290,7 +271,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     updateCartSummary();
 
-    // Shipping option change
     document.querySelectorAll('input[name="shippingOption"]').forEach(radio => {
         radio.addEventListener('change', updateCartSummary);
     });
@@ -319,6 +299,36 @@ function updateItemTotal(button) {
     const total = price * quantity;
 
     totalElement.textContent = 'P' + total.toLocaleString();
+}
+
+function applyPromoCode() {
+    const promoCode = document.getElementById('promoCode').value.toUpperCase();
+    const promoMessage = document.getElementById('promoMessage');
+
+    const validCodes = {
+        'WELCOME10': 0.1,
+        'SAVE15': 0.15,
+        'FIRSTORDER': 0.2
+    };
+
+    if (validCodes[promoCode]) {
+        const discountRate = validCodes[promoCode];
+        const subtotal = parseFloat(document.getElementById('subtotalAmount').textContent.replace('P', '').replace(',', ''));
+        const discount = Math.round(subtotal * discountRate);
+
+        document.getElementById('discountAmount').textContent = '-P' + discount.toLocaleString();
+        promoMessage.innerHTML = '<span class="text-success">Promo code applied successfully!</span>';
+
+        const shipping = parseFloat(document.getElementById('shippingAmount').textContent.replace('P', '').replace(',', '') || 0);
+        const tax = parseFloat(document.getElementById('taxAmount').textContent.replace('P', '').replace(',', ''));
+        const total = subtotal + shipping + tax - discount;
+
+        document.getElementById('totalAmount').textContent = 'P' + total.toLocaleString();
+    } else {
+        document.getElementById('discountAmount').textContent = '-P0';
+        promoMessage.innerHTML = '<span class="text-danger">Invalid promo code. Please try again.</span>';
+        updateCartSummary();
+    }
 }
 
 function removeItem(button) {
@@ -366,65 +376,27 @@ function checkEmptyCart() {
 function updateCartSummary() {
     let subtotal = 0;
 
-    // Calculate subtotal from all items
     document.querySelectorAll('.cart-item').forEach(item => {
         const totalElement = item.querySelector('.col-md-2 .product-price:last-child');
         const itemTotal = parseFloat(totalElement.textContent.replace('P', '').replace(',', ''));
         subtotal += itemTotal;
     });
 
-    // Calculate shipping
     const shippingOption = document.querySelector('input[name="shippingOption"]:checked').id;
     const shipping = shippingOption === 'delivery' ? 200 : 0;
 
-    // Calculate tax (12%)
     const tax = Math.round(subtotal * 0.12);
 
-    // Calculate total
     const total = subtotal + shipping + tax;
 
-    // Update display
     document.getElementById('subtotalAmount').textContent = 'P' + subtotal.toLocaleString();
     document.getElementById('shippingAmount').textContent = shipping > 0 ? 'P' + shipping.toLocaleString() : 'Free';
     document.getElementById('taxAmount').textContent = 'P' + tax.toLocaleString();
     document.getElementById('totalAmount').textContent = 'P' + total.toLocaleString();
 
-    // Update item count
     const itemCount = document.querySelectorAll('.cart-item').length;
     document.getElementById('cartItemCount').textContent = itemCount + ' item' + (itemCount !== 1 ? 's' : '');
     document.getElementById('cartCountDisplay').textContent = itemCount + ' item' + (itemCount !== 1 ? 's' : '');
-}
-
-function applyPromoCode() {
-    const promoCode = document.getElementById('promoCode').value.toUpperCase();
-    const promoMessage = document.getElementById('promoMessage');
-
-    // Simulate promo code validation
-    const validCodes = {
-        'WELCOME10': 0.1,
-        'SAVE15': 0.15,
-        'FIRSTORDER': 0.2
-    };
-
-    if (validCodes[promoCode]) {
-        const discountRate = validCodes[promoCode];
-        const subtotal = parseFloat(document.getElementById('subtotalAmount').textContent.replace('P', '').replace(',', ''));
-        const discount = Math.round(subtotal * discountRate);
-
-        document.getElementById('discountAmount').textContent = '-P' + discount.toLocaleString();
-        promoMessage.innerHTML = '<span class="text-success">Promo code applied successfully!</span>';
-
-        // Update total with discount
-        const shipping = parseFloat(document.getElementById('shippingAmount').textContent.replace('P', '').replace(',', '') || 0);
-        const tax = parseFloat(document.getElementById('taxAmount').textContent.replace('P', '').replace(',', ''));
-        const total = subtotal + shipping + tax - discount;
-
-        document.getElementById('totalAmount').textContent = 'P' + total.toLocaleString();
-    } else {
-        document.getElementById('discountAmount').textContent = '-P0';
-        promoMessage.innerHTML = '<span class="text-danger">Invalid promo code. Please try again.</span>';
-        updateCartSummary();
-    }
 }
 </script>
 

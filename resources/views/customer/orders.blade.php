@@ -109,257 +109,44 @@
             <!-- All Orders -->
             <div class="tab-pane fade show active" id="all" role="tabpanel">
                 <div class="orders-list">
-                    <!-- Order Card 1 -->
-                    <div class="card order-card mb-4">
-                        <div class="card-header bg-success text-white">
-                            <div class="row align-items-center">
-                                <div class="col-md-6">
-                                    <h5 class="mb-0">
-                                        <i class="fas fa-check-circle me-2"></i>Order #ORD-00123
-                                    </h5>
-                                </div>
-                                <div class="col-md-6 text-md-end">
-                                    <span class="badge bg-light text-success fs-6">Completed</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-lg-3 col-md-6 mb-3">
-                                    <small class="text-muted">Order Date</small>
-                                    <div class="fw-bold">Dec 4, 2023</div>
-                                </div>
-                                <div class="col-lg-3 col-md-6 mb-3">
-                                    <small class="text-muted">Items</small>
-                                    <div class="fw-bold">2 Products</div>
-                                </div>
-                                <div class="col-lg-3 col-md-6 mb-3">
-                                    <small class="text-muted">Total Amount</small>
-                                    <div class="fw-bold text-success">P5,800</div>
-                                </div>
-                                <div class="col-lg-3 col-md-6 mb-3">
-                                    <small class="text-muted">Delivery</small>
-                                    <div class="fw-bold">Delivered Dec 6, 2023</div>
-                                </div>
-                            </div>
-                            <div class="order-items mt-3">
-                                <div class="d-flex align-items-center mb-2">
-                                    <img src="/images/tire-1.jpg" alt="Product" class="order-item-img me-3">
-                                    <div class="flex-grow-1">
-                                        <h6 class="mb-1">Premium All-Terrain Tire</h6>
-                                        <small class="text-muted">Quantity: 2 × P2,500</small>
+                    @forelse($orders as $order)
+                        <div class="card order-card mb-4">
+                            <div class="card-header bg-success text-white">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <h6>Order ID: {{ $order->order_id }}</h6>
+                                        <p class="mb-0">
+                                            Order Date: {{ \Carbon\Carbon::parse($order->order_date)->format('F d, Y') }}
+                                        </p>
                                     </div>
-                                    <span class="text-success fw-bold">P5,000</span>
-                                </div>
-                                <div class="d-flex align-items-center">
-                                    <img src="/images/tire-2.jpg" alt="Product" class="order-item-img me-3">
-                                    <div class="flex-grow-1">
-                                        <h6 class="mb-1">Wheel Alignment Service</h6>
-                                        <small class="text-muted">Service Fee</small>
+                                    <div class="col-md-6 text-md-end">
+                                        <h6>Total: ₱{{ number_format($order->total_amount, 2) }}</h6>
                                     </div>
-                                    <span class="text-success fw-bold">P800</span>
                                 </div>
                             </div>
-                            <div class="order-actions mt-4">
-                                <button class="btn btn-outline-primary btn-sm me-2" onclick="viewOrderDetails('ORD-00123')">
-                                    <i class="fas fa-eye me-1"></i>View Details
-                                </button>
-                                <button class="btn btn-outline-success btn-sm me-2">
-                                    <i class="fas fa-redo me-1"></i>Reorder
-                                </button>
-                                <button class="btn btn-outline-info btn-sm">
-                                    <i class="fas fa-file-invoice me-1"></i>Invoice
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Order Card 2 -->
-                    <div class="card order-card mb-4">
-                        <div class="card-header bg-warning text-dark">
-                            <div class="row align-items-center">
-                                <div class="col-md-6">
-                                    <h5 class="mb-0">
-                                        <i class="fas fa-clock me-2"></i>Order #ORD-00122
-                                    </h5>
-                                </div>
-                                <div class="col-md-6 text-md-end">
-                                    <span class="badge bg-light text-warning fs-6">Pending</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-lg-3 col-md-6 mb-3">
-                                    <small class="text-muted">Order Date</small>
-                                    <div class="fw-bold">Dec 3, 2023</div>
-                                </div>
-                                <div class="col-lg-3 col-md-6 mb-3">
-                                    <small class="text-muted">Items</small>
-                                    <div class="fw-bold">1 Product</div>
-                                </div>
-                                <div class="col-lg-3 col-md-6 mb-3">
-                                    <small class="text-muted">Total Amount</small>
-                                    <div class="fw-bold text-success">P3,200</div>
-                                </div>
-                                <div class="col-lg-3 col-md-6 mb-3">
-                                    <small class="text-muted">Est. Delivery</small>
-                                    <div class="fw-bold">Dec 5, 2023</div>
-                                </div>
-                            </div>
-                            <div class="order-progress mb-3">
-                                <div class="progress" style="height: 8px;">
-                                    <div class="progress-bar bg-warning" style="width: 25%;"></div>
-                                </div>
-                                <div class="d-flex justify-content-between mt-2">
-                                    <small class="text-muted">Order Placed</small>
-                                    <small class="text-muted">Processing</small>
-                                    <small class="text-muted">Shipped</small>
-                                    <small class="text-muted">Delivered</small>
-                                </div>
-                            </div>
-                            <div class="order-items mt-3">
-                                <div class="d-flex align-items-center">
-                                    <img src="/images/tire-3.jpg" alt="Product" class="order-item-img me-3">
-                                    <div class="flex-grow-1">
-                                        <h6 class="mb-1">High-Performance Tire</h6>
-                                        <small class="text-muted">Quantity: 1 × P3,200</small>
-                                    </div>
-                                    <span class="text-success fw-bold">P3,200</span>
-                                </div>
-                            </div>
-                            <div class="order-actions mt-4">
-                                <button class="btn btn-outline-primary btn-sm me-2" onclick="trackOrder('ORD-00122')">
-                                    <i class="fas fa-map-marker-alt me-1"></i>Track Order
-                                </button>
-                                <button class="btn btn-outline-danger btn-sm">
-                                    <i class="fas fa-times me-1"></i>Cancel Order
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Order Card 3 -->
-                    <div class="card order-card mb-4">
-                        <div class="card-header bg-info text-white">
-                            <div class="row align-items-center">
-                                <div class="col-md-6">
-                                    <h5 class="mb-0">
-                                        <i class="fas fa-shipping-fast me-2"></i>Order #ORD-00121
-                                    </h5>
-                                </div>
-                                <div class="col-md-6 text-md-end">
-                                    <span class="badge bg-light text-info fs-6">Shipped</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-lg-3 col-md-6 mb-3">
-                                    <small class="text-muted">Order Date</small>
-                                    <div class="fw-bold">Dec 2, 2023</div>
-                                </div>
-                                <div class="col-lg-3 col-md-6 mb-3">
-                                    <small class="text-muted">Items</small>
-                                    <div class="fw-bold">3 Products</div>
-                                </div>
-                                <div class="col-lg-3 col-md-6 mb-3">
-                                    <small class="text-muted">Total Amount</small>
-                                    <div class="fw-bold text-success">P12,400</div>
-                                </div>
-                                <div class="col-lg-3 col-md-6 mb-3">
-                                    <small class="text-muted">Tracking</small>
-                                    <div class="fw-bold">#TRK-789456</div>
-                                </div>
-                            </div>
-                            <div class="order-progress mb-3">
-                                <div class="progress" style="height: 8px;">
-                                    <div class="progress-bar bg-info" style="width: 75%;"></div>
-                                </div>
-                                <div class="d-flex justify-content-between mt-2">
-                                    <small class="text-success"><i class="fas fa-check-circle me-1"></i>Order Placed</small>
-                                    <small class="text-success"><i class="fas fa-check-circle me-1"></i>Processing</small>
-                                    <small class="text-info"><i class="fas fa-shipping-fast me-1"></i>Shipped</small>
-                                    <small class="text-muted">Delivered</small>
-                                </div>
-                            </div>
-                            <div class="shipping-info alert alert-info">
-                                <div class="d-flex align-items-center">
-                                    <i class="fas fa-truck fa-2x me-3"></i>
+                            <div class="card-body">
+                                <h6>Order Items:</h6>
+                                <!-- Show product for the cart linked to the order -->
+                                @if($order->cart && $order->cart->product)
                                     <div>
-                                        <h6 class="mb-1">Out for Delivery</h6>
-                                        <p class="mb-0">Your order is on the way. Expected delivery: Today by 6:00 PM</p>
+                                        <strong>{{ $order->cart->product->product_name }}</strong>
+                                        <div class="text-muted">
+                                            Brand: {{ $order->cart->product->brand }}<br>
+                                            Size: {{ $order->cart->product->size }}<br>
+                                            Category: {{ $order->cart->product->category->category_name ?? '-' }}<br>
+                                            Description: {{ $order->cart->product->description }}<br>
+                                            Price: ₱{{ number_format($order->cart->product->selling_price, 2) }}<br>
+                                            Serial #: {{ $order->cart->product->serial_number }}
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
-                            <div class="order-actions mt-4">
-                                <button class="btn btn-outline-primary btn-sm me-2" onclick="trackOrder('ORD-00121')">
-                                    <i class="fas fa-map-marker-alt me-1"></i>Live Tracking
-                                </button>
-                                <button class="btn btn-outline-info btn-sm">
-                                    <i class="fas fa-phone me-1"></i>Contact Carrier
-                                </button>
+                                @else
+                                    <p class="text-muted">No products found for this order.</p>
+                                @endif
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Order Card 4 -->
-                    <div class="card order-card mb-4">
-                        <div class="card-header bg-danger text-white">
-                            <div class="row align-items-center">
-                                <div class="col-md-6">
-                                    <h5 class="mb-0">
-                                        <i class="fas fa-times-circle me-2"></i>Order #ORD-00120
-                                    </h5>
-                                </div>
-                                <div class="col-md-6 text-md-end">
-                                    <span class="badge bg-light text-danger fs-6">Cancelled</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-lg-3 col-md-6 mb-3">
-                                    <small class="text-muted">Order Date</small>
-                                    <div class="fw-bold">Dec 1, 2023</div>
-                                </div>
-                                <div class="col-lg-3 col-md-6 mb-3">
-                                    <small class="text-muted">Items</small>
-                                    <div class="fw-bold">1 Product</div>
-                                </div>
-                                <div class="col-lg-3 col-md-6 mb-3">
-                                    <small class="text-muted">Total Amount</small>
-                                    <div class="fw-bold text-muted">P2,500</div>
-                                </div>
-                                <div class="col-lg-3 col-md-6 mb-3">
-                                    <small class="text-muted">Cancelled On</small>
-                                    <div class="fw-bold">Dec 2, 2023</div>
-                                </div>
-                            </div>
-                            <div class="cancellation-reason alert alert-warning">
-                                <h6><i class="fas fa-exclamation-triangle me-2"></i>Cancellation Reason</h6>
-                                <p class="mb-0">Order was cancelled per customer request. Refund processed successfully.</p>
-                            </div>
-                            <div class="order-items mt-3">
-                                <div class="d-flex align-items-center">
-                                    <img src="/images/tire-1.jpg" alt="Product" class="order-item-img me-3">
-                                    <div class="flex-grow-1">
-                                        <h6 class="mb-1">All-Terrain Tire</h6>
-                                        <small class="text-muted">Quantity: 1 × P2,500</small>
-                                    </div>
-                                    <span class="text-muted fw-bold">P2,500</span>
-                                </div>
-                            </div>
-                            <div class="order-actions mt-4">
-                                <button class="btn btn-outline-primary btn-sm me-2" onclick="viewOrderDetails('ORD-00120')">
-                                    <i class="fas fa-eye me-1"></i>View Details
-                                </button>
-                                <button class="btn btn-outline-success btn-sm">
-                                    <i class="fas fa-redo me-1"></i>Reorder
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                    @empty
+                        <div class="alert alert-warning text-center">No orders found.</div>
+                    @endforelse
                 </div>
             </div>
 

@@ -85,3 +85,10 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('/customer/products', [\App\Http\Controllers\Customer\ProductController::class, 'index'])->name('customer.products');
 Route::get('/customer/services', [App\Http\Controllers\Customer\ServiceController::class, 'index'])->name('customer.services');
+Route::get('/customer/cart', [App\Http\Controllers\Customer\CartController::class, 'index'])->name('customer.cart');
+Route::post('/customer/cart/add', [App\Http\Controllers\Customer\CartController::class, 'add'])->name('customer.cart.add');
+Route::delete('/customer/cart/remove/{cart}', [App\Http\Controllers\Customer\CartController::class, 'remove'])->name('customer.cart.remove');
+Route::delete('/customer/cart/clear', [App\Http\Controllers\Customer\CartController::class, 'clear'])->name('customer.cart.clear');
+Route::get('/customer/checkout', [App\Http\Controllers\Customer\CheckoutController::class, 'index'])->name('customer.checkout');
+Route::post('/customer/checkout/complete', [App\Http\Controllers\Customer\CheckoutController::class, 'completePurchase'])->name('customer.checkout.complete');
+Route::get('/customer/orders', [App\Http\Controllers\Customer\OrderController::class, 'index'])->name('customer.orders');

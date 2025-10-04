@@ -113,10 +113,14 @@
                                 <span class="product-price">₱{{ number_format($product->selling_price, 2) }}</span>
                                 <small class="text-muted d-block">per tire</small>
                             </div>
-                            <button class="btn btn-primary"
-                                    onclick="addToCart({{ $product->product_id }}, '{{ $product->product_name }}', {{ $product->selling_price }})">
-                                <i class="fas fa-cart-plus me-2"></i>Add to Cart
-                            </button>
+                            <form action="{{ route('customer.cart.add') }}" method="POST">
+                                @csrf
+                                <input type="hidden" name="product_id" value="{{ $product->product_id }}">
+                                <input type="hidden" name="quantity" value="1">
+                                <button class="btn btn-primary" type="submit">
+                                    <i class="fas fa-cart-plus me-2"></i>Add to Cart
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>

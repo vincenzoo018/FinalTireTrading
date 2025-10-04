@@ -7,20 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 class Order extends Model
 {
     protected $primaryKey = 'order_id';
-    protected $fillable = ['total_amount','discount','payment_method','order_date','customer_id'];
 
-    public function customer()
-    {
-        return $this->belongsTo(Customer::class, 'customer_id');
-    }
+    protected $fillable = [
+        'user_id', 'cart_id', 'total_amount', 'discount', 'payment_method', 'order_date',
+    ];
 
-    public function carts()
+    public function cart()
     {
-        return $this->hasMany(Cart::class, 'order_id');
-    }
-
-    public function deliveries()
-    {
-        return $this->hasMany(Delivery::class, 'order_id');
+        return $this->belongsTo(Cart::class, 'cart_id');
     }
 }

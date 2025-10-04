@@ -39,74 +39,28 @@
                         <form id="shippingForm">
                             <div class="row mb-3">
                                 <div class="col-md-6">
-                                    <label for="shippingFirstName" class="form-label">
-                                        <i class="fas fa-user me-1 text-primary"></i>First Name
-                                    </label>
-                                    <input type="text" class="form-control" id="shippingFirstName" value="Juan" required>
+                                    <label for="shippingFirstName" class="form-label">First Name</label>
+                                    <input type="text" class="form-control" id="shippingFirstName" value="{{ Auth::user()->fname }}" readonly>
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="shippingLastName" class="form-label">
-                                        <i class="fas fa-user me-1 text-primary"></i>Last Name
-                                    </label>
-                                    <input type="text" class="form-control" id="shippingLastName" value="Dela Cruz" required>
+                                    <label for="shippingLastName" class="form-label">Last Name</label>
+                                    <input type="text" class="form-control" id="shippingLastName" value="{{ Auth::user()->lname }}" readonly>
                                 </div>
                             </div>
 
                             <div class="mb-3">
-                                <label for="shippingAddress" class="form-label">
-                                    <i class="fas fa-map-marker-alt me-1 text-primary"></i>Address
-                                    </label>
-                                <textarea class="form-control" id="shippingAddress" rows="3" required>123 Main Street, Cebu City</textarea>
+                                <label for="shippingAddress" class="form-label">Address</label>
+                                <textarea class="form-control" id="shippingAddress" rows="3" readonly>{{ Auth::user()->address }}</textarea>
                             </div>
 
                             <div class="row mb-3">
-                                <div class="col-md-4">
-                                    <label for="shippingCity" class="form-label">City</label>
-                                    <input type="text" class="form-control" id="shippingCity" value="Cebu City" required>
+                                <div class="col-md-6">
+                                    <label for="shippingPhone" class="form-label">Phone</label>
+                                    <input type="tel" class="form-control" id="shippingPhone" value="{{ Auth::user()->phone }}" readonly>
                                 </div>
-                                <div class="col-md-4">
-                                    <label for="shippingProvince" class="form-label">Province</label>
-                                    <input type="text" class="form-control" id="shippingProvince" value="Cebu" required>
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="shippingZip" class="form-label">ZIP Code</label>
-                                    <input type="text" class="form-control" id="shippingZip" value="6000" required>
-                                </div>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="shippingPhone" class="form-label">
-                                    <i class="fas fa-phone me-1 text-primary"></i>Phone Number
-                                </label>
-                                <input type="tel" class="form-control" id="shippingPhone" value="0912-345-6789" required>
-                            </div>
-
-                            <div class="form-check mb-3">
-                                <input class="form-check-input" type="checkbox" id="billingSame" checked>
-                                <label class="form-check-label" for="billingSame">
-                                    Billing address is the same as shipping address
-                                </label>
-                            </div>
-
-                            <!-- Billing Address (Hidden by default) -->
-                            <div id="billingAddress" class="billing-section" style="display: none;">
-                                <hr>
-                                <h6 class="mb-3">
-                                    <i class="fas fa-credit-card me-2 text-primary"></i>Billing Address
-                                </h6>
-                                <div class="row mb-3">
-                                    <div class="col-md-6">
-                                        <label for="billingFirstName" class="form-label">First Name</label>
-                                        <input type="text" class="form-control" id="billingFirstName">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label for="billingLastName" class="form-label">Last Name</label>
-                                        <input type="text" class="form-control" id="billingLastName">
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="billingAddress" class="form-label">Address</label>
-                                    <textarea class="form-control" id="billingAddress" rows="2"></textarea>
+                                <div class="col-md-6">
+                                    <label for="shippingEmail" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="shippingEmail" value="{{ Auth::user()->email }}" readonly>
                                 </div>
                             </div>
                         </form>
@@ -242,20 +196,21 @@
                     <div class="card-body">
                         <!-- Order Items -->
                         <div class="order-items mb-3">
-                            <div class="order-item d-flex justify-content-between align-items-start mb-2">
-                                <div class="item-info">
-                                    <h6 class="mb-1">Premium All-Terrain Tire</h6>
-                                    <small class="text-muted">Qty: 2 × P2,500</small>
+                            @php
+                                $subtotal = 0;
+                            @endphp
+                            @foreach($cartItems as $cart)
+                                <div class="order-item d-flex justify-content-between align-items-start mb-2">
+                                    <div class="item-info">
+                                        <strong>{{ $cart->product->product_name }}</strong>
+                                        <small class="text-muted d-block">₱{{ number_format($cart->product->selling_price, 2) }} x {{ $cart->quantity }}</small>
+                                    </div>
+                                    <span class="item-price">₱{{ number_format($cart->product->selling_price * $cart->quantity, 2) }}</span>
                                 </div>
-                                <span class="item-price">P5,000</span>
-                            </div>
-                            <div class="order-item d-flex justify-content-between align-items-start mb-2">
-                                <div class="item-info">
-                                    <h6 class="mb-1">High-Performance Tire</h6>
-                                    <small class="text-muted">Qty: 1 × P3,200</small>
-                                </div>
-                                <span class="item-price">P3,200</span>
-                            </div>
+                                @php
+                                    $subtotal += $cart->product->selling_price * $cart->quantity;
+                                @endphp
+                            @endforeach
                         </div>
 
                         <hr>
@@ -264,71 +219,35 @@
                         <div class="order-totals">
                             <div class="d-flex justify-content-between mb-2">
                                 <span>Subtotal:</span>
-                                <span id="checkoutSubtotal">P8,200</span>
+                                <span id="checkoutSubtotal">₱{{ number_format($subtotal, 2) }}</span>
                             </div>
                             <div class="d-flex justify-content-between mb-2">
                                 <span>Shipping:</span>
-                                <span id="checkoutShipping">P200</span>
+                                <span id="checkoutShipping">₱200</span>
                             </div>
                             <div class="d-flex justify-content-between mb-2">
                                 <span>Tax (12%):</span>
-                                <span id="checkoutTax">P984</span>
+                                <span id="checkoutTax">₱{{ number_format($subtotal * 0.12, 2) }}</span>
                             </div>
                             <div class="d-flex justify-content-between mb-2 text-success">
                                 <span>Discount:</span>
-                                <span id="checkoutDiscount">-P0</span>
+                                <span id="checkoutDiscount">-₱0</span>
                             </div>
                             <hr>
                             <div class="d-flex justify-content-between mb-3">
                                 <strong class="fs-5">Total:</strong>
-                                <strong class="fs-5 text-primary" id="checkoutTotal">P9,184</strong>
-                            </div>
-                        </div>
-
-                        <!-- Promo Code -->
-                        <div class="promo-section mb-3">
-                            <label for="checkoutPromoCode" class="form-label small">Promo Code</label>
-                            <div class="input-group input-group-sm">
-                                <input type="text" class="form-control" id="checkoutPromoCode" placeholder="Enter code">
-                                <button class="btn btn-outline-primary" type="button" onclick="applyCheckoutPromo()">
-                                    Apply
-                                </button>
-                            </div>
-                            <div id="checkoutPromoMessage" class="mt-1 small"></div>
-                        </div>
-
-                        <!-- Terms and Conditions -->
-                        <div class="terms-section mb-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="termsAgreement" required>
-                                <label class="form-check-label small" for="termsAgreement">
-                                    I agree to the <a href="#" class="text-primary">Terms and Conditions</a> and <a href="#" class="text-primary">Privacy Policy</a>
-                                </label>
+                                <strong class="fs-5 text-primary" id="checkoutTotal">₱{{ number_format($subtotal + 200 + ($subtotal * 0.12), 2) }}</strong>
                             </div>
                         </div>
 
                         <!-- Complete Purchase Button -->
-                        <div class="d-grid">
-                            <button type="button" class="btn btn-primary btn-lg" onclick="completePurchase()" id="completePurchaseBtn">
+                        <form action="{{ route('customer.checkout.complete') }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="payment_method" value="Credit Card"> <!-- Example -->
+                            <button type="submit" class="btn btn-primary btn-lg w-100">
                                 <i class="fas fa-lock me-2"></i>Complete Purchase
                             </button>
-                        </div>
-
-                        <!-- Security Badges -->
-                        <div class="security-badges text-center mt-3">
-                            <small class="text-muted d-block mb-2">
-                                <i class="fas fa-shield-alt me-1 text-success"></i>
-                                256-bit SSL Secured
-                            </small>
-                            <div class="trust-badges d-flex justify-content-center gap-2">
-                                <span class="badge bg-light text-dark">
-                                    <i class="fas fa-lock me-1"></i>Secure
-                                </span>
-                                <span class="badge bg-light text-dark">
-                                    <i class="fas fa-shield-alt me-1"></i>Protected
-                                </span>
-                            </div>
-                        </div>
+                        </form>
                     </div>
                 </div>
 

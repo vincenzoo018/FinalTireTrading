@@ -7,20 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 class Cart extends Model
 {
     protected $primaryKey = 'cart_id';
-    protected $fillable = ['product_id','customer_id','order_id'];
+    protected $fillable = ['product_id', 'user_id'];
 
     public function product()
     {
         return $this->belongsTo(Product::class, 'product_id');
     }
 
-    public function customer()
+    public function user()
     {
-        return $this->belongsTo(Customer::class, 'customer_id');
-    }
-
-    public function order()
-    {
-        return $this->belongsTo(Order::class, 'order_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 }
