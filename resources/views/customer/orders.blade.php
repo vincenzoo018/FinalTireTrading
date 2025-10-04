@@ -109,7 +109,7 @@
             <!-- All Orders -->
             <div class="tab-pane fade show active" id="all" role="tabpanel">
                 <div class="orders-list">
-                    @forelse($orders as $order)
+                    @foreach($orders as $order)
                         <div class="card order-card mb-4">
                             <div class="card-header bg-success text-white">
                                 <div class="row align-items-center">
@@ -126,27 +126,27 @@
                             </div>
                             <div class="card-body">
                                 <h6>Order Items:</h6>
-                                <!-- Show product for the cart linked to the order -->
-                                @if($order->cart && $order->cart->product)
-                                    <div>
-                                        <strong>{{ $order->cart->product->product_name }}</strong>
-                                        <div class="text-muted">
-                                            Brand: {{ $order->cart->product->brand }}<br>
-                                            Size: {{ $order->cart->product->size }}<br>
-                                            Category: {{ $order->cart->product->category->category_name ?? '-' }}<br>
-                                            Description: {{ $order->cart->product->description }}<br>
-                                            Price: ₱{{ number_format($order->cart->product->selling_price, 2) }}<br>
-                                            Serial #: {{ $order->cart->product->serial_number }}
+                                @forelse($order->items as $item)
+                                    @if($item->product)
+                                        <div>
+                                            <strong>{{ $item->product->product_name }}</strong>
+                                            <div class="text-muted">
+                                                Brand: {{ $item->product->brand ?? '-' }}<br>
+                                                Size: {{ $item->product->size ?? '-' }}<br>
+                                                Category: {{ $item->product->category->category_name ?? '-' }}<br>
+                                                Description: {{ $item->product->description ?? '-' }}<br>
+                                                Price: ₱{{ number_format($item->price, 2) }}<br>
+                                                Quantity: {{ $item->quantity }}<br>
+                                                Serial #: {{ $item->product->serial_number ?? '-' }}
+                                            </div>
                                         </div>
-                                    </div>
-                                @else
+                                    @endif
+                                @empty
                                     <p class="text-muted">No products found for this order.</p>
-                                @endif
+                                @endforelse
                             </div>
                         </div>
-                    @empty
-                        <div class="alert alert-warning text-center">No orders found.</div>
-                    @endforelse
+                    @endforeach
                 </div>
             </div>
 

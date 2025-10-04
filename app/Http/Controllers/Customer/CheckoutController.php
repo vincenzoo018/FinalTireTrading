@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Cart;
 use App\Models\Order;
+use App\Models\OrderItem;
 
 class CheckoutController extends Controller
 {
@@ -27,7 +28,7 @@ class CheckoutController extends Controller
             return redirect()->route('auth.login')->withErrors(['auth' => 'Please login as a customer to complete your purchase.']);
         }
 
-        $cartItems = Cart::where('user_id', Auth::id())->get();
+        $cartItems = Cart::with('product')->where('user_id', Auth::id())->get();
 
         if ($cartItems->isEmpty()) {
             return redirect()->route('customer.cart')->withErrors(['cart' => 'Your cart is empty.']);
@@ -35,7 +36,7 @@ class CheckoutController extends Controller
 
         // Calculate totals
         $subtotal = $cartItems->sum(function ($cart) {
-            return $cart->product->selling_price * $cart->quantity;
+            return $cart->product->selling_price * ($cart->quantity ?? 1);
         });
         $tax = $subtotal * 0.12;
         $shipping = 200;
@@ -44,12 +45,20 @@ class CheckoutController extends Controller
         // Create the order
         $order = Order::create([
             'user_id' => Auth::id(),
-            'cart_id' => $cartItems->first()->cart_id, // Link the first cart item
             'total_amount' => $total,
             'discount' => 0,
             'payment_method' => $request->payment_method,
             'order_date' => now(),
         ]);
+
+        foreach ($cartItems as $cart) {
+            OrderItem::create([
+                'order_id'   => $order->order_id,
+                'product_id' => $cart->product_id,
+                'quantity'   => $cart->quantity ?? 1,
+                'price'      => $cart->product->selling_price,
+            ]);
+        }
 
         // Clear the cart
         Cart::where('user_id', Auth::id())->delete();

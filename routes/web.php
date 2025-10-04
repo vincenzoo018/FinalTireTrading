@@ -92,3 +92,4 @@ Route::delete('/customer/cart/clear', [App\Http\Controllers\Customer\CartControl
 Route::get('/customer/checkout', [App\Http\Controllers\Customer\CheckoutController::class, 'index'])->name('customer.checkout');
 Route::post('/customer/checkout/complete', [App\Http\Controllers\Customer\CheckoutController::class, 'completePurchase'])->name('customer.checkout.complete');
 Route::get('/customer/orders', [App\Http\Controllers\Customer\OrderController::class, 'index'])->name('customer.orders');
+Route::get('/customer/order/{order}/items', [App\Http\Controllers\Customer\OrderItemController::class, 'index'])->name('customer.order.items');
