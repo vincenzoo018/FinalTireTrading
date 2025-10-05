@@ -14,7 +14,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/stockadjustments', [\App\Http\Controllers\Admin\StockAdjustmentController::class, 'index'])->name('stockadjustments.index');
     Route::get('/suppliers', [\App\Http\Controllers\Admin\SupplierController::class, 'index'])->name('suppliers.index');
     Route::post('/suppliers', [\App\Http\Controllers\Admin\SupplierController::class, 'store'])->name('suppliers.store');
-    Route::get('/transactions', [AdminController::class, 'transactions'])->name('transactions');
+    Route::get('/transactions', [\App\Http\Controllers\Admin\SupplierTransactionController::class, 'index'])->name('transactions');
+    Route::post('/transactions', [\App\Http\Controllers\Admin\SupplierTransactionController::class, 'store'])->name('transactions.store');
+Route::get('/transactions/supplier/{supplierId}/history', [\App\Http\Controllers\Admin\SupplierTransactionController::class, 'supplierHistory'])->name('transactions.supplier.history');
     Route::get('/services', [AdminController::class, 'services'])->name('services');
     Route::get('/bookings', [AdminController::class, 'bookings'])->name('bookings');
     Route::get('/orders', [AdminController::class, 'orders'])->name('orders');
@@ -107,13 +109,3 @@ Route::prefix('admin/stockadjustments/approvals')->name('admin.stockadjustments.
 });
 
 // Simple notifications routes for employee
-Route::get('/notifications/unread', function () {
-    if (!auth()->check()) return response()->json(['count'=>0,'items'=>[]]);
-    $items = \App\Models\Notification::where('user_id', auth()->user()->user_id)->where('is_read', false)->orderBy('created_at','desc')->limit(10)->get(['title','message','link']);
-    return response()->json(['count' => $items->count(), 'items' => $items]);
-});
-Route::post('/notifications/mark-read', function () {
-    if (!auth()->check()) return response()->json(['success'=>false]);
-    \App\Models\Notification::where('user_id', auth()->user()->user_id)->where('is_read', false)->update(['is_read'=>true]);
-    return response()->json(['success'=>true]);
-})->name('notifications.markRead');
