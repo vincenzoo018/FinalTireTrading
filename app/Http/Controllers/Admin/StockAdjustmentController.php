@@ -14,6 +14,10 @@ class StockAdjustmentController extends Controller
     // Show all adjustments
     public function index()
     {
+        // Only allow employees (role_id == 2) to access this page
+        if (!Auth::check() || Auth::user()->role_id != 2) {
+            return redirect()->route('auth.login')->withErrors(['auth' => 'Access denied. Employee privileges required.']);
+        }
         $adjustments = StockAdjustment::with([
             'stockProd.product.inventory',
             'requestedBy',
@@ -32,6 +36,10 @@ class StockAdjustmentController extends Controller
     // Store a new adjustment and update inventory
     public function store(Request $request)
     {
+        // Only allow employees (role_id == 2) to create requests
+        if (!Auth::check() || Auth::user()->role_id != 2) {
+            return redirect()->route('auth.login')->withErrors(['auth' => 'Access denied. Employee privileges required.']);
+        }
         $validated = $request->validate([
             'stock_prod_id'    => 'required|exists:stock_prods,stock_prod_id',
             'reason'           => 'required|string|max:255',

@@ -6,10 +6,13 @@
 <div class="supplier-container">
     <div class="page-header">
         <h1 class="page-title">Stock Adjustments</h1>
-        <button class="btn-add-supplier" onclick="openAdjustmentModal()">
-            <i class="fas fa-plus"></i>
-            Create Adjustment
-        </button>
+        <div style="margin-left:auto; display:flex; align-items:center; gap:0.5rem;">
+
+            <button class="btn-add-supplier" onclick="openAdjustmentModal()">
+                <i class="fas fa-plus"></i>
+                Create Adjustment
+            </button>
+        </div>
     </div>
 
     <div class="content-card">
@@ -421,6 +424,34 @@
 </style>
 
 <script>
+// Notifications
+async function fetchNotifications() {
+    try {
+        const res = await fetch('/notifications/unread');
+        const data = await res.json();
+        const countEl = document.getElementById('notifCount');
+        if (data.count > 0) {
+            countEl.textContent = data.count;
+            countEl.style.display = 'inline-block';
+        } else {
+            countEl.style.display = 'none';
+        }
+        window._notifications = data.items || [];
+    } catch (e) {}
+}
+
+function toggleNotifications() {
+    if (!window._notifications || window._notifications.length === 0) {
+        alert('No new notifications.');
+        return;
+    }
+    const list = window._notifications.map(n => `• ${n.title}`).join('\n');
+    alert(list);
+    fetch('/notifications/mark-read', { method: 'POST', headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content') } })
+        .then(() => { document.getElementById('notifCount').style.display = 'none'; window._notifications = []; });
+}
+
+fetchNotifications();
 // Open modal
 function openAdjustmentModal() {
     document.getElementById('adjustmentModal').classList.add('active');

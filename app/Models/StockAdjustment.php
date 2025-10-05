@@ -18,7 +18,7 @@ class StockAdjustment extends Model
         'status',
         'requested_by',
         'reviewed_by',
-        'admin_notes'
+        'admin_notes',
     ];
 
     public function stockProd()

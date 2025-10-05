@@ -105,3 +105,15 @@ Route::prefix('admin/stockadjustments/approvals')->name('admin.stockadjustments.
     Route::post('/{id}/reject', [App\Http\Controllers\Admin\AdminStockAdjustmentController::class, 'reject'])->name('reject');
     Route::post('/bulk-approve', [App\Http\Controllers\Admin\AdminStockAdjustmentController::class, 'bulkApprove'])->name('bulk-approve');
 });
+
+// Simple notifications routes for employee
+Route::get('/notifications/unread', function () {
+    if (!auth()->check()) return response()->json(['count'=>0,'items'=>[]]);
+    $items = \App\Models\Notification::where('user_id', auth()->user()->user_id)->where('is_read', false)->orderBy('created_at','desc')->limit(10)->get(['title','message','link']);
+    return response()->json(['count' => $items->count(), 'items' => $items]);
+});
+Route::post('/notifications/mark-read', function () {
+    if (!auth()->check()) return response()->json(['success'=>false]);
+    \App\Models\Notification::where('user_id', auth()->user()->user_id)->where('is_read', false)->update(['is_read'=>true]);
+    return response()->json(['success'=>true]);
+})->name('notifications.markRead');

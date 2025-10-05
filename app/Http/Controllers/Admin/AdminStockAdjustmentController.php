@@ -9,9 +9,57 @@ use App\Models\StockProd;
 use App\Models\Inventory;
 use App\Models\Employee;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use App\Models\Notification;
 
 class AdminStockAdjustmentController extends Controller
 {
+    /**
+     * Notify requesting employee's user via email about status change.
+     */
+    protected function notifyRequester(StockAdjustment $adjustment, string $newStatus, ?string $notes = null): void
+    {
+        try {
+            $requester = $adjustment->requestedBy; // Employee
+            if (!$requester) {
+                return;
+            }
+            $user = \App\Models\User::where('user_id', $requester->user_id)->first();
+            if (!$user || empty($user->email)) {
+                // Create in-app notification even if email missing
+                Notification::create([
+                    'user_id' => $requester->user_id,
+                    'title' => "Stock Adjustment {$newStatus}",
+                    'message' => "Your request #{$adjustment->stock_adjustment_id} has been {$newStatus}.",
+                    'link' => route('admin.stockadjustments.index'),
+                ]);
+                return;
+            }
+
+            $subject = "Stock Adjustment #{$adjustment->stock_adjustment_id} {$newStatus}";
+            $message = "Hello {$user->fname},\n\n" .
+                "Your stock adjustment request (ID: {$adjustment->stock_adjustment_id}) has been {$newStatus}.\n" .
+                "Product: " . ($adjustment->stockProd->product->product_name ?? 'N/A') . "\n" .
+                "Type: {$adjustment->adjustment_type}\n" .
+                "Quantity: {$adjustment->adjust_count}\n" .
+                (!empty($notes) ? ("Notes: {$notes}\n") : '') .
+                "\nThank you.";
+
+            Mail::raw($message, function ($mail) use ($user, $subject) {
+                $mail->to($user->email)->subject($subject);
+            });
+
+            // Create in-app notification
+            Notification::create([
+                'user_id' => $user->user_id,
+                'title' => $subject,
+                'message' => $message,
+                'link' => route('admin.stockadjustments.index'),
+            ]);
+        } catch (\Throwable $e) {
+            // Silently ignore email errors
+        }
+    }
     /**
      * Display a listing of pending stock adjustments for admin approval.
      */
@@ -22,12 +70,14 @@ class AdminStockAdjustmentController extends Controller
             return redirect()->route('auth.login')->withErrors(['auth' => 'Access denied. Admin privileges required.']);
         }
 
-        // Get all stock adjustments with relationships for admin review
+        // Get all stock adjustments with relationships for admin review (pending first by default)
         $adjustments = StockAdjustment::with([
             'stockProd.product.inventory',
             'requestedBy',
             'reviewedBy'
-        ])->orderBy('created_at', 'desc')->paginate(10);
+        ])->orderByRaw("FIELD(status, 'pending','approved','rejected')")
+          ->orderBy('created_at', 'desc')
+          ->paginate(10);
 
         // Get all employees for the dropdown
         $employees = Employee::with('role')->get();
@@ -67,7 +117,7 @@ class AdminStockAdjustmentController extends Controller
         }
 
         $validated = $request->validate([
-            'reviewed_by' => 'required|exists:employees,employee_id',
+            'reviewed_by' => 'nullable|exists:employees,employee_id',
             'notes' => 'nullable|string|max:500',
         ]);
 
@@ -81,9 +131,12 @@ class AdminStockAdjustmentController extends Controller
             $currentEmployee = Employee::where('role_id', $currentUser->role_id)->first();
         }
 
+        // Choose reviewer: explicit value or current admin
+        $reviewerEmployeeId = $validated['reviewed_by'] ?? ($currentEmployee?->employee_id);
+
         // Update the adjustment with approval details
         $adjustment->update([
-            'reviewed_by' => $validated['reviewed_by'] ?? $currentEmployee?->employee_id,
+            'reviewed_by' => $reviewerEmployeeId,
             'reviewed_date' => now(),
             'status' => 'approved',
             'admin_notes' => $validated['notes'] ?? null,
@@ -104,6 +157,17 @@ class AdminStockAdjustmentController extends Controller
             }
             $inventory->last_updated = now();
             $inventory->save();
+        }
+
+        // Notify requester
+        $this->notifyRequester($adjustment, 'approved', $validated['notes'] ?? null);
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'status' => 'approved',
+                'adjustment_id' => $adjustment->stock_adjustment_id,
+            ]);
         }
 
         return redirect()->route('admin.stockadjustments.approvals.index')
@@ -142,6 +206,17 @@ class AdminStockAdjustmentController extends Controller
             'admin_notes' => $validated['rejection_reason'],
         ]);
 
+        // Notify requester
+        $this->notifyRequester($adjustment, 'rejected', $validated['rejection_reason']);
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'status' => 'rejected',
+                'adjustment_id' => $adjustment->stock_adjustment_id,
+            ]);
+        }
+
         return redirect()->route('admin.stockadjustments.approvals.index')
             ->with('success', 'Stock adjustment rejected successfully.');
     }
@@ -165,10 +240,19 @@ class AdminStockAdjustmentController extends Controller
             return redirect()->route('auth.login')->withErrors(['auth' => 'Access denied. Admin privileges required.']);
         }
 
+        // Normalize adjustment_ids to array (accept JSON string or array)
+        $idsInput = $request->input('adjustment_ids');
+        if (is_string($idsInput)) {
+            $decoded = json_decode($idsInput, true);
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                $request->merge(['adjustment_ids' => $decoded]);
+            }
+        }
+
         $validated = $request->validate([
             'adjustment_ids' => 'required|array',
             'adjustment_ids.*' => 'exists:stock_adjustments,stock_adjustment_id',
-            'reviewed_by' => 'required|exists:employees,employee_id',
+            'reviewed_by' => 'nullable|exists:employees,employee_id',
         ]);
 
         $currentUser = Auth::user();
@@ -178,13 +262,16 @@ class AdminStockAdjustmentController extends Controller
             $currentEmployee = Employee::where('role_id', $currentUser->role_id)->first();
         }
 
+        // Determine reviewer id for bulk approval (fallback to current admin)
+        $bulkReviewerId = $validated['reviewed_by'] ?? ($currentEmployee?->employee_id);
+
         $approvedCount = 0;
         foreach ($validated['adjustment_ids'] as $adjustmentId) {
             $adjustment = StockAdjustment::find($adjustmentId);
 
             if ($adjustment && $adjustment->status === 'pending') {
                 $adjustment->update([
-                    'reviewed_by' => $validated['reviewed_by'],
+                    'reviewed_by' => $bulkReviewerId,
                     'reviewed_date' => now(),
                     'status' => 'approved',
                 ]);

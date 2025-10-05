@@ -135,15 +135,7 @@
         <div class="action-buttons">
             <form method="POST" action="{{ route('admin.stockadjustments.approvals.approve', $adjustment->stock_adjustment_id) }}" style="display: inline;">
                 @csrf
-                <div class="form-group">
-                    <label class="form-label">Reviewer <span class="required">*</span></label>
-                    <select class="form-select" name="reviewed_by" required style="max-width: 300px; display: inline-block;">
-                        <option value="">Select Reviewer</option>
-                        @foreach($employees as $employee)
-                            <option value="{{ $employee->employee_id }}">{{ $employee->employee_name }}</option>
-                        @endforeach
-                    </select>
-                </div>
+                <input type="hidden" name="reviewed_by" value="">
                 <div class="form-group">
                     <label class="form-label">Approval Notes (Optional)</label>
                     <textarea class="form-textarea" name="notes" placeholder="Add approval notes..." style="max-width: 500px;"></textarea>

@@ -134,10 +134,10 @@
                                     <i class="fas fa-eye"></i>
                                 </a>
                                 @if($adjustment->status === 'pending')
-                                    <button class="btn-icon btn-approve" title="Quick Approve" onclick="quickApprove({{ $adjustment->stock_adjustment_id }})">
+                                    <button class="btn-icon btn-approve" title="Quick Approve" onclick="confirmQuickApprove({{ $adjustment->stock_adjustment_id }})">
                                         <i class="fas fa-check"></i>
                                     </button>
-                                    <button class="btn-icon btn-reject" title="Quick Reject" onclick="quickReject({{ $adjustment->stock_adjustment_id }})">
+                                    <button class="btn-icon btn-reject" title="Quick Reject" onclick="confirmQuickReject({{ $adjustment->stock_adjustment_id }})">
                                         <i class="fas fa-times"></i>
                                     </button>
                                 @endif
@@ -177,15 +177,7 @@
         <form id="quickApproveForm">
             @csrf
             <div class="modal-body">
-                <div class="form-group">
-                    <label class="form-label">Reviewer <span class="required">*</span></label>
-                    <select class="form-select" name="reviewed_by" required>
-                        <option value="">Select Reviewer</option>
-                        @foreach($employees as $employee)
-                            <option value="{{ $employee->employee_id }}">{{ $employee->employee_name }}</option>
-                        @endforeach
-                    </select>
-                </div>
+                <input type="hidden" name="reviewed_by" value="">
                 <div class="form-group">
                     <label class="form-label">Notes (Optional)</label>
                     <textarea class="form-textarea" name="notes" placeholder="Add approval notes..."></textarea>
@@ -378,9 +370,39 @@ function bulkApprove() {
 }
 
 // Quick approve
-function quickApprove(adjustmentId) {
-    currentAdjustmentId = adjustmentId;
-    document.getElementById('quickApproveModal').classList.add('active');
+function confirmQuickApprove(adjustmentId) {
+    if (!confirm('Are you sure you want to approve this stock adjustment request?')) return;
+    // Build form data with empty reviewed_by for default behavior
+    const formData = new FormData();
+    formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
+    formData.append('reviewed_by', '');
+    fetch(`/admin/stockadjustments/approvals/${adjustmentId}/approve`, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json'
+        },
+        credentials: 'same-origin'
+    })
+    .then(async r => {
+        if (!r.ok) {
+            const txt = await r.text();
+            throw new Error(`HTTP ${r.status}: ${txt.substring(0,200)}`);
+        }
+        return r.json();
+    })
+    .then(data => {
+        if (data.success) {
+            // Remove the row instantly
+            const row = document.querySelector(`button[onclick="confirmQuickApprove(${adjustmentId})"]`).closest('tr');
+            if (row) row.remove();
+        } else {
+            alert('Error approving adjustment');
+        }
+    })
+    .catch((e) => { console.error(e); alert('Error approving adjustment'); });
 }
 
 function closeQuickApproveModal() {
@@ -389,9 +411,38 @@ function closeQuickApproveModal() {
 }
 
 // Quick reject
-function quickReject(adjustmentId) {
-    currentAdjustmentId = adjustmentId;
-    document.getElementById('quickRejectModal').classList.add('active');
+function confirmQuickReject(adjustmentId) {
+    const reason = prompt('Enter a reason for rejection:');
+    if (!reason) return;
+    const formData = new FormData();
+    formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
+    formData.append('rejection_reason', reason);
+    fetch(`/admin/stockadjustments/approvals/${adjustmentId}/reject`, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json'
+        },
+        credentials: 'same-origin'
+    })
+    .then(async r => {
+        if (!r.ok) {
+            const txt = await r.text();
+            throw new Error(`HTTP ${r.status}: ${txt.substring(0,200)}`);
+        }
+        return r.json();
+    })
+    .then(data => {
+        if (data.success) {
+            const row = document.querySelector(`button[onclick="confirmQuickReject(${adjustmentId})"]`).closest('tr');
+            if (row) row.remove();
+        } else {
+            alert('Error rejecting adjustment');
+        }
+    })
+    .catch((e) => { console.error(e); alert('Error rejecting adjustment'); });
 }
 
 function closeQuickRejectModal() {
@@ -404,6 +455,7 @@ document.getElementById('quickApproveForm').addEventListener('submit', function(
     e.preventDefault();
 
     const formData = new FormData(this);
+    // Leave reviewed_by empty so backend defaults to current admin
 
     fetch(`/admin/stockadjustments/approvals/${currentAdjustmentId}/approve`, {
         method: 'POST',
