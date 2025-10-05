@@ -11,7 +11,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/product', [\App\Http\Controllers\Admin\ProductController::class, 'store'])->name('products.store');
     Route::get('/inventory', [\App\Http\Controllers\Admin\InventoryController::class, 'index'])->name('inventory.index');
     Route::post('/inventory', [\App\Http\Controllers\Admin\InventoryController::class, 'store'])->name('inventory.store');
-    Route::get('/stockadjustments', [AdminController::class, 'stockadjustments'])->name('stockadjustments');
+    Route::get('/stockadjustments', [\App\Http\Controllers\Admin\StockAdjustmentController::class, 'index'])->name('stockadjustments.index');
     Route::get('/suppliers', [\App\Http\Controllers\Admin\SupplierController::class, 'index'])->name('suppliers.index');
     Route::post('/suppliers', [\App\Http\Controllers\Admin\SupplierController::class, 'store'])->name('suppliers.store');
     Route::get('/transactions', [AdminController::class, 'transactions'])->name('transactions');
@@ -95,4 +95,13 @@ Route::get('/customer/orders', [App\Http\Controllers\Customer\OrderController::c
 Route::get('/customer/order/{order}/items', [App\Http\Controllers\Customer\OrderItemController::class, 'index'])->name('customer.order.items');
 Route::get('/admin/orders', [App\Http\Controllers\Admin\OrdersController::class, 'index'])->name('admin.orders');
 Route::post('/admin/stockadjustments', [App\Http\Controllers\Admin\StockAdjustmentController::class, 'store'])->name('admin.stockadjustments.store');
-Route::get('/admin/stockadjustments', [App\Http\Controllers\Admin\StockAdjustmentController::class, 'index'])->name('admin.stockadjustments');
+Route::get('/admin/stockadjustments', [App\Http\Controllers\Admin\StockAdjustmentController::class, 'index'])->name('admin.stockadjustments.index');
+
+// Admin Stock Adjustment Approval Routes - Only for role_id 1 (Admin)
+Route::prefix('admin/stockadjustments/approvals')->name('admin.stockadjustments.approvals.')->middleware(['auth'])->group(function () {
+    Route::get('/', [App\Http\Controllers\Admin\AdminStockAdjustmentController::class, 'index'])->name('index');
+    Route::get('/{id}', [App\Http\Controllers\Admin\AdminStockAdjustmentController::class, 'show'])->name('show');
+    Route::post('/{id}/approve', [App\Http\Controllers\Admin\AdminStockAdjustmentController::class, 'approve'])->name('approve');
+    Route::post('/{id}/reject', [App\Http\Controllers\Admin\AdminStockAdjustmentController::class, 'reject'])->name('reject');
+    Route::post('/bulk-approve', [App\Http\Controllers\Admin\AdminStockAdjustmentController::class, 'bulkApprove'])->name('bulk-approve');
+});

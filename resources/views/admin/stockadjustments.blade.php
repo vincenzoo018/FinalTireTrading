@@ -22,11 +22,8 @@
             <div class="filter-wrapper">
                 <select class="btn-filter" id="adjustmentTypeFilter" style="padding-right: 2.5rem;">
                     <option value="">All Types</option>
-                    <option value="addition">Addition</option>
-                    <option value="subtraction">Subtraction</option>
-                    <option value="damage">Damage</option>
-                    <option value="return">Return</option>
-                    <option value="correction">Correction</option>
+                    <option value="increase">Increase</option>
+                    <option value="decrease">Decrease</option>
                 </select>
                 <button class="btn-filter" onclick="toggleDateFilter()">
                     <i class="fas fa-calendar"></i>
@@ -68,200 +65,84 @@
                         <th>Previous Stock</th>
                         <th>New Stock</th>
                         <th>Reason</th>
-                        <th>Adjusted By</th>
+                        <th>Status</th>
                         <th class="sortable">Date <i class="fas fa-sort"></i></th>
                         <th class="actions-header">Actions <i class="fas fa-info-circle tooltip-icon"></i></th>
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Sample Data Row 1 -->
-                    <tr>
-                        <td><input type="checkbox" class="row-checkbox"></td>
-                        <td class="supplier-id">1</td>
-                        <td class="supplier-name">L'Oréal Professional Shampoo</td>
-                        <td>
-                            <span class="payment-badge" style="background: #d1fae5; color: #065f46;">Addition</span>
-                        </td>
-                        <td><span style="font-weight: 600; color: #059669;">+25</span></td>
-                        <td><span class="stock-badge stock-medium">48</span></td>
-                        <td><span class="stock-badge stock-high">73</span></td>
-                        <td><span style="font-size: 0.8125rem; color: #64748b;" title="Restocking from supplier">Restocking from supplier</span></td>
-                        <td><span style="font-size: 0.8125rem; color: #475569;">Admin User</span></td>
-                        <td><span class="time-badge">Oct 02, 2025</span></td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-view" title="View Details">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-
-                    <!-- Sample Data Row 2 -->
-                    <tr>
-                        <td><input type="checkbox" class="row-checkbox"></td>
-                        <td class="supplier-id">2</td>
-                        <td class="supplier-name">Kerastase Hair Mask</td>
-                        <td>
-                            <span class="payment-badge" style="background: #fee2e2; color: #991b1b;">Subtraction</span>
-                        </td>
-                        <td><span style="font-weight: 600; color: #dc2626;">-5</span></td>
-                        <td><span class="stock-badge stock-medium">15</span></td>
-                        <td><span class="stock-badge stock-low">10</span></td>
-                        <td><span style="font-size: 0.8125rem; color: #64748b;" title="Sold during flash sale">Sold during flash sale</span></td>
-                        <td><span style="font-size: 0.8125rem; color: #475569;">Staff Member</span></td>
-                        <td><span class="time-badge">Oct 01, 2025</span></td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-view" title="View Details">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-
-                    <!-- Sample Data Row 3 -->
-                    <tr>
-                        <td><input type="checkbox" class="row-checkbox"></td>
-                        <td class="supplier-id">3</td>
-                        <td class="supplier-name">OPI Nail Polish</td>
-                        <td>
-                            <span class="payment-badge" style="background: #fed7aa; color: #9a3412;">Damage</span>
-                        </td>
-                        <td><span style="font-weight: 600; color: #dc2626;">-3</span></td>
-                        <td><span class="stock-badge stock-high">72</span></td>
-                        <td><span class="stock-badge stock-high">69</span></td>
-                        <td><span style="font-size: 0.8125rem; color: #64748b;" title="Broken during handling">Broken during handling</span></td>
-                        <td><span style="font-size: 0.8125rem; color: #475569;">Manager</span></td>
-                        <td><span class="time-badge">Sep 30, 2025</span></td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-view" title="View Details">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-
-                    <!-- Sample Data Row 4 -->
-                    <tr>
-                        <td><input type="checkbox" class="row-checkbox"></td>
-                        <td class="supplier-id">4</td>
-                        <td class="supplier-name">Cetaphil Gentle Cleanser</td>
-                        <td>
-                            <span class="payment-badge" style="background: #e0e7ff; color: #3730a3;">Return</span>
-                        </td>
-                        <td><span style="font-weight: 600; color: #059669;">+2</span></td>
-                        <td><span class="stock-badge stock-low">8</span></td>
-                        <td><span class="stock-badge stock-medium">10</span></td>
-                        <td><span style="font-size: 0.8125rem; color: #64748b;" title="Customer return - unopened">Customer return - unopened</span></td>
-                        <td><span style="font-size: 0.8125rem; color: #475569;">Staff Member</span></td>
-                        <td><span class="time-badge">Sep 29, 2025</span></td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-view" title="View Details">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-
-                    <!-- Sample Data Row 5 -->
-                    <tr>
-                        <td><input type="checkbox" class="row-checkbox"></td>
-                        <td class="supplier-id">5</td>
-                        <td class="supplier-name">Revlon ColorStay Foundation</td>
-                        <td>
-                            <span class="payment-badge" style="background: #fef3c7; color: #92400e;">Correction</span>
-                        </td>
-                        <td><span style="font-weight: 600; color: #dc2626;">-2</span></td>
-                        <td><span class="stock-badge stock-medium">22</span></td>
-                        <td><span class="stock-badge stock-medium">20</span></td>
-                        <td><span style="font-size: 0.8125rem; color: #64748b;" title="Physical count discrepancy">Physical count discrepancy</span></td>
-                        <td><span style="font-size: 0.8125rem; color: #475569;">Manager</span></td>
-                        <td><span class="time-badge">Sep 28, 2025</span></td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-view" title="View Details">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-
-                    <!-- Sample Data Row 6 -->
-                    <tr>
-                        <td><input type="checkbox" class="row-checkbox"></td>
-                        <td class="supplier-id">6</td>
-                        <td class="supplier-name">Wella Koleston Hair Color</td>
-                        <td>
-                            <span class="payment-badge" style="background: #d1fae5; color: #065f46;">Addition</span>
-                        </td>
-                        <td><span style="font-weight: 600; color: #059669;">+50</span></td>
-                        <td><span class="stock-badge stock-high">56</span></td>
-                        <td><span class="stock-badge stock-high">106</span></td>
-                        <td><span style="font-size: 0.8125rem; color: #64748b;" title="New stock delivery">New stock delivery</span></td>
-                        <td><span style="font-size: 0.8125rem; color: #475569;">Admin User</span></td>
-                        <td><span class="time-badge">Sep 27, 2025</span></td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-view" title="View Details">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-
-                    <!-- Sample Data Row 7 -->
-                    <tr>
-                        <td><input type="checkbox" class="row-checkbox"></td>
-                        <td class="supplier-id">7</td>
-                        <td class="supplier-name">Bioderma Micellar Water</td>
-                        <td>
-                            <span class="payment-badge" style="background: #fee2e2; color: #991b1b;">Subtraction</span>
-                        </td>
-                        <td><span style="font-weight: 600; color: #dc2626;">-8</span></td>
-                        <td><span class="stock-badge stock-medium">18</span></td>
-                        <td><span class="stock-badge stock-medium">10</span></td>
-                        <td><span style="font-size: 0.8125rem; color: #64748b;" title="Promotional giveaway">Promotional giveaway</span></td>
-                        <td><span style="font-size: 0.8125rem; color: #475569;">Manager</span></td>
-                        <td><span class="time-badge">Sep 26, 2025</span></td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-view" title="View Details">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-
-                    <!-- Sample Data Row 8 -->
-                    <tr>
-                        <td><input type="checkbox" class="row-checkbox"></td>
-                        <td class="supplier-id">8</td>
-                        <td class="supplier-name">Maybelline Mascara</td>
-                        <td>
-                            <span class="payment-badge" style="background: #fed7aa; color: #9a3412;">Damage</span>
-                        </td>
-                        <td><span style="font-weight: 600; color: #dc2626;">-12</span></td>
-                        <td><span class="stock-badge stock-medium">12</span></td>
-                        <td><span class="stock-badge stock-out">0</span></td>
-                        <td><span style="font-size: 0.8125rem; color: #64748b;" title="Expired products">Expired products</span></td>
-                        <td><span style="font-size: 0.8125rem; color: #475569;">Staff Member</span></td>
-                        <td><span class="time-badge">Sep 25, 2025</span></td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-view" title="View Details">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
+                    @forelse($adjustments as $adjustment)
+                        <tr>
+                            <td><input type="checkbox" class="row-checkbox"></td>
+                            <td class="supplier-id">{{ $adjustment->stock_adjustment_id }}</td>
+                            <td class="supplier-name">{{ $adjustment->stockProd->product->product_name ?? 'N/A' }}</td>
+                            <td>
+                                @if($adjustment->adjustment_type == 'increase')
+                                    <span class="payment-badge" style="background: #d1fae5; color: #065f46;">Increase</span>
+                                @else
+                                    <span class="payment-badge" style="background: #fee2e2; color: #991b1b;">Decrease</span>
+                                @endif
+                            </td>
+                            <td>
+                                @if($adjustment->adjustment_type == 'increase')
+                                    <span style="font-weight: 600; color: #059669;">+{{ $adjustment->adjust_count }}</span>
+                                @else
+                                    <span style="font-weight: 600; color: #dc2626;">-{{ $adjustment->adjust_count }}</span>
+                                @endif
+                            </td>
+                            <td>
+                                @php
+                                    $previousStock = $adjustment->system_count;
+                                    $stockClass = $previousStock <= 10 ? 'stock-low' : ($previousStock <= 50 ? 'stock-medium' : 'stock-high');
+                                @endphp
+                                <span class="stock-badge {{ $stockClass }}">{{ $previousStock }}</span>
+                            </td>
+                            <td>
+                                @php
+                                    $newStock = $adjustment->adjustment_type == 'increase' ?
+                                        $adjustment->system_count + $adjustment->adjust_count :
+                                        $adjustment->system_count - $adjustment->adjust_count;
+                                    $newStockClass = $newStock <= 10 ? 'stock-low' : ($newStock <= 50 ? 'stock-medium' : 'stock-high');
+                                @endphp
+                                <span class="stock-badge {{ $newStockClass }}">{{ $newStock }}</span>
+                            </td>
+                            <td><span style="font-size: 0.8125rem; color: #64748b;" title="{{ $adjustment->reason }}">{{ Str::limit($adjustment->reason, 30) }}</span></td>
+                            <td>
+                                @if($adjustment->status === 'pending')
+                                    <span class="payment-badge" style="background: #fef3c7; color: #92400e;">Pending</span>
+                                @elseif($adjustment->status === 'approved')
+                                    <span class="payment-badge" style="background: #d1fae5; color: #065f46;">Approved</span>
+                                @elseif($adjustment->status === 'rejected')
+                                    <span class="payment-badge" style="background: #fee2e2; color: #991b1b;">Rejected</span>
+                                @endif
+                            </td>
+                            <td><span class="time-badge">{{ $adjustment->created_at->format('M d, Y') }}</span></td>
+                            <td class="actions-cell">
+                                <button class="btn-icon btn-view" title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="10" style="text-align: center; padding: 2rem; color: #64748b;">
+                                No stock adjustments found.
+                            </td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
 
         <div class="table-footer">
             <div class="showing-info">
-                Showing <strong>1-8</strong> of <strong>156</strong>
+                Showing <strong>{{ $adjustments->firstItem() ?? 0 }}-{{ $adjustments->lastItem() ?? 0 }}</strong> of <strong>{{ $adjustments->total() }}</strong>
             </div>
 
             <div class="pagination">
-                <button class="page-btn page-prev" disabled>
-                    <i class="fas fa-chevron-left"></i>
-                </button>
-                <button class="page-btn active">1</button>
-                <button class="page-btn">2</button>
-                <button class="page-btn">3</button>
-                <button class="page-btn">4</button>
-                <button class="page-btn">5</button>
-                <button class="page-btn page-next">
-                    <i class="fas fa-chevron-right"></i>
-                </button>
+                @if ($adjustments->hasPages())
+                    {{ $adjustments->links() }}
+                @endif
             </div>
         </div>
     </div>
@@ -286,7 +167,7 @@
                         </label>
                         <select class="form-select" name="stock_prod_id" required>
                             @foreach($inventories as $inv)
-                                <option value="{{ $inv->stock_prod_id }}">{{ $inv->product->product_name }} (Current: {{ $inv->quantity_on_hand }})</option>
+                                <option value="{{ $inv->stock_prod_id }}">{{ $inv->product->product_name }} (Current: {{ $inv->product->inventory->quantity_on_hand ?? 0 }})</option>
                             @endforeach
                         </select>
                     </div>
@@ -296,21 +177,17 @@
                             Adjustment Type <span class="required">*</span>
                         </label>
                         <select class="form-select" name="adjustment_type" required>
-                            <option value="add">Add</option>
-                            <option value="subtract">Subtract</option>
-                            <option value="damage">Damage</option>
-                            <option value="missing">Missing</option>
-                            <option value="return">Return</option>
-                            <option value="correction">Correction</option>
+                            <option value="increase">Increase</option>
+                            <option value="decrease">Decrease</option>
                         </select>
                     </div>
 
                     <div class="form-group">
                         <label class="form-label">
                             Physical Count <span class="required">*</span>
-                            <i class="fas fa-info-circle info-icon" title="Enter the quantity to adjust"></i>
+                            <i class="fas fa-info-circle info-icon" title="Enter the actual physical count"></i>
                         </label>
-                        <input type="number" class="form-input" name="physical_count" min="0" placeholder="Enter quantity" required>
+                        <input type="number" class="form-input" name="physical_count" min="0" placeholder="Enter actual physical count" required>
                     </div>
 
                     <div class="form-group">
@@ -323,25 +200,27 @@
                     <div class="form-group">
                         <label class="form-label">
                             System Count <span class="required">*</span>
+                            <i class="fas fa-info-circle info-icon" title="Current system inventory count"></i>
                         </label>
-                        <input type="number" class="form-input" name="system_count" min="0" placeholder="Enter system count" required>
+                        <input type="number" class="form-input" name="system_count" min="0" placeholder="Enter current system count" required>
                     </div>
 
                     <div class="form-group">
                         <label class="form-label">
                             Adjustment Quantity <span class="required">*</span>
+                            <i class="fas fa-info-circle info-icon" title="Quantity to add or subtract"></i>
                         </label>
-                        <input type="number" class="form-input" name="adjust_count" min="0" placeholder="Enter adjustment quantity" required>
+                        <input type="number" class="form-input" name="adjust_count" min="1" placeholder="Enter quantity to adjust" required>
                     </div>
+
+                    <!-- Employee fields removed - only admin can see these -->
 
                     <div class="form-group">
                         <label class="form-label">
-                            Status <span class="required">*</span>
+                            Status
                         </label>
-                        <select class="form-select" name="status" required>
-                            <option value="active">Active</option>
-                            <option value="inactive">Inactive</option>
-                        </select>
+                        <input type="text" class="form-input" value="Pending Approval" readonly style="background: #f8fafc; color: #64748b;">
+                        <small style="font-size: 0.75rem; color: #64748b;">All adjustments require admin approval</small>
                     </div>
                 </div>
             </div>
@@ -552,8 +431,7 @@ function openAdjustmentModal() {
 function closeAdjustmentModal() {
     document.getElementById('adjustmentModal').classList.remove('active');
     document.body.style.overflow = '';
-    document.getElementById('adjustmentForm').reset();
-    document.getElementById('currentStock').value = '';
+    document.querySelector('form').reset();
 }
 
 // Close modal when clicking outside
@@ -563,39 +441,41 @@ document.getElementById('adjustmentModal').addEventListener('click', function(e)
     }
 });
 
-// Update current stock when product is selected
-document.getElementById('productSelect').addEventListener('change', function() {
+// Update system count when product is selected
+document.querySelector('select[name="stock_prod_id"]').addEventListener('change', function() {
     const selectedOption = this.options[this.selectedIndex];
-    const stock = selectedOption.getAttribute('data-stock');
-    document.getElementById('currentStock').value = stock ? stock : '--';
+    const stockText = selectedOption.textContent;
+    const match = stockText.match(/Current: (\d+)/);
+    if (match) {
+        document.querySelector('input[name="system_count"]').value = match[1];
+    }
 });
 
-// Handle form submission
-document.getElementById('adjustmentForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-
-    // Get form values
-    const productId = document.getElementById('productSelect').value;
-    const adjustmentType = document.getElementById('adjustmentType').value;
-    const quantity = document.getElementById('quantity').value;
-    const reason = document.getElementById('reason').value;
-
+// Handle form submission - Let the form submit naturally to the backend
+document.querySelector('form').addEventListener('submit', function(e) {
+    // Get form values for validation
+    const productId = document.querySelector('select[name="stock_prod_id"]').value;
+    const adjustmentType = document.querySelector('select[name="adjustment_type"]').value;
+    const physicalCount = document.querySelector('input[name="physical_count"]').value;
+    const systemCount = document.querySelector('input[name="system_count"]').value;
+    const adjustCount = document.querySelector('input[name="adjust_count"]').value;
+    const reason = document.querySelector('input[name="reason"]').value;
     // Validate
-    if (!productId || !adjustmentType || !quantity || !reason) {
+    if (!productId || !adjustmentType || !physicalCount || !systemCount || !adjustCount || !reason) {
+        e.preventDefault();
         alert('Please fill in all required fields');
         return;
     }
 
-    // Here you would typically send this to your backend
-    console.log({
-        product_id: productId,
-        adjustment_type: adjustmentType,
-        quantity: quantity,
-        reason: reason
-    });
+    // Validate that adjust_count is positive
+    if (parseInt(adjustCount) <= 0) {
+        e.preventDefault();
+        alert('Adjustment quantity must be greater than 0');
+        return;
+    }
 
-    alert('Stock adjustment submitted successfully!');
-    closeAdjustmentModal();
+    // Let the form submit to the backend
+    console.log('Submitting stock adjustment...');
 });
 
 // Close modal with ESC key

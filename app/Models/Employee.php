@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Employee extends Model
 {
     protected $primaryKey = 'employee_id';
-    protected $fillable = ['employee_name', 'contact_number', 'position', 'role_id'];
+    protected $fillable = ['employee_name', 'contact_number', 'position', 'role_id', 'user_id'];
 
     public function role()
     {
@@ -27,5 +27,10 @@ class Employee extends Model
     public function stockAdjustmentsReviewed()
     {
         return $this->hasMany(StockAdjustment::class, 'reviewed_by');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

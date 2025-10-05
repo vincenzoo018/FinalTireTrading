@@ -41,7 +41,7 @@
             <!-- Inventory -->
             <li class="nav-item dropdown">
                 <a href="#"
-                   class="nav-link dropdown-toggle {{ request()->routeIs('admin.inventory') || request()->routeIs('admin.stockadjustments') ? 'active' : '' }}">
+                   class="nav-link dropdown-toggle {{ request()->routeIs('admin.inventory') || request()->routeIs('admin.stockadjustments*') ? 'active' : '' }}">
                     <i class="fas fa-warehouse"></i>
                     <span>Inventory</span>
                     <i class="fas fa-chevron-down dropdown-icon"></i>
@@ -54,11 +54,20 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('admin.stockadjustments') }}"
-                           class="{{ request()->routeIs('admin.stockadjustments') ? 'active' : '' }}">
+                        <a href="{{ route('admin.stockadjustments.index') }}"
+                           class="{{ request()->routeIs('admin.stockadjustments.index') ? 'active' : '' }}">
                             Stock Adjustments
                         </a>
                     </li>
+                    @if(Auth::check() && Auth::user()->role_id == 1)
+                    <li>
+                        <a href="{{ route('admin.stockadjustments.approvals.index') }}"
+                           class="{{ request()->routeIs('admin.stockadjustments.approvals*') ? 'active' : '' }}">
+                            <i class="fas fa-check-circle" style="margin-right: 0.5rem;"></i>
+                            Approvals
+                        </a>
+                    </li>
+                    @endif
                 </ul>
             </li>
 

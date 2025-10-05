@@ -13,11 +13,21 @@ class StockAdjustmentController extends Controller
 {
     // Show all adjustments
     public function index()
-{
-    $adjustments = StockAdjustment::with('stockProd.product')->orderBy('created_at', 'desc')->paginate(10);
-    $inventories = StockProd::with('product')->get();
-    return view('admin.stockadjustments', compact('adjustments', 'inventories'));
-}
+    {
+        $adjustments = StockAdjustment::with([
+            'stockProd.product.inventory',
+            'requestedBy',
+            'reviewedBy'
+        ])->orderBy('created_at', 'desc')->paginate(10);
+
+        // Get products with their current inventory for the dropdown
+        $inventories = StockProd::with(['product.inventory'])->get();
+
+        // Get all employees for the dropdown
+        $employees = \App\Models\Employee::with('role')->get();
+
+        return view('admin.stockadjustments', compact('adjustments', 'inventories', 'employees'));
+    }
 
     // Store a new adjustment and update inventory
     public function store(Request $request)
@@ -25,12 +35,26 @@ class StockAdjustmentController extends Controller
         $validated = $request->validate([
             'stock_prod_id'    => 'required|exists:stock_prods,stock_prod_id',
             'reason'           => 'required|string|max:255',
-            'adjustment_type'  => 'required|in:add,subtract,damage,missing,return,correction',
+            'adjustment_type'  => 'required|in:increase,decrease',
             'physical_count'   => 'required|integer|min:0',
             'system_count'     => 'required|integer|min:0',
             'adjust_count'     => 'required|integer',
-            'status'           => 'required|in:active,inactive',
+            // Status will be set to 'pending' automatically
         ]);
+
+        // Get current user and find associated employee
+        $currentUser = Auth::user();
+        $currentEmployee = null;
+
+        // Try to find employee by user_id first, then by role_id as fallback
+        if ($currentUser) {
+            $currentEmployee = \App\Models\Employee::where('user_id', $currentUser->user_id)->first();
+
+            // Fallback: if no direct user_id match, try by role_id for admin/manager roles
+            if (!$currentEmployee && in_array($currentUser->role_id, [1, 2])) {
+                $currentEmployee = \App\Models\Employee::where('role_id', $currentUser->role_id)->first();
+            }
+        }
 
         // Create adjustment
         $adjustment = StockAdjustment::create([
@@ -40,33 +64,15 @@ class StockAdjustmentController extends Controller
             'physical_count'   => $validated['physical_count'],
             'system_count'     => $validated['system_count'],
             'adjust_count'     => $validated['adjust_count'],
-            'status'           => $validated['status'],
-            // 'reviewed_by'    => Auth::id(), // Uncomment if you add approval
-            // 'reviewed_date'  => now(),      // Uncomment if you add approval
+            'status'           => 'pending', // Always set as pending for admin approval
+            'requested_by'     => $currentEmployee ? $currentEmployee->employee_id : null,
+            'reviewed_by'      => null, // Will be set by admin when reviewing
+            'reviewed_date'    => now(),
         ]);
 
-        // Update inventory immediately
-        $stockProd = StockProd::find($validated['stock_prod_id']);
-        $inventory = Inventory::where('product_id', $stockProd->product_id)->first();
+        // Don't update inventory immediately - wait for admin approval
+        // Inventory will be updated when admin approves the adjustment
 
-        if ($inventory) {
-            switch ($validated['adjustment_type']) {
-                case 'add':
-                case 'return':
-                    $inventory->quantity += $validated['adjust_count'];
-                    break;
-                case 'subtract':
-                case 'damage':
-                case 'missing':
-                    $inventory->quantity -= $validated['adjust_count'];
-                    break;
-                case 'correction':
-                    $inventory->quantity = $validated['physical_count'];
-                    break;
-            }
-            $inventory->save();
-        }
-
-        return redirect()->route('admin.stockadjustments.index')->with('success', 'Stock adjustment applied.');
+        return redirect()->route('admin.stockadjustments.index')->with('success', 'Stock adjustment submitted for approval.');
     }
 }
