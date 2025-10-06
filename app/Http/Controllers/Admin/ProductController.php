@@ -16,7 +16,7 @@ class ProductController extends Controller
     {
         // Only allow authenticated admins (role_id == 1 or 2)
         if (!Auth::check() || !in_array(Auth::user()->role_id, [1, 2])) {
-            return redirect()->route('auth.login')->withErrors(['auth' => 'Please login as an admin to view products.']);
+            return redirect()->route('login')->withErrors(['auth' => 'Please login as an admin to view products.']);
         }
 
         $query = Product::with(['category', 'supplier', 'inventory'])->orderBy('created_at', 'desc');
@@ -41,7 +41,7 @@ class ProductController extends Controller
     {
         // Only allow authenticated admins (role_id == 1 or 2)
         if (!Auth::check() || !in_array(Auth::user()->role_id, [1, 2])) {
-            return redirect()->route('auth.login')->withErrors(['auth' => 'Please login as an admin to add products.']);
+            return redirect()->route('login')->withErrors(['auth' => 'Please login as an admin to add products.']);
         }
 
         $request->validate([

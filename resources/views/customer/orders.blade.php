@@ -128,16 +128,28 @@
                                 <h6>Order Items:</h6>
                                 @forelse($order->items as $item)
                                     @if($item->product)
-                                        <div>
-                                            <strong>{{ $item->product->product_name }}</strong>
-                                            <div class="text-muted">
-                                                Brand: {{ $item->product->brand ?? '-' }}<br>
-                                                Size: {{ $item->product->size ?? '-' }}<br>
-                                                Category: {{ $item->product->category->category_name ?? '-' }}<br>
-                                                Description: {{ $item->product->description ?? '-' }}<br>
-                                                Price: ₱{{ number_format($item->price, 2) }}<br>
-                                                Quantity: {{ $item->quantity }}<br>
-                                                Serial #: {{ $item->product->serial_number ?? '-' }}
+                                        <div class="order-item-detail d-flex align-items-start mb-3 p-3 border rounded">
+                                            @if($item->product->image)
+                                                <img src="{{ asset($item->product->image) }}" alt="{{ $item->product->product_name }}"
+                                                     class="me-3" style="width: 60px; height: 60px; object-fit: cover; border-radius: 0.5rem;">
+                                            @else
+                                                <img src="{{ asset('images/default-product.png') }}" alt="Default Product"
+                                                     class="me-3" style="width: 60px; height: 60px; object-fit: cover; border-radius: 0.5rem;">
+                                            @endif
+                                            <div class="flex-grow-1">
+                                                <strong>{{ $item->product->product_name }}</strong>
+                                                <div class="text-muted small">
+                                                    Brand: {{ $item->product->brand ?? '-' }}<br>
+                                                    Size: {{ $item->product->size ?? '-' }}<br>
+                                                    Category: {{ $item->product->category->category_name ?? '-' }}<br>
+                                                    Description: {{ $item->product->description ?? '-' }}<br>
+                                                    Price: ₱{{ number_format($item->price, 2) }}<br>
+                                                    Quantity: {{ $item->quantity }}<br>
+                                                    Serial #: {{ $item->product->serial_number ?? '-' }}
+                                                </div>
+                                            </div>
+                                            <div class="text-end">
+                                                <strong>₱{{ number_format($item->price * $item->quantity, 2) }}</strong>
                                             </div>
                                         </div>
                                     @endif

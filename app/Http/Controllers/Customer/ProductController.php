@@ -14,7 +14,7 @@ class ProductController extends Controller
     {
         // Only allow authenticated customers (role_id == 3)
         if (!Auth::check() || Auth::user()->role_id != 3) {
-            return redirect()->route('auth.login')->withErrors(['auth' => 'Please login as a customer to view products.']);
+            return redirect()->route('login')->withErrors(['auth' => 'Please login as a customer to view products.']);
         }
 
         // Optional: Add filtering, searching, sorting here

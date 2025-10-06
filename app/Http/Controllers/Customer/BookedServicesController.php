@@ -13,7 +13,7 @@ class BookedServicesController extends Controller
     {
         // Only allow authenticated customers (role_id == 3)
         if (!Auth::check() || Auth::user()->role_id != 3) {
-            return redirect()->route('auth.login')->withErrors(['auth' => 'Please login as a customer to view your bookings.']);
+            return redirect()->route('login')->withErrors(['auth' => 'Please login as a customer to view your bookings.']);
         }
 
         // Fetch bookings for the logged-in customer

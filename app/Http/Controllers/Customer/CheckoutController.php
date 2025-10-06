@@ -14,7 +14,7 @@ class CheckoutController extends Controller
     public function index()
     {
         if (!Auth::check() || Auth::user()->role_id != 3) {
-            return redirect()->route('auth.login')->withErrors(['auth' => 'Please login as a customer to proceed to checkout.']);
+            return redirect()->route('login')->withErrors(['auth' => 'Please login as a customer to proceed to checkout.']);
         }
 
         $cartItems = Cart::with('product')->where('user_id', Auth::id())->get();
@@ -30,7 +30,7 @@ class CheckoutController extends Controller
     public function completePurchase(Request $request)
     {
         if (!Auth::check() || Auth::user()->role_id != 3) {
-            return redirect()->route('auth.login')->withErrors(['auth' => 'Please login as a customer to complete your purchase.']);
+            return redirect()->route('login')->withErrors(['auth' => 'Please login as a customer to complete your purchase.']);
         }
 
         $cartItems = Cart::with('product')->where('user_id', Auth::id())->get();
@@ -53,7 +53,8 @@ class CheckoutController extends Controller
             'total_amount' => $total,
             'discount' => 0,
             'payment_method' => $request->payment_method,
-            'order_date' => now(),
+            'order_date' => now()->toDateString(),
+            'status' => 'pending',
         ]);
 
         foreach ($cartItems as $cart) {

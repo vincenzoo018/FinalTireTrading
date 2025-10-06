@@ -14,7 +14,7 @@ class HomeController extends Controller
     {
         // Only allow authenticated customers (role_id == 3)
         if (!Auth::check() || Auth::user()->role_id != 3) {
-            return redirect()->route('auth.login')->withErrors(['auth' => 'Please login as a customer to view the home page.']);
+            return redirect()->route('login')->withErrors(['auth' => 'Please login as a customer to view the home page.']);
         }
 
         // Fetch featured products (e.g., latest 3 or add your own logic)

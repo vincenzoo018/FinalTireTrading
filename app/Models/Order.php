@@ -9,7 +9,7 @@ class Order extends Model
     protected $primaryKey = 'order_id';
 
     protected $fillable = [
-        'user_id', 'cart_id', 'total_amount', 'discount', 'payment_method', 'order_date',
+        'user_id', 'total_amount', 'discount', 'payment_method', 'order_date', 'status',
     ];
 
     public function cart()

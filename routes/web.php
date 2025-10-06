@@ -30,7 +30,7 @@ Route::get('/transactions/supplier/{supplierId}/history', [\App\Http\Controllers
 use App\Http\Controllers\CustomerController;
 
 // Customer Routes
-Route::prefix('customer')->name('customer.')->group(function () {
+Route::prefix('customer')->name('customer.')->middleware('auth')->group(function () {
     Route::get('/home', [CustomerController::class, 'home'])->name('home');
     Route::get('/products', [CustomerController::class, 'products'])->name('products');
     Route::get('/services', [CustomerController::class, 'services'])->name('services');
@@ -44,7 +44,7 @@ Route::prefix('customer')->name('customer.')->group(function () {
 });
 
 
-Route::get('/customer/home', [App\Http\Controllers\Customer\HomeController::class, 'index'])->name('customer.home');
+Route::get('/customer/home', [App\Http\Controllers\Customer\HomeController::class, 'index'])->name('customer.home')->middleware('auth');
 
 
 
@@ -77,24 +77,32 @@ use App\Http\Controllers\AuthController;
 
 Route::prefix('auth')->name('auth.')->group(function () {
     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/login', [AuthController::class, 'login']);
 
-Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
-Route::post('/register', [AuthController::class, 'register']);
+    Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
+    Route::post('/register', [AuthController::class, 'register']);
 
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 
-Route::get('/customer/products', [\App\Http\Controllers\Customer\ProductController::class, 'index'])->name('customer.products');
-Route::get('/customer/services', [App\Http\Controllers\Customer\ServiceController::class, 'index'])->name('customer.services');
-Route::get('/customer/cart', [App\Http\Controllers\Customer\CartController::class, 'index'])->name('customer.cart');
-Route::post('/customer/cart/add', [App\Http\Controllers\Customer\CartController::class, 'add'])->name('customer.cart.add');
-Route::delete('/customer/cart/remove/{cart}', [App\Http\Controllers\Customer\CartController::class, 'remove'])->name('customer.cart.remove');
-Route::delete('/customer/cart/clear', [App\Http\Controllers\Customer\CartController::class, 'clear'])->name('customer.cart.clear');
-Route::get('/customer/checkout', [App\Http\Controllers\Customer\CheckoutController::class, 'index'])->name('customer.checkout');
-Route::post('/customer/checkout/complete', [App\Http\Controllers\Customer\CheckoutController::class, 'completePurchase'])->name('customer.checkout.complete');
-Route::get('/customer/orders', [App\Http\Controllers\Customer\OrderController::class, 'index'])->name('customer.orders');
-Route::get('/customer/order/{order}/items', [App\Http\Controllers\Customer\OrderItemController::class, 'index'])->name('customer.order.items');
+// Define login route without prefix for auth middleware
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
+
+// Customer Routes with Auth Middleware
+Route::middleware('auth')->group(function () {
+    Route::get('/customer/products', [\App\Http\Controllers\Customer\ProductController::class, 'index'])->name('customer.products');
+    Route::get('/customer/services', [App\Http\Controllers\Customer\ServiceController::class, 'index'])->name('customer.services');
+    Route::get('/customer/cart', [App\Http\Controllers\Customer\CartController::class, 'index'])->name('customer.cart');
+    Route::post('/customer/cart/add', [App\Http\Controllers\Customer\CartController::class, 'add'])->name('customer.cart.add');
+    Route::put('/customer/cart/update/{cart}', [App\Http\Controllers\Customer\CartController::class, 'updateQuantity'])->name('customer.cart.update');
+    Route::delete('/customer/cart/remove/{cart}', [App\Http\Controllers\Customer\CartController::class, 'remove'])->name('customer.cart.remove');
+    Route::delete('/customer/cart/clear', [App\Http\Controllers\Customer\CartController::class, 'clear'])->name('customer.cart.clear');
+    Route::get('/customer/checkout', [App\Http\Controllers\Customer\CheckoutController::class, 'index'])->name('customer.checkout');
+    Route::post('/customer/checkout/complete', [App\Http\Controllers\Customer\CheckoutController::class, 'completePurchase'])->name('customer.checkout.complete');
+    Route::get('/customer/orders', [App\Http\Controllers\Customer\OrderController::class, 'index'])->name('customer.orders');
+    Route::get('/customer/order/{order}/items', [App\Http\Controllers\Customer\OrderItemController::class, 'index'])->name('customer.order.items');
+});
 Route::get('/admin/orders', [App\Http\Controllers\Admin\OrdersController::class, 'index'])->name('admin.orders');
 Route::post('/admin/stockadjustments', [App\Http\Controllers\Admin\StockAdjustmentController::class, 'store'])->name('admin.stockadjustments.store');
 Route::get('/admin/stockadjustments', [App\Http\Controllers\Admin\StockAdjustmentController::class, 'index'])->name('admin.stockadjustments.index');

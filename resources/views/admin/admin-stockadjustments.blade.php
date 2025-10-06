@@ -8,7 +8,19 @@
         <h1 class="page-title">Stock Adjustment Approvals</h1>
         <div class="header-actions">
             <span class="pending-badge">Pending: {{ $adjustments->where('status', 'pending')->count() }}</span>
-            <span style="font-size: 0.875rem; color: #64748b; margin-left: 1rem;">Admin Only Access</span>
+            <div class="user-auth-info">
+                <span class="auth-badge">
+                    <i class="fas fa-user-shield"></i>
+                    {{ Auth::user()->fname }} {{ Auth::user()->lname }}
+                </span>
+                <span class="role-badge">
+                    @if(Auth::user()->role_id == 1)
+                        <i class="fas fa-crown"></i> Administrator
+                    @elseif(Auth::user()->role_id == 2)
+                        <i class="fas fa-user-tie"></i> Employee
+                    @endif
+                </span>
+            </div>
         </div>
     </div>
 
@@ -260,6 +272,40 @@
     display: flex;
     align-items: center;
     gap: 1rem;
+}
+
+.user-auth-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.auth-badge {
+    background: #e0f2fe;
+    color: #0277bd;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.role-badge {
+    background: #f3e8ff;
+    color: #7c3aed;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.role-badge i {
+    color: #7c3aed;
 }
 </style>
 

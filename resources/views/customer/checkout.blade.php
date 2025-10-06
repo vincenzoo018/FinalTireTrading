@@ -65,7 +65,7 @@
                             </div>
 
                             <!-- Delivery Vehicle Selection -->
-                            <div class="mb-3">
+                            {{-- <div class="mb-3">
                                 <label for="deliveryVehicle" class="form-label">Select Delivery Vehicle</label>
                                 <select class="form-select" id="deliveryVehicle" name="delivery_vehicle_id" required>
                                     <option value="">Choose vehicle...</option>
@@ -75,7 +75,7 @@
                                         </option>
                                     @endforeach
                                 </select>
-                            </div>
+                            </div> --}}
 
                             @if($delivery)
                                 <div class="mb-3">
@@ -201,15 +201,25 @@
                                 $subtotal = 0;
                             @endphp
                             @foreach($cartItems as $cart)
-                                <div class="order-item d-flex justify-content-between align-items-start mb-2">
-                                    <div class="item-info">
-                                        <strong>{{ $cart->product->product_name }}</strong>
-                                        <small class="text-muted d-block">₱{{ number_format($cart->product->selling_price, 2) }} x {{ $cart->quantity }}</small>
+                                <div class="order-item d-flex justify-content-between align-items-start mb-3">
+                                    <div class="item-info d-flex align-items-center">
+                                        @if($cart->product && $cart->product->image)
+                                            <img src="{{ asset($cart->product->image) }}" alt="{{ $cart->product->product_name }}"
+                                                 class="me-3" style="width: 50px; height: 50px; object-fit: cover; border-radius: 0.5rem;">
+                                        @else
+                                            <img src="{{ asset('images/default-product.png') }}" alt="Default Product"
+                                                 class="me-3" style="width: 50px; height: 50px; object-fit: cover; border-radius: 0.5rem;">
+                                        @endif
+                                        <div>
+                                            <strong>{{ $cart->product->product_name ?? 'Unknown Product' }}</strong>
+                                            <small class="text-muted d-block">₱{{ number_format($cart->product->selling_price ?? 0, 2) }} x {{ $cart->quantity ?? 1 }}</small>
+                                            <small class="text-muted">Size: {{ $cart->product->size ?? '-' }} • Brand: {{ $cart->product->brand ?? '-' }}</small>
+                                        </div>
                                     </div>
-                                    <span class="item-price">₱{{ number_format($cart->product->selling_price * $cart->quantity, 2) }}</span>
+                                    <span class="item-price">₱{{ number_format(($cart->product->selling_price ?? 0) * ($cart->quantity ?? 1), 2) }}</span>
                                 </div>
                                 @php
-                                    $subtotal += $cart->product->selling_price * $cart->quantity;
+                                    $subtotal += ($cart->product->selling_price ?? 0) * ($cart->quantity ?? 1);
                                 @endphp
                             @endforeach
                         </div>
@@ -242,10 +252,11 @@
                         </div>
 
                         <!-- Complete Purchase Button -->
-                        <form action="{{ route('customer.checkout.complete') }}" method="POST">
+                        <form id="checkoutForm" action="{{ route('customer.checkout.complete') }}" method="POST">
                             @csrf
-                            <input type="hidden" name="payment_method" value="Credit Card"> <!-- Example -->
-                            <button type="submit" class="btn btn-primary btn-lg w-100">
+                            <input type="hidden" name="payment_method" id="selectedPaymentMethod" value="Credit Card">
+                            <input type="hidden" name="delivery_vehicle_id" id="selectedDeliveryVehicle" value="">
+                            <button type="submit" id="completePurchaseBtn" class="btn btn-primary btn-lg w-100">
                                 <i class="fas fa-lock me-2"></i>Complete Purchase
                             </button>
                         </form>
@@ -288,7 +299,20 @@ document.addEventListener('DOMContentLoaded', function() {
             if (selectedForm) {
                 selectedForm.style.display = 'block';
             }
+
+            // Update the hidden payment method field
+            const paymentMethodMap = {
+                'creditCard': 'Credit Card',
+                'paypal': 'PayPal',
+                'bankTransfer': 'Bank Transfer'
+            };
+            document.getElementById('selectedPaymentMethod').value = paymentMethodMap[this.id] || 'Credit Card';
         });
+    });
+
+    // Update delivery vehicle selection
+    document.getElementById('deliveryVehicle').addEventListener('change', function() {
+        document.getElementById('selectedDeliveryVehicle').value = this.value;
     });
 
     // Card number formatting
@@ -373,35 +397,26 @@ function processPayPal() {
     btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Redirecting...';
     btn.disabled = true;
 
-    setTimeout(() => {
-        completePurchase();
-    }, 2000);
+    // Form validation completed
 }
 
-function completePurchase() {
-    if (!document.getElementById('termsAgreement').checked) {
-        alert('Please agree to the Terms and Conditions to continue.');
-        return;
-    }
-
+// Form submission handler
+document.getElementById('checkoutForm').addEventListener('submit', function(e) {
     // Validate forms
     const shippingForm = document.getElementById('shippingForm');
     if (!shippingForm.checkValidity()) {
+        e.preventDefault();
         shippingForm.reportValidity();
         return;
     }
 
-    const selectedPayment = document.querySelector('input[name="paymentMethod"]:checked').id;
-    if (selectedPayment === 'creditCard') {
-        const cardForm = document.getElementById('creditCardForm');
-        const inputs = cardForm.querySelectorAll('input[required]');
-        for (let input of inputs) {
-            if (!input.value.trim()) {
-                alert('Please complete all required payment information.');
-                input.focus();
-                return;
-            }
-        }
+    // Validate delivery vehicle selection
+    const deliveryVehicle = document.getElementById('deliveryVehicle');
+    if (deliveryVehicle && !deliveryVehicle.value) {
+        e.preventDefault();
+        alert('Please select a delivery vehicle.');
+        deliveryVehicle.focus();
+        return;
     }
 
     // Show processing state
@@ -410,15 +425,8 @@ function completePurchase() {
     btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
     btn.disabled = true;
 
-    // Simulate payment processing
-    setTimeout(() => {
-        // Show success message
-        alert('Order placed successfully! Thank you for your purchase. You will receive a confirmation email shortly.');
-
-        // Redirect to order confirmation page
-        window.location.href = "{{ route('customer.orders') }}";
-    }, 3000);
-}
+    // Let the form submit naturally
+});
 
 // Generate random reference number
 document.getElementById('transferReference').textContent = '8PLY-' +

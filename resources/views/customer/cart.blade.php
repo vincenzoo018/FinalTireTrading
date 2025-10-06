@@ -61,15 +61,21 @@
                                     </div>
                                     <div class="col-md-2">
                                         <div class="quantity-selector">
-                                            <div class="input-group input-group-sm">
-                                                <button class="btn btn-outline-secondary" type="button" onclick="updateQuantity(this, -1)">
-                                                    <i class="fas fa-minus"></i>
-                                                </button>
-                                                <input type="text" class="form-control text-center" value="{{ $cart->quantity ?? 1 }}" readonly>
-                                                <button class="btn btn-outline-secondary" type="button" onclick="updateQuantity(this, 1)">
-                                                    <i class="fas fa-plus"></i>
-                                                </button>
-                                            </div>
+                                            <form action="{{ route('customer.cart.update', $cart->cart_id) }}" method="POST" class="d-inline">
+                                                @csrf
+                                                @method('PUT')
+                                                <div class="input-group input-group-sm">
+                                                    <button class="btn btn-outline-secondary" type="button" onclick="updateQuantity(this, -1)">
+                                                        <i class="fas fa-minus"></i>
+                                                    </button>
+                                                    <input type="number" name="quantity" class="form-control text-center quantity-input"
+                                                           value="{{ $cart->quantity ?? 1 }}" min="1" max="10"
+                                                           data-cart-id="{{ $cart->cart_id }}">
+                                                    <button class="btn btn-outline-secondary" type="button" onclick="updateQuantity(this, 1)">
+                                                        <i class="fas fa-plus"></i>
+                                                    </button>
+                                                </div>
+                                            </form>
                                         </div>
                                     </div>
                                     <div class="col-md-2">
@@ -249,6 +255,12 @@ function updateQuantity(button, change) {
     input.value = quantity;
     updateItemTotal(button);
     updateCartSummary();
+
+    // Auto-submit the form to update the database
+    const form = input.closest('form');
+    if (form) {
+        form.submit();
+    }
 }
 
 function updateItemTotal(button) {
