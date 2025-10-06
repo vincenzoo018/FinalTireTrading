@@ -125,7 +125,17 @@
                                 </div>
                             </div>
                             <div class="card-body">
-                                <h6>Order Items:</h6>
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h6 class="mb-0">Order Items</h6>
+                                    <span class="badge bg-secondary">
+                                        Status:
+                                        @php
+                                            $status = strtolower($order->status);
+                                            $displayStatus = $status === 'approved' ? 'Shipped' : ucfirst($status);
+                                        @endphp
+                                        {{ $displayStatus }}
+                                    </span>
+                                </div>
                                 @forelse($order->items as $item)
                                     @if($item->product)
                                         <div class="order-item-detail d-flex align-items-start mb-3 p-3 border rounded">
@@ -156,32 +166,158 @@
                                 @empty
                                     <p class="text-muted">No products found for this order.</p>
                                 @endforelse
+
+                                @if(strtolower($order->status) === 'pending')
+                                    <form action="{{ route('customer.orders.cancel', $order) }}" method="POST" onsubmit="return confirm('Cancel this pending order?')">
+                                        @csrf
+                                        <div class="d-flex align-items-center gap-2 mt-3">
+                                            <input type="text" name="cancelled_reason" class="form-control" placeholder="Optional reason">
+                                            <button class="btn btn-outline-danger">
+                                                <i class="fas fa-times me-1"></i>Cancel Order
+                                            </button>
+                                        </div>
+                                    </form>
+                                @elseif(in_array(strtolower($order->status), ['approved','shipped']))
+                                    <form action="{{ route('customer.orders.receive', $order) }}" method="POST" onsubmit="return confirm('Mark this order as received?')">
+                                        @csrf
+                                        <button class="btn btn-success mt-3">
+                                            <i class="fas fa-box-open me-1"></i>Received
+                                        </button>
+                                    </form>
+                                @endif
                             </div>
                         </div>
                     @endforeach
                 </div>
             </div>
 
-            <!-- Other Tabs (Pending, Shipped, Completed, Cancelled) -->
-            <!-- Content would be similar but filtered - for brevity, we show the structure -->
+            <!-- Pending Tab -->
             <div class="tab-pane fade" id="pending" role="tabpanel">
-                <div class="text-center py-5">
-                    <i class="fas fa-clock fa-3x text-warning mb-3"></i>
-                    <h5 class="text-muted">No Pending Orders</h5>
-                    <p class="text-muted">You don't have any pending orders at the moment.</p>
+                <div class="orders-list">
+                    @foreach($orders->where('status','pending') as $order)
+                        <div class="card order-card mb-4">
+                            <div class="card-header bg-warning text-white">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <h6>Order ID: {{ $order->order_id }}</h6>
+                                        <p class="mb-0">Order Date: {{ \Carbon\Carbon::parse($order->order_date)->format('F d, Y') }}</p>
+                                    </div>
+                                    <div class="col-md-6 text-md-end">
+                                        <h6>Total: ₱{{ number_format($order->total_amount, 2) }}</h6>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <h6>Order Items:</h6>
+                                @foreach($order->items as $item)
+                                    @if($item->product)
+                                        <div class="d-flex align-items-start mb-3 p-3 border rounded">
+                                            <div class="flex-grow-1">
+                                                <strong>{{ $item->product->product_name }}</strong>
+                                                <div class="text-muted small">
+                                                    Price: ₱{{ number_format($item->price, 2) }} | Qty: {{ $item->quantity }}
+                                                </div>
+                                            </div>
+                                            <div class="text-end">
+                                                <strong>₱{{ number_format($item->price * $item->quantity, 2) }}</strong>
+                                            </div>
+                                        </div>
+                                    @endif
+                                @endforeach
+                                <form action="{{ route('customer.orders.cancel', $order) }}" method="POST" onsubmit="return confirm('Cancel this pending order?')">
+                                    @csrf
+                                    <button class="btn btn-outline-danger mt-2">
+                                        <i class="fas fa-times me-1"></i>Cancel Order
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    @endforeach
                 </div>
             </div>
 
+            <!-- Shipped Tab (Approved) -->
             <div class="tab-pane fade" id="shipped" role="tabpanel">
-                <!-- Shipped orders would go here -->
+                <div class="orders-list">
+                    @foreach($orders->filter(function($o){ return in_array(strtolower($o->status), ['approved','shipped']); }) as $order)
+                        <div class="card order-card mb-4">
+                            <div class="card-header bg-info text-white">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <h6>Order ID: {{ $order->order_id }}</h6>
+                                        <p class="mb-0">Approved: {{ optional($order->approved_date)->format('F d, Y H:i') }}</p>
+                                    </div>
+                                    <div class="col-md-6 text-md-end">
+                                        <h6>Total: ₱{{ number_format($order->total_amount, 2) }}</h6>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <h6>Order Items:</h6>
+                                @foreach($order->items as $item)
+                                    @if($item->product)
+                                        <div class="d-flex align-items-start mb-3 p-3 border rounded">
+                                            <div class="flex-grow-1">
+                                                <strong>{{ $item->product->product_name }}</strong>
+                                                <div class="text-muted small">
+                                                    Price: ₱{{ number_format($item->price, 2) }} | Qty: {{ $item->quantity }}
+                                                </div>
+                                            </div>
+                                            <div class="text-end">
+                                                <strong>₱{{ number_format($item->price * $item->quantity, 2) }}</strong>
+                                            </div>
+                                        </div>
+                                    @endif
+                                @endforeach
+                                <form action="{{ route('customer.orders.receive', $order) }}" method="POST" onsubmit="return confirm('Mark this order as received?')">
+                                    @csrf
+                                    <button class="btn btn-success">
+                                        <i class="fas fa-box-open me-1"></i>Received
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
             </div>
 
+            <!-- Completed Tab -->
             <div class="tab-pane fade" id="completed" role="tabpanel">
-                <!-- Completed orders would go here -->
-            </div>
-
-            <div class="tab-pane fade" id="cancelled" role="tabpanel">
-                <!-- Cancelled orders would go here -->
+                <div class="orders-list">
+                    @foreach($orders->where('status','completed') as $order)
+                        <div class="card order-card mb-4">
+                            <div class="card-header bg-success text-white">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <h6>Order ID: {{ $order->order_id }}</h6>
+                                        <p class="mb-0">Received: {{ optional($order->received_date)->format('F d, Y H:i') }}</p>
+                                    </div>
+                                    <div class="col-md-6 text-md-end">
+                                        <h6>Total: ₱{{ number_format($order->total_amount, 2) }}</h6>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <h6>Order Items:</h6>
+                                @foreach($order->items as $item)
+                                    @if($item->product)
+                                        <div class="d-flex align-items-start mb-3 p-3 border rounded">
+                                            <div class="flex-grow-1">
+                                                <strong>{{ $item->product->product_name }}</strong>
+                                                <div class="text-muted small">
+                                                    Price: ₱{{ number_format($item->price, 2) }} | Qty: {{ $item->quantity }}
+                                                </div>
+                                            </div>
+                                            <div class="text-end">
+                                                <strong>₱{{ number_format($item->price * $item->quantity, 2) }}</strong>
+                                            </div>
+                                        </div>
+                                    @endif
+                                @endforeach
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
             </div>
         </div>
 

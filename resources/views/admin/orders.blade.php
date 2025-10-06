@@ -89,12 +89,26 @@
                                 </ul>
                             </td>
                             <td class="actions-cell">
-                                <button class="btn-icon btn-edit" title="Edit">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="btn-icon btn-view" title="View">
-                                    <i class="fas fa-eye"></i>
-                                </button>
+                                @if(strtolower($order->status) === 'pending')
+                                    <form action="{{ route('admin.orders.approve', $order) }}" method="POST" style="display:inline" onsubmit="return confirmApprove()">
+                                        @csrf
+                                        <input type="hidden" name="approved_note" value="Approved by admin">
+                                        <button class="btn-icon btn-view" title="Approve">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                    </form>
+                                    <form action="{{ route('admin.orders.reject', $order) }}" method="POST" style="display:inline" onsubmit="return confirmReject(this)">
+                                        @csrf
+                                        <input type="hidden" name="rejected_reason" value="">
+                                        <button class="btn-icon btn-edit" title="Reject">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </form>
+                                @else
+                                    <button class="btn-icon btn-view" title="View">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                @endif
                             </td>
                         </tr>
                     @endforeach
@@ -116,6 +130,16 @@
 
 @section('scripts')
 <script>
+function confirmApprove() {
+    return confirm('Are you sure you want to approve this order? Inventory will be deducted.');
+}
+
+function confirmReject(form) {
+    const reason = prompt('Enter reason for rejection:');
+    if (!reason) return false;
+    form.querySelector('input[name="rejected_reason"]').value = reason;
+    return confirm('Are you sure you want to reject this order?');
+}
 document.getElementById('liveOrderSearchInput').addEventListener('input', function() {
     var search = this.value;
     var xhr = new XMLHttpRequest();

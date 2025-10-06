@@ -101,9 +101,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/customer/checkout', [App\Http\Controllers\Customer\CheckoutController::class, 'index'])->name('customer.checkout');
     Route::post('/customer/checkout/complete', [App\Http\Controllers\Customer\CheckoutController::class, 'completePurchase'])->name('customer.checkout.complete');
     Route::get('/customer/orders', [App\Http\Controllers\Customer\OrderController::class, 'index'])->name('customer.orders');
+    Route::post('/customer/orders/{order}/cancel', [App\Http\Controllers\Customer\OrderController::class, 'cancel'])->name('customer.orders.cancel');
+    Route::post('/customer/orders/{order}/receive', [App\Http\Controllers\Customer\OrderController::class, 'receive'])->name('customer.orders.receive');
     Route::get('/customer/order/{order}/items', [App\Http\Controllers\Customer\OrderItemController::class, 'index'])->name('customer.order.items');
 });
 Route::get('/admin/orders', [App\Http\Controllers\Admin\OrdersController::class, 'index'])->name('admin.orders');
+Route::post('/admin/orders/{order}/approve', [App\Http\Controllers\Admin\OrdersController::class, 'approve'])->name('admin.orders.approve');
+Route::post('/admin/orders/{order}/reject', [App\Http\Controllers\Admin\OrdersController::class, 'reject'])->name('admin.orders.reject');
 Route::post('/admin/stockadjustments', [App\Http\Controllers\Admin\StockAdjustmentController::class, 'store'])->name('admin.stockadjustments.store');
 Route::get('/admin/stockadjustments', [App\Http\Controllers\Admin\StockAdjustmentController::class, 'index'])->name('admin.stockadjustments.index');
 
