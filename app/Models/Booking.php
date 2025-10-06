@@ -7,10 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 class Booking extends Model
 {
     protected $primaryKey = 'booking_id';
-    protected $fillable = ['booking_date','booking_time','status','payment_method','service_id'];
+    protected $fillable = ['user_id','booking_date','booking_time','status','payment_method','service_id','notes'];
 
     public function service()
     {
         return $this->belongsTo(Service::class, 'service_id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

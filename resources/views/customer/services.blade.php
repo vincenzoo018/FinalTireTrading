@@ -68,13 +68,9 @@
                         <p class="card-text text-muted">{{ $service->description }}</p>
                         <div class="service-details mb-3">
                             <div class="row text-center">
-                                <div class="col-6">
+                                <div class="col-12">
                                     <small class="text-muted d-block">Price</small>
                                     <strong class="text-primary">P{{ number_format($service->service_price, 2) }}</strong>
-                                </div>
-                                <div class="col-6">
-                                    <small class="text-muted d-block">Employee</small>
-                                    <strong>{{ $service->employee->name ?? 'N/A' }}</strong>
                                 </div>
                             </div>
                         </div>
@@ -101,7 +97,8 @@
 <!-- Booking Modal -->
 <div class="modal fade" id="bookingModal" tabindex="-1" aria-labelledby="bookingModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
-        <form id="bookingForm" method="POST" action="#">
+        <form id="bookingForm" method="POST" action="{{ route('customer.booking.store') }}">
+            @csrf
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="bookingModalLabel">
@@ -132,13 +129,13 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="customerName" class="form-label">Your Name <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="customerName" name="customer_name" required>
+                                <input type="text" class="form-control" id="customerName" name="customer_name" value="{{ auth()->user()->full_name ?? (auth()->user()->fname ?? '') }}" readonly>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="customerContact" class="form-label">Contact Number <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="customerContact" name="customer_contact" required>
+                                <input type="text" class="form-control" id="customerContact" name="customer_contact" value="{{ auth()->user()->phone ?? '' }}" readonly>
                             </div>
                         </div>
                     </div>
@@ -168,17 +165,22 @@
                         </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="vehicleInfo" class="form-label">Vehicle Information <span class="text-danger">*</span></label>
-                        <div class="row g-2">
-                            <div class="col-md-4">
-                                <input type="text" class="form-control" placeholder="Make (e.g., Toyota)" required>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="paymentMethod" class="form-label">Payment Method <span class="text-danger">*</span></label>
+                                <select class="form-select" id="paymentMethod" name="payment_method" required>
+                                    <option value="Cash">Cash</option>
+                                    <option value="GCash">GCash</option>
+                                    <option value="Credit Card">Credit Card</option>
+                                    <option value="Debit Card">Debit Card</option>
+                                </select>
                             </div>
-                            <div class="col-md-4">
-                                <input type="text" class="form-control" placeholder="Model (e.g., Vios)" required>
-                            </div>
-                            <div class="col-md-4">
-                                <input type="text" class="form-control" placeholder="Year" required>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="specialRequests" class="form-label">Notes</label>
+                                <input type="text" class="form-control" id="specialRequests" name="notes" placeholder="What needs to be fixed?">
                             </div>
                         </div>
                     </div>
@@ -278,19 +280,12 @@ document.addEventListener('DOMContentLoaded', function () {
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('bookingDate').min = today;
 
-    // Form submission handling
-    document.getElementById('bookingForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-
-        // Show success message
-        const modal = bootstrap.Modal.getInstance(document.getElementById('bookingModal'));
-        modal.hide();
-
-        // Show success notification
-        setTimeout(() => {
-            alert('Booking submitted successfully! We will contact you to confirm your appointment.');
-        }, 500);
-    });
+        // Prefill hidden service_id when opening modal
+        document.querySelectorAll('.book-btn').forEach(function (button) {
+            button.addEventListener('click', function () {
+                document.getElementById('modalServiceId').value = this.getAttribute('data-id');
+            });
+        });
 });
 </script>
 @endsection

@@ -18,10 +18,15 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/transactions', [\App\Http\Controllers\Admin\SupplierTransactionController::class, 'store'])->name('transactions.store');
 Route::get('/transactions/supplier/{supplierId}/history', [\App\Http\Controllers\Admin\SupplierTransactionController::class, 'supplierHistory'])->name('transactions.supplier.history');
     Route::get('/services', [AdminController::class, 'services'])->name('services');
-    Route::get('/bookings', [AdminController::class, 'bookings'])->name('bookings');
+    Route::get('/bookings', [\App\Http\Controllers\Admin\BookingsController::class, 'index'])->name('bookings');
+    Route::post('/bookings/{booking}/approve', [\App\Http\Controllers\Admin\BookingsController::class, 'approve'])->name('bookings.approve');
+    Route::post('/bookings/{booking}/reject', [\App\Http\Controllers\Admin\BookingsController::class, 'reject'])->name('bookings.reject');
+    Route::post('/bookings/{booking}/complete', [\App\Http\Controllers\Admin\BookingsController::class, 'complete'])->name('bookings.complete');
     Route::get('/orders', [AdminController::class, 'orders'])->name('orders');
     Route::get('/sales', [AdminController::class, 'sales'])->name('sales');
-    Route::get('/customers', [AdminController::class, 'customers'])->name('customers');
+    Route::get('/customers', [\App\Http\Controllers\Admin\CustomerController::class, 'index'])->name('customers');
+    Route::post('/customers/{user}/toggle', [\App\Http\Controllers\Admin\CustomerController::class, 'toggleActive'])->name('customers.toggle');
+    Route::post('/customers/{user}/reset-password', [\App\Http\Controllers\Admin\CustomerController::class, 'resetPassword'])->name('customers.reset');
     Route::get('/employee', [AdminController::class, 'employee'])->name('employee');
 });
 
@@ -34,7 +39,10 @@ Route::prefix('customer')->name('customer.')->middleware('auth')->group(function
     Route::get('/home', [CustomerController::class, 'home'])->name('home');
     Route::get('/products', [CustomerController::class, 'products'])->name('products');
     Route::get('/services', [CustomerController::class, 'services'])->name('services');
-    Route::get('/booking', [CustomerController::class, 'booking'])->name('booking');
+    Route::get('/booking', [\App\Http\Controllers\Customer\BookingController::class, 'index'])->name('booking');
+    Route::post('/booking', [\App\Http\Controllers\Customer\BookingController::class, 'store'])->name('booking.store');
+    Route::post('/booking/{booking}/cancel', [\App\Http\Controllers\Customer\BookingController::class, 'cancel'])->name('booking.cancel');
+    Route::post('/booking/{booking}/completed', [\App\Http\Controllers\Customer\BookingController::class, 'markCompleted'])->name('booking.completed');
     Route::get('/cart', [CustomerController::class, 'cart'])->name('cart');
     Route::get('/checkout', [CustomerController::class, 'checkout'])->name('checkout');
     Route::get('/orders', [CustomerController::class, 'orders'])->name('orders');

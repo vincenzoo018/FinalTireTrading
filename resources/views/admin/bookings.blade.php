@@ -94,186 +94,47 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td><input type="checkbox" class="row-checkbox"></td>
-                        <td class="supplier-id">BK001</td>
-                        <td class="supplier-name">Maria Clara Santos</td>
-                        <td>Hair Cut & Styling</td>
-                        <td>Oct 03, 2024</td>
-                        <td><span class="time-badge">10:00 AM</span></td>
-                        <td>Cash</td>
-                        <td><span class="payment-badge status-confirmed">Confirmed</span></td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-edit" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn-icon btn-view" title="View">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><input type="checkbox" class="row-checkbox"></td>
-                        <td class="supplier-id">BK002</td>
-                        <td class="supplier-name">Juan Paolo Reyes</td>
-                        <td>Hair Coloring</td>
-                        <td>Oct 03, 2024</td>
-                        <td><span class="time-badge">11:30 AM</span></td>
-                        <td>GCash</td>
-                        <td><span class="payment-badge status-pending">Pending</span></td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-edit" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn-icon btn-view" title="View">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><input type="checkbox" class="row-checkbox"></td>
-                        <td class="supplier-id">BK003</td>
-                        <td class="supplier-name">Anna Marie Cruz</td>
-                        <td>Facial Treatment</td>
-                        <td>Oct 03, 2024</td>
-                        <td><span class="time-badge">2:00 PM</span></td>
-                        <td>Credit Card</td>
-                        <td><span class="payment-badge status-confirmed">Confirmed</span></td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-edit" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn-icon btn-view" title="View">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><input type="checkbox" class="row-checkbox"></td>
-                        <td class="supplier-id">BK004</td>
-                        <td class="supplier-name">Carlos Miguel Torres</td>
-                        <td>Manicure & Pedicure</td>
-                        <td>Oct 02, 2024</td>
-                        <td><span class="time-badge">9:00 AM</span></td>
-                        <td>Cash</td>
-                        <td><span class="payment-badge status-completed">Completed</span></td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-edit" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn-icon btn-view" title="View">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><input type="checkbox" class="row-checkbox"></td>
-                        <td class="supplier-id">BK005</td>
-                        <td class="supplier-name">Isabella Garcia</td>
-                        <td>Hair Rebonding</td>
-                        <td>Oct 02, 2024</td>
-                        <td><span class="time-badge">1:00 PM</span></td>
-                        <td>GCash</td>
-                        <td><span class="payment-badge status-cancelled">Cancelled</span></td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-edit" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn-icon btn-view" title="View">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><input type="checkbox" class="row-checkbox"></td>
-                        <td class="supplier-id">BK006</td>
-                        <td class="supplier-name">Sofia Angelica Mendoza</td>
-                        <td>Makeup Services</td>
-                        <td>Oct 04, 2024</td>
-                        <td><span class="time-badge">3:30 PM</span></td>
-                        <td>Cash</td>
-                        <td><span class="payment-badge status-confirmed">Confirmed</span></td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-edit" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn-icon btn-view" title="View">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><input type="checkbox" class="row-checkbox"></td>
-                        <td class="supplier-id">BK007</td>
-                        <td class="supplier-name">Miguel Antonio Ramos</td>
-                        <td>Spa Treatment</td>
-                        <td>Oct 04, 2024</td>
-                        <td><span class="time-badge">10:30 AM</span></td>
-                        <td>Credit Card</td>
-                        <td><span class="payment-badge status-pending">Pending</span></td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-edit" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn-icon btn-view" title="View">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><input type="checkbox" class="row-checkbox"></td>
-                        <td class="supplier-id">BK008</td>
-                        <td class="supplier-name">Patricia Nicole Flores</td>
-                        <td>Brazilian Blowout</td>
-                        <td>Oct 01, 2024</td>
-                        <td><span class="time-badge">12:00 PM</span></td>
-                        <td>GCash</td>
-                        <td><span class="payment-badge status-completed">Completed</span></td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-edit" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn-icon btn-view" title="View">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><input type="checkbox" class="row-checkbox"></td>
-                        <td class="supplier-id">BK009</td>
-                        <td class="supplier-name">Gabriel Lorenzo Diaz</td>
-                        <td>Eyelash Extension</td>
-                        <td>Oct 05, 2024</td>
-                        <td><span class="time-badge">4:00 PM</span></td>
-                        <td>Cash</td>
-                        <td><span class="payment-badge status-confirmed">Confirmed</span></td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-edit" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn-icon btn-view" title="View">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><input type="checkbox" class="row-checkbox"></td>
-                        <td class="supplier-id">BK010</td>
-                        <td class="supplier-name">Samantha Joy Rivera</td>
-                        <td>Body Massage</td>
-                        <td>Oct 05, 2024</td>
-                        <td><span class="time-badge">2:30 PM</span></td>
-                        <td>Credit Card</td>
-                        <td><span class="payment-badge status-confirmed">Confirmed</span></td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-edit" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn-icon btn-view" title="View">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
+                    @foreach($bookings as $booking)
+                        <tr>
+                            <td><input type="checkbox" class="row-checkbox"></td>
+                            <td class="supplier-id">{{ $booking->booking_id }}</td>
+                            <td class="supplier-name">{{ $booking->user->full_name ?? ($booking->user->fname ?? 'N/A') }}</td>
+                            <td>{{ $booking->service->service_name ?? 'N/A' }}</td>
+                            <td>{{ \Carbon\Carbon::parse($booking->booking_date)->format('M d, Y') }}</td>
+                            <td><span class="time-badge">{{ $booking->booking_time }}</span></td>
+                            <td>{{ $booking->payment_method }}</td>
+                            <td>
+                                <span class="payment-badge status-{{ strtolower($booking->status) }}">{{ ucfirst($booking->status) }}</span>
+                            </td>
+                            <td class="actions-cell">
+                                @if($booking->status === 'pending')
+                                    <form action="{{ route('admin.bookings.approve', $booking) }}" method="POST" style="display:inline" onsubmit="return confirm('Approve this booking?')">
+                                        @csrf
+                                        <button class="btn-icon btn-view" title="Approve">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                    </form>
+                                    <form action="{{ route('admin.bookings.reject', $booking) }}" method="POST" style="display:inline" onsubmit="return confirm('Reject this booking?')">
+                                        @csrf
+                                        <button class="btn-icon btn-edit" title="Reject">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </form>
+                                @elseif($booking->status === 'confirmed')
+                                    <form action="{{ route('admin.bookings.complete', $booking) }}" method="POST" style="display:inline" onsubmit="return confirm('Mark this booking as completed?')">
+                                        @csrf
+                                        <button class="btn-icon btn-view" title="Complete">
+                                            <i class="fas fa-check-double"></i>
+                                        </button>
+                                    </form>
+                                @else
+                                    <button class="btn-icon btn-view" title="View">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                @endif
+                            </td>
+                        </tr>
+                    @endforeach
                 </tbody>
             </table>
         </div>
