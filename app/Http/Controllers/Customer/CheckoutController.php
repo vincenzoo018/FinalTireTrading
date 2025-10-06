@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Cart;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Sale;
+use App\Models\Inventory;
 
 class CheckoutController extends Controller
 {
@@ -64,7 +66,26 @@ class CheckoutController extends Controller
                 'quantity'   => $cart->quantity ?? 1,
                 'price'      => $cart->product->selling_price,
             ]);
+
+            // Deduct inventory based on purchased quantity
+            $inventory = Inventory::where('product_id', $cart->product_id)->first();
+            if ($inventory) {
+                $inventory->quantity_on_hand = max(0, ($inventory->quantity_on_hand ?? 0) - ($cart->quantity ?? 1));
+                $inventory->last_updated = now();
+                $inventory->save();
+            }
         }
+
+        // Record Sale summary for admin reporting
+        Sale::create([
+            'order_id'       => $order->order_id,
+            'user_id'        => Auth::id(),
+            'subtotal'       => $subtotal,
+            'tax'            => $tax,
+            'shipping'       => $shipping,
+            'total_amount'   => $total,
+            'payment_method' => $request->payment_method,
+        ]);
 
         // Clear the cart
         Cart::where('user_id', Auth::id())->delete();

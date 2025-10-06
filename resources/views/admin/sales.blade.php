@@ -22,7 +22,7 @@
                 <i class="fas fa-chart-line"></i>
             </div>
             <div class="stat-info">
-                <h3>₱342,458</h3>
+                <h3>₱{{ number_format($totalRevenue ?? 0, 2) }}</h3>
                 <p>Total Revenue</p>
             </div>
         </div>
@@ -32,7 +32,7 @@
                 <i class="fas fa-shopping-bag"></i>
             </div>
             <div class="stat-info">
-                <h3>542</h3>
+                <h3>{{ $totalOrders ?? 0 }}</h3>
                 <p>Total Orders</p>
             </div>
         </div>
@@ -42,7 +42,7 @@
                 <i class="fas fa-times-circle"></i>
             </div>
             <div class="stat-info">
-                <h3>23</h3>
+                <h3>{{ $cancelledOrders ?? 0 }}</h3>
                 <p>Cancelled Orders</p>
             </div>
         </div>
@@ -114,146 +114,26 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td class="supplier-id">ORD001</td>
-                        <td class="supplier-name">Maria Clara Santos</td>
-                        <td>Oct 02, 2024</td>
-                        <td>3 items</td>
-                        <td class="transaction-amount">₱2,450.00</td>
-                        <td>Cash</td>
-                        <td><span class="payment-badge status-completed">Completed</span></td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-view" title="View">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="supplier-id">ORD002</td>
-                        <td class="supplier-name">Juan Paolo Reyes</td>
-                        <td>Oct 02, 2024</td>
-                        <td>2 items</td>
-                        <td class="transaction-amount">₱1,800.00</td>
-                        <td>GCash</td>
-                        <td><span class="payment-badge status-completed">Completed</span></td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-view" title="View">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="supplier-id">ORD003</td>
-                        <td class="supplier-name">Anna Marie Cruz</td>
-                        <td>Oct 01, 2024</td>
-                        <td>5 items</td>
-                        <td class="transaction-amount">₱4,200.00</td>
-                        <td>Credit Card</td>
-                        <td><span class="payment-badge status-completed">Completed</span></td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-view" title="View">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="supplier-id">ORD004</td>
-                        <td class="supplier-name">Carlos Miguel Torres</td>
-                        <td>Oct 01, 2024</td>
-                        <td>1 item</td>
-                        <td class="transaction-amount">₱950.00</td>
-                        <td>Cash</td>
-                        <td><span class="payment-badge status-completed">Completed</span></td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-view" title="View">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="supplier-id">ORD005</td>
-                        <td class="supplier-name">Isabella Garcia</td>
-                        <td>Sep 30, 2024</td>
-                        <td>4 items</td>
-                        <td class="transaction-amount">₱3,650.00</td>
-                        <td>GCash</td>
-                        <td><span class="payment-badge status-cancelled">Cancelled</span></td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-view" title="View">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="supplier-id">ORD006</td>
-                        <td class="supplier-name">Sofia Angelica Mendoza</td>
-                        <td>Sep 30, 2024</td>
-                        <td>2 items</td>
-                        <td class="transaction-amount">₱1,500.00</td>
-                        <td>Cash</td>
-                        <td><span class="payment-badge status-completed">Completed</span></td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-view" title="View">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="supplier-id">ORD007</td>
-                        <td class="supplier-name">Miguel Antonio Ramos</td>
-                        <td>Sep 29, 2024</td>
-                        <td>3 items</td>
-                        <td class="transaction-amount">₱2,890.00</td>
-                        <td>Credit Card</td>
-                        <td><span class="payment-badge status-completed">Completed</span></td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-view" title="View">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="supplier-id">ORD008</td>
-                        <td class="supplier-name">Patricia Nicole Flores</td>
-                        <td>Sep 29, 2024</td>
-                        <td>6 items</td>
-                        <td class="transaction-amount">₱5,120.00</td>
-                        <td>GCash</td>
-                        <td><span class="payment-badge status-completed">Completed</span></td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-view" title="View">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="supplier-id">ORD009</td>
-                        <td class="supplier-name">Gabriel Lorenzo Diaz</td>
-                        <td>Sep 28, 2024</td>
-                        <td>2 items</td>
-                        <td class="transaction-amount">₱1,200.00</td>
-                        <td>Cash</td>
-                        <td><span class="payment-badge status-completed">Completed</span></td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-view" title="View">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="supplier-id">ORD010</td>
-                        <td class="supplier-name">Samantha Joy Rivera</td>
-                        <td>Sep 28, 2024</td>
-                        <td>4 items</td>
-                        <td class="transaction-amount">₱3,780.00</td>
-                        <td>Credit Card</td>
-                        <td><span class="payment-badge status-completed">Completed</span></td>
-                        <td class="actions-cell">
-                            <button class="btn-icon btn-view" title="View">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
+                    @forelse(($sales ?? []) as $sale)
+                        <tr>
+                            <td class="supplier-id">{{ $sale->order_id }}</td>
+                            <td class="supplier-name">{{ optional($sale->order->user)->fname }} {{ optional($sale->order->user)->lname }}</td>
+                            <td>{{ optional($sale->created_at)->format('M d, Y') }}</td>
+                            <td>{{ $sale->order ? $sale->order->items->sum('quantity') : 0 }} items</td>
+                            <td class="transaction-amount">₱{{ number_format($sale->total_amount, 2) }}</td>
+                            <td>{{ $sale->payment_method ?? '-' }}</td>
+                            <td><span class="payment-badge status-completed">Completed</span></td>
+                            <td class="actions-cell">
+                                <a href="{{ route('admin.orders') }}" class="btn-icon btn-view" title="View">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="8" style="text-align:center; padding:1rem; color:#64748b;">No sales yet.</td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
@@ -264,17 +144,9 @@
             </div>
 
             <div class="pagination">
-                <button class="page-btn page-prev" disabled>
-                    <i class="fas fa-chevron-left"></i>
-                </button>
-                <button class="page-btn active">1</button>
-                <button class="page-btn">2</button>
-                <button class="page-btn">3</button>
-                <button class="page-btn">4</button>
-                <button class="page-btn">5</button>
-                <button class="page-btn page-next">
-                    <i class="fas fa-chevron-right"></i>
-                </button>
+                @if(isset($sales) && $sales->hasPages())
+                    {{ $sales->links() }}
+                @endif
             </div>
         </div>
     </div>

@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Sale;
+use App\Models\Order;
 
 class SalesController extends Controller
 {
@@ -16,8 +18,14 @@ class SalesController extends Controller
             return redirect()->route('auth.login')->withErrors(['auth' => 'Please login as an admin to view sales analytics.']);
         }
 
-        // TODO: Fetch sales data, stats, and recent orders here
+        $sales = Sale::with(['order.user'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
 
-        return view('admin.sales');
+        $totalRevenue = Sale::sum('total_amount');
+        $totalOrders = Order::count();
+        $cancelledOrders = Order::where('status', 'cancelled')->count();
+
+        return view('admin.sales', compact('sales', 'totalRevenue', 'totalOrders', 'cancelledOrders'));
     }
 }
