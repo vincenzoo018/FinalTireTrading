@@ -18,4 +18,9 @@ class Booking extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    public function sale()
+    {
+        return $this->hasOne(Sale::class, 'booking_id', 'booking_id');
+    }
 }

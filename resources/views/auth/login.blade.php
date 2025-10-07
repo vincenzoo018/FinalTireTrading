@@ -51,8 +51,8 @@
         }
 
         .logo-icon {
-            width: 50px;
-            height: 50px;
+            width: 60px;
+            height: 60px;
             background: rgba(255, 255, 255, 0.2);
             border-radius: 50%;
             display: flex;
@@ -241,7 +241,7 @@
                     <div class="auth-header">
                         <div class="logo">
                             <div class="logo-icon">
-                                <i class="fas fa-tire"></i>
+                                <i class="fas fa-tire fa-2x"></i>
                             </div>
                             <div class="logo-text">8PLY</div>
                         </div>

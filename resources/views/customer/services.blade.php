@@ -55,7 +55,7 @@
         <div class="row">
             @forelse($services as $service)
             <div class="col-lg-4 col-md-6 mb-4">
-                <div class="card service-card text-center h-100">
+                <div class="card service-card text-center h-100 {{ !$service->available_for_user ? 'service-unavailable' : '' }}">
                     <div class="card-body">
                         <div class="service-icon mb-3">
                             @if($service->image)
@@ -66,22 +66,46 @@
                         </div>
                         <h5 class="card-title">{{ $service->service_name }}</h5>
                         <p class="card-text text-muted">{{ $service->description }}</p>
+                        
+                        <!-- Availability Status -->
+                        <div class="availability-status mb-2">
+                            @if($service->available_for_user)
+                                <span class="badge bg-success">
+                                    <i class="fas fa-check-circle me-1"></i>Available
+                                </span>
+                            @else
+                                <span class="badge bg-warning">
+                                    <i class="fas fa-clock me-1"></i>Already Booked
+                                </span>
+                            @endif
+                        </div>
+                        
                         <div class="service-details mb-3">
                             <div class="row text-center">
                                 <div class="col-12">
                                     <small class="text-muted d-block">Price</small>
-                                    <strong class="text-primary">P{{ number_format($service->service_price, 2) }}</strong>
+                                    <strong class="text-primary">₱{{ number_format($service->service_price, 2) }}</strong>
                                 </div>
                             </div>
                         </div>
-                        <button class="btn btn-primary book-btn w-100"
-                                data-id="{{ $service->service_id }}"
-                                data-name="{{ $service->service_name }}"
-                                data-price="{{ $service->service_price }}"
-                                data-description="{{ $service->description }}"
-                                data-duration="N/A">
-                            <i class="fas fa-calendar-check me-2"></i>Book Now
-                        </button>
+                        
+                        @if($service->available_for_user)
+                            <button class="btn btn-primary book-btn w-100"
+                                    data-id="{{ $service->service_id }}"
+                                    data-name="{{ $service->service_name }}"
+                                    data-price="{{ $service->service_price }}"
+                                    data-description="{{ $service->description }}"
+                                    data-duration="N/A">
+                                <i class="fas fa-calendar-check me-2"></i>Book Now
+                            </button>
+                        @else
+                            <button class="btn btn-secondary w-100" disabled>
+                                <i class="fas fa-ban me-2"></i>Unavailable
+                            </button>
+                            <small class="text-muted d-block mt-2">
+                                You already have a booking for this service
+                            </small>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -257,6 +281,53 @@
         </div>
     </div>
 </section>
+@endsection
+
+@section('styles')
+<style>
+.service-card {
+    transition: all 0.3s ease;
+    border: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.service-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.service-unavailable {
+    opacity: 0.7;
+    background-color: #f8f9fa;
+}
+
+.service-unavailable:hover {
+    transform: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.service-icon {
+    color: #3498db;
+}
+
+.availability-status .badge {
+    font-size: 0.75rem;
+    padding: 0.5rem 0.75rem;
+}
+
+.feature-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    color: white;
+    font-size: 2rem;
+}
+</style>
 @endsection
 
 @section('scripts')

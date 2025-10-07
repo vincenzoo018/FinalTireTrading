@@ -452,66 +452,13 @@
                 toast.show();
             }
 
-            // Form submission handler for demo
+            // Form submission handler
             registerForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-
-                // Simulate form validation
-                let isValid = true;
-                const requiredFields = registerForm.querySelectorAll('[required]');
-
-                requiredFields.forEach(field => {
-                    if (!field.value.trim()) {
-                        isValid = false;
-                        field.classList.add('is-invalid');
-                    } else {
-                        field.classList.remove('is-invalid');
-                    }
-                });
-
-                // Check password match
-                const password = document.getElementById('password');
-                const confirmPassword = document.getElementById('password_confirmation');
-
-                if (password.value !== confirmPassword.value) {
-                    isValid = false;
-                    confirmPassword.classList.add('is-invalid');
-                    document.querySelector('.password-requirements').innerHTML =
-                        '<span style="color: #dc2626;">Passwords do not match</span>';
-                } else {
-                    confirmPassword.classList.remove('is-invalid');
-                }
-
-                // Check terms agreement
-                const terms = document.getElementById('terms');
-                if (!terms.checked) {
-                    isValid = false;
-                    terms.classList.add('is-invalid');
-                } else {
-                    terms.classList.remove('is-invalid');
-                }
-
-                if (isValid) {
-                    // Show loading state
-                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Creating Account...';
-                    submitBtn.disabled = true;
-
-                    // Simulate API call
-                    setTimeout(function() {
-                        // Show success toast
-                        toast.show();
-
-                        // Reset form
-                        registerForm.reset();
-
-                        // Reset button
-                        submitBtn.innerHTML = 'Create Account';
-                        submitBtn.disabled = false;
-
-                        // In a real application, you would redirect to login or dashboard
-                        // window.location.href = "{{ route('auth.login') }}?success=1";
-                    }, 2000);
-                }
+                // Show loading state
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Creating Account...';
+                submitBtn.disabled = true;
+                
+                // Let the form submit naturally to the server
             });
 
             // Real-time password validation

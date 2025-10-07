@@ -1,45 +1,113 @@
 @foreach($list as $booking)
-    <div class="booking-card" @if(session('highlight_booking_id') == $booking->booking_id) style="border-color:#3b82f6; box-shadow:0 0 0 3px rgba(59,130,246,0.1)" @endif>
-        <div class="booking-header">
-            <div class="booking-id">Booking #{{ $booking->booking_id }}</div>
-            <div class="booking-status status-{{ strtolower($booking->status) }}">{{ ucfirst($booking->status) }}</div>
+    <div class="card order-card mb-4 border-0 shadow-sm" @if(session('highlight_booking_id') == $booking->booking_id) style="border-color:#3b82f6; box-shadow:0 0 0 3px rgba(59,130,246,0.1)" @endif>
+        <div class="card-header border-0">
+            <div class="booking-header">
+                <div class="booking-id">
+                    Booking #{{ $booking->booking_id }}
+                </div>
+                @php
+                    $status = strtolower($booking->status);
+                    $statusClass = match($status) {
+                        'pending' => 'status-pending',
+                        'confirmed' => 'status-confirmed',
+                        'completed' => 'status-completed',
+                        'cancelled' => 'status-cancelled',
+                        default => 'status-pending'
+                    };
+                @endphp
+                <span class="booking-status {{ $statusClass }}">{{ ucfirst($booking->status) }}</span>
+            </div>
+            
+            <div class="booking-details">
+                <div class="detail-item">
+                    <span class="detail-label">Booking Date</span>
+                    <span class="detail-value">{{ \Carbon\Carbon::parse($booking->booking_date)->format('F d, Y') }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Time</span>
+                    <span class="detail-value">{{ $booking->booking_time }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Payment Method</span>
+                    <span class="detail-value">{{ $booking->payment_method ?? 'Cash' }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Service Price</span>
+                    <span class="detail-value">₱{{ number_format($booking->service->service_price ?? 0, 2) }}</span>
+                </div>
+            </div>
         </div>
+        <div class="card-body">
+            <h6 class="mb-3 fw-bold text-primary">
+                <i class="fas fa-cogs me-2"></i>Service Details
+            </h6>
+            
+            <div class="order-item-card mb-3 p-3 border rounded-3 bg-light">
+                <div class="row align-items-center g-3">
+                    <div class="col-auto">
+                        <div class="service-icon-wrapper">
+                            <div class="service-icon rounded-3 shadow-sm d-flex align-items-center justify-content-center">
+                                <i class="fas fa-tools fa-2x text-primary"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="service-details">
+                            <h6 class="service-name mb-2 fw-bold text-dark">{{ $booking->service->service_name ?? 'Service' }}</h6>
+                            <div class="service-specs d-flex flex-wrap gap-3 mb-2">
+                                <span class="spec-item">
+                                    <i class="fas fa-calendar text-primary me-1"></i>
+                                    <small class="text-muted">Date: <strong>{{ \Carbon\Carbon::parse($booking->booking_date)->format('M d, Y') }}</strong></small>
+                                </span>
+                                <span class="spec-item">
+                                    <i class="fas fa-clock text-success me-1"></i>
+                                    <small class="text-muted">Time: <strong>{{ $booking->booking_time }}</strong></small>
+                                </span>
+                                <span class="spec-item">
+                                    <i class="fas fa-credit-card text-info me-1"></i>
+                                    <small class="text-muted">Payment: <strong>{{ $booking->payment_method ?? 'Cash' }}</strong></small>
+                                </span>
+                            </div>
+                            <p class="service-description mb-0">
+                                <small class="text-muted">{{ $booking->service->description ?? 'Professional tire service' }}</small>
+                            </p>
+                            @if($booking->notes)
+                                <div class="mt-2 p-2 bg-warning bg-opacity-10 rounded">
+                                    <small><strong>Special Notes:</strong> {{ $booking->notes }}</small>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="col-auto text-end">
+                        <div class="pricing-info">
+                            <div class="service-price">
+                                <small class="text-muted">Service Price:</small>
+                                <div class="fw-bold text-success fs-4">₱{{ number_format($booking->service->service_price ?? 0, 2) }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-        <div class="booking-details">
-            <div class="detail-item">
-                <div class="detail-label">Booking Date</div>
-                <div class="detail-value">{{ \Carbon\Carbon::parse($booking->booking_date)->format('M d, Y') }}</div>
-            </div>
-            <div class="detail-item">
-                <div class="detail-label">Time</div>
-                <div class="detail-value">{{ $booking->booking_time }}</div>
-            </div>
-            <div class="detail-item">
-                <div class="detail-label">Payment</div>
-                <div class="detail-value">{{ $booking->payment_method }}</div>
-            </div>
-        </div>
-
-        <div class="service-info">
-            <div class="service-name">{{ $booking->service->service_name ?? 'Service' }}</div>
-            <div class="service-description">{{ $booking->service->description ?? '' }}</div>
-            <div class="service-price">P{{ number_format($booking->service->service_price ?? 0, 2) }}</div>
-            @if($booking->notes)
-                <div class="mt-2"><strong>Notes:</strong> {{ $booking->notes }}</div>
+            @if(strtolower($booking->status) === 'pending')
+                <form method="POST" action="{{ route('customer.booking.cancel', $booking) }}" onsubmit="return confirm('Cancel this pending booking?')">
+                    @csrf
+                    <div class="d-flex align-items-center gap-2 mt-3">
+                        <input type="text" name="cancelled_reason" class="form-control" placeholder="Optional reason">
+                        <button class="btn btn-outline-danger">
+                            <i class="fas fa-times me-1"></i>Cancel Booking
+                        </button>
+                    </div>
+                </form>
+            @elseif(strtolower($booking->status) === 'confirmed')
+                <form method="POST" action="{{ route('customer.booking.completed', $booking) }}" onsubmit="return confirm('Mark this booking as completed?')">
+                    @csrf
+                    <button class="btn btn-success mt-3">
+                        <i class="fas fa-check me-1"></i>Mark as Completed
+                    </button>
+                </form>
             @endif
         </div>
-
-        @if(strtolower($booking->status) === 'pending')
-            <form method="POST" action="{{ route('customer.booking.cancel', $booking) }}" onsubmit="return confirm('Cancel this pending booking?')" class="booking-actions">
-                @csrf
-                <button type="submit" class="btn btn-danger">Cancel</button>
-            </form>
-        @elseif(strtolower($booking->status) === 'confirmed')
-            <form method="POST" action="{{ route('customer.booking.completed', $booking) }}" onsubmit="return confirm('Mark this booking as completed?')" class="booking-actions">
-                @csrf
-                <button type="submit" class="btn btn-primary">Mark as Completed</button>
-            </form>
-        @endif
     </div>
 @endforeach
 

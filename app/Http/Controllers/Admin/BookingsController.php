@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Booking;
+use App\Models\Sale;
 
 class BookingsController extends Controller
 {
@@ -68,8 +69,33 @@ class BookingsController extends Controller
         }
 
         $booking->status = 'completed';
+        $booking->served_date = now();
         $booking->save();
 
-        return back()->with('success', 'Booking marked as completed.');
+        // Create a sale record for the completed booking
+        try {
+            $totalAmount = $booking->service ? $booking->service->service_price : 0;
+            
+            // Check if sale record already exists to avoid duplicates
+            $existingSale = Sale::where('booking_id', $booking->booking_id)->first();
+            if (!$existingSale) {
+                Sale::create([
+                    'order_id' => null,
+                    'booking_id' => $booking->booking_id,
+                    'user_id' => $booking->user_id,
+                    'subtotal' => $totalAmount - ($totalAmount * 0.12),
+                    'tax' => $totalAmount * 0.12,
+                    'shipping' => 0,
+                    'total_amount' => $totalAmount,
+                    'payment_method' => $booking->payment_method ?? 'Cash',
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+        } catch (\Exception $e) {
+            \Log::error('Error creating sale record for completed booking: ' . $e->getMessage());
+        }
+
+        return back()->with('success', 'Booking marked as completed and sale recorded.');
     }
 }

@@ -261,6 +261,24 @@
             justify-content: center;
         }
     }
+
+    /* Service Icon Styles */
+    .service-icon-wrapper {
+        position: relative;
+    }
+
+    .service-icon {
+        width: 90px;
+        height: 90px;
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        color: white;
+        border: 3px solid #fff;
+        transition: transform 0.3s ease;
+    }
+
+    .order-item-card:hover .service-icon {
+        transform: scale(1.05);
+    }
 </style>
 @endsection
 

@@ -3,6 +3,11 @@
 use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Route;
 
+// Welcome/Home Route
+Route::get('/', function () {
+    return redirect()->route('auth.login');
+})->name('welcome');
+
 // Admin Routes
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
@@ -23,7 +28,8 @@ Route::get('/transactions/supplier/{supplierId}/history', [\App\Http\Controllers
     Route::post('/bookings/{booking}/reject', [\App\Http\Controllers\Admin\BookingsController::class, 'reject'])->name('bookings.reject');
     Route::post('/bookings/{booking}/complete', [\App\Http\Controllers\Admin\BookingsController::class, 'complete'])->name('bookings.complete');
     Route::get('/orders', [AdminController::class, 'orders'])->name('orders');
-    Route::get('/sales', [AdminController::class, 'sales'])->name('sales');
+    Route::get('/sales', [\App\Http\Controllers\Admin\SalesController::class, 'index'])->name('sales');
+    Route::post('/sales/generate', [\App\Http\Controllers\Admin\SalesController::class, 'generateSales'])->name('sales.generate');
     Route::get('/customers', [\App\Http\Controllers\Admin\CustomerController::class, 'index'])->name('customers');
     Route::post('/customers/{user}/toggle', [\App\Http\Controllers\Admin\CustomerController::class, 'toggleActive'])->name('customers.toggle');
     Route::post('/customers/{user}/reset-password', [\App\Http\Controllers\Admin\CustomerController::class, 'resetPassword'])->name('customers.reset');

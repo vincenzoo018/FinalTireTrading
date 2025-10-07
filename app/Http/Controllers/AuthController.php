@@ -73,7 +73,7 @@ class AuthController extends Controller
         // ✅ Automatically log in after registration
         Auth::login($user);
 
-        return redirect()->route('login')->with('success', 'Registration successful! Welcome!');
+        return redirect()->route('customer.home')->with('success', 'Registration successful! Welcome!');
     }
 
     // Logout

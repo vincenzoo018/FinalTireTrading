@@ -10,6 +10,7 @@ class Sale extends Model
 
     protected $fillable = [
         'order_id',
+        'booking_id',
         'user_id',
         'subtotal',
         'tax',
@@ -21,6 +22,11 @@ class Sale extends Model
     public function order()
     {
         return $this->belongsTo(Order::class, 'order_id');
+    }
+
+    public function booking()
+    {
+        return $this->belongsTo(Booking::class, 'booking_id');
     }
 
     public function user()

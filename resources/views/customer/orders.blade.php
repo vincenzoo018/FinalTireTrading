@@ -1,7 +1,104 @@
 @extends('layouts.customer.app')
 
+@section('styles')
+<style>
+    /* Order Card Styles */
+    .booking-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .booking-id {
+        font-weight: bold;
+        font-size: 18px;
+        color: #6a11cb;
+    }
+
+    .booking-status {
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .status-pending {
+        background-color: #fff3e0;
+        color: #ff9800;
+    }
+
+    .status-confirmed {
+        background-color: #e3f2fd;
+        color: #2196f3;
+    }
+
+    .status-completed {
+        background-color: #e8f5e9;
+        color: #4caf50;
+    }
+
+    .status-cancelled {
+        background-color: #ffebee;
+        color: #f44336;
+    }
+
+    .booking-details {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .detail-item {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .detail-label {
+        font-size: 12px;
+        color: #888;
+        margin-bottom: 5px;
+    }
+
+    .detail-value {
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    .service-info {
+        margin-top: 15px;
+        padding: 15px;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+    }
+
+    .service-name {
+        font-weight: 600;
+        font-size: 16px;
+        margin-bottom: 5px;
+    }
+
+    .service-price {
+        font-weight: 600;
+        color: #6a11cb;
+        font-size: 16px;
+    }
+
+    .order-card {
+        transition: transform 0.3s ease;
+    }
+
+    .order-card:hover {
+        transform: translateY(-5px);
+    }
+</style>
+@endsection
+
 @section('content')
-<!-- Orders Header -->
 <section class="py-5 bg-light">
     <div class="container">
         <div class="row align-items-center">
@@ -110,61 +207,110 @@
             <div class="tab-pane fade show active" id="all" role="tabpanel">
                 <div class="orders-list">
                     @foreach($orders as $order)
-                        <div class="card order-card mb-4">
-                            <div class="card-header bg-success text-white">
-                                <div class="row align-items-center">
-                                    <div class="col-md-6">
-                                        <h6>Order ID: {{ $order->order_id }}</h6>
-                                        <p class="mb-0">
-                                            Order Date: {{ \Carbon\Carbon::parse($order->order_date)->format('F d, Y') }}
-                                        </p>
+                        <div class="card order-card mb-4 border-0 shadow-sm">
+                            <div class="card-header border-0">
+                                <div class="booking-header">
+                                    <div class="booking-id">
+                                        Order #{{ $order->order_id }}
                                     </div>
-                                    <div class="col-md-6 text-md-end">
-                                        <h6>Total: ₱{{ number_format($order->total_amount, 2) }}</h6>
+                                    @php
+                                        $status = strtolower($order->status);
+                                        $displayStatus = $status === 'approved' ? 'Shipped' : ucfirst($status);
+                                        $statusClass = match($status) {
+                                            'pending' => 'status-pending',
+                                            'approved', 'shipped' => 'status-confirmed',
+                                            'completed' => 'status-completed',
+                                            'cancelled' => 'status-cancelled',
+                                            default => 'status-pending'
+                                        };
+                                    @endphp
+                                    <span class="booking-status {{ $statusClass }}">{{ $displayStatus }}</span>
+                                </div>
+                                
+                                <div class="booking-details">
+                                    <div class="detail-item">
+                                        <span class="detail-label">Order Date</span>
+                                        <span class="detail-value">{{ \Carbon\Carbon::parse($order->order_date)->format('F d, Y') }}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Total Amount</span>
+                                        <span class="detail-value">₱{{ number_format($order->total_amount, 2) }}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Payment Method</span>
+                                        <span class="detail-value">{{ $order->payment_method ?? 'Cash on Delivery' }}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Items</span>
+                                        <span class="detail-value">{{ count($order->items) }} items</span>
                                     </div>
                                 </div>
                             </div>
                             <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <h6 class="mb-0">Order Items</h6>
-                                    <span class="badge bg-secondary">
-                                        Status:
-                                        @php
-                                            $status = strtolower($order->status);
-                                            $displayStatus = $status === 'approved' ? 'Shipped' : ucfirst($status);
-                                        @endphp
-                                        {{ $displayStatus }}
-                                    </span>
-                                </div>
+                                <h6 class="mb-3 fw-bold text-primary">
+                                    <i class="fas fa-box me-2"></i>Order Items
+                                </h6>
                                 @forelse($order->items as $item)
                                     @if($item->product)
-                                        <div class="order-item-detail d-flex align-items-start mb-3 p-3 border rounded">
-                                            @if($item->product->image)
-                                                <img src="{{ asset($item->product->image) }}" alt="{{ $item->product->product_name }}"
-                                                     class="me-3" style="width: 60px; height: 60px; object-fit: cover; border-radius: 0.5rem;">
-                                            @else
-                                                <img src="{{ asset('images/default-product.png') }}" alt="Default Product"
-                                                     class="me-3" style="width: 60px; height: 60px; object-fit: cover; border-radius: 0.5rem;">
-                                            @endif
-                                            <div class="flex-grow-1">
-                                                <strong>{{ $item->product->product_name }}</strong>
-                                                <div class="text-muted small">
-                                                    Brand: {{ $item->product->brand ?? '-' }}<br>
-                                                    Size: {{ $item->product->size ?? '-' }}<br>
-                                                    Category: {{ $item->product->category->category_name ?? '-' }}<br>
-                                                    Description: {{ $item->product->description ?? '-' }}<br>
-                                                    Price: ₱{{ number_format($item->price, 2) }}<br>
-                                                    Quantity: {{ $item->quantity }}<br>
-                                                    Serial #: {{ $item->product->serial_number ?? '-' }}
+                                        <div class="order-item-card mb-3 p-3 border rounded-3 bg-light">
+                                            <div class="row align-items-center g-3">
+                                                <div class="col-auto">
+                                                    <div class="product-image-wrapper">
+                                                        @if($item->product->image)
+                                                            <img src="{{ asset($item->product->image) }}" alt="{{ $item->product->product_name }}"
+                                                                class="product-image rounded-3 shadow-sm">
+                                                        @else
+                                                            <img src="{{ asset('images/default-product.png') }}" alt="Default Product"
+                                                                class="product-image rounded-3 shadow-sm">
+                                                        @endif
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="text-end">
-                                                <strong>₱{{ number_format($item->price * $item->quantity, 2) }}</strong>
+                                                <div class="col">
+                                                    <div class="product-details">
+                                                        <h6 class="product-name mb-2 fw-bold text-dark">{{ $item->product->product_name }}</h6>
+                                                        <div class="product-specs d-flex flex-wrap gap-3 mb-2">
+                                                            <span class="spec-item">
+                                                                <i class="fas fa-tag text-primary me-1"></i>
+                                                                <small class="text-muted">Brand: <strong>{{ $item->product->brand ?? '-' }}</strong></small>
+                                                            </span>
+                                                            <span class="spec-item">
+                                                                <i class="fas fa-expand-arrows-alt text-success me-1"></i>
+                                                                <small class="text-muted">Size: <strong>{{ $item->product->size ?? '-' }}</strong></small>
+                                                            </span>
+                                                            <span class="spec-item">
+                                                                <i class="fas fa-barcode text-info me-1"></i>
+                                                                <small class="text-muted">Serial: <strong>{{ $item->product->serial_number ?? '-' }}</strong></small>
+                                                            </span>
+                                                        </div>
+                                                        <p class="product-description mb-0">
+                                                            <small class="text-muted">{{ $item->product->description ?? 'No description available' }}</small>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div class="col-auto text-end">
+                                                    <div class="pricing-info">
+                                                        <div class="unit-price mb-1">
+                                                            <small class="text-muted">Unit Price:</small>
+                                                            <div class="fw-semibold text-primary">₱{{ number_format($item->price, 2) }}</div>
+                                                        </div>
+                                                        <div class="quantity mb-2">
+                                                            <small class="text-muted">Quantity:</small>
+                                                            <div class="fw-semibold">{{ $item->quantity }}</div>
+                                                        </div>
+                                                        <div class="total-price">
+                                                            <small class="text-muted">Total:</small>
+                                                            <div class="fw-bold text-success fs-5">₱{{ number_format($item->price * $item->quantity, 2) }}</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     @endif
                                 @empty
-                                    <p class="text-muted">No products found for this order.</p>
+                                    <div class="empty-state text-center py-4">
+                                        <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+                                        <p class="text-muted">No products found for this order.</p>
+                                    </div>
                                 @endforelse
 
                                 @if(strtolower($order->status) === 'pending')
@@ -612,6 +758,98 @@ document.addEventListener('DOMContentLoaded', function() {
     .stat-number {
         font-size: 1.5rem;
     }
+}
+
+/* Enhanced Order Item Cards */
+.order-item-card {
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border: 1px solid #e3e6f0 !important;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.order-item-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1) !important;
+    border-color: #3498db !important;
+}
+
+.order-item-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(135deg, #3498db, #2980b9);
+}
+
+.product-image-wrapper {
+    position: relative;
+}
+
+.product-image {
+    width: 90px;
+    height: 90px;
+    object-fit: cover;
+    border: 3px solid #fff;
+    transition: transform 0.3s ease;
+}
+
+.order-item-card:hover .product-image {
+    transform: scale(1.05);
+}
+
+.product-details .product-name {
+    color: #2c3e50;
+    font-size: 1.1rem;
+    line-height: 1.3;
+}
+
+.product-specs {
+    margin: 0;
+}
+
+.spec-item {
+    background: rgba(52, 152, 219, 0.1);
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.375rem;
+    border: 1px solid rgba(52, 152, 219, 0.2);
+}
+
+.pricing-info {
+    background: rgba(255, 255, 255, 0.8);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid #e9ecef;
+    min-width: 140px;
+}
+
+.pricing-info .unit-price,
+.pricing-info .quantity {
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #f1f3f4;
+}
+
+.pricing-info .total-price {
+    background: linear-gradient(135deg, #27ae60, #2ecc71);
+    color: white;
+    margin: 0.5rem -1rem -1rem -1rem;
+    padding: 0.75rem 1rem;
+    border-radius: 0 0 0.5rem 0.5rem;
+    text-align: center;
+}
+
+.pricing-info .total-price .fw-bold {
+    color: white !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.empty-state {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-radius: 1rem;
+    border: 2px dashed #dee2e6;
 }
 </style>
 @endsection

@@ -16,7 +16,16 @@ class ServiceController extends Controller
             return redirect()->route('login')->withErrors(['auth' => 'Please login as a customer to view services.']);
         }
 
-        $services = Service::with('employee')->get();
+        $services = Service::with(['employee', 'bookings' => function($query) {
+            $query->whereIn('status', ['pending', 'confirmed']);
+        }])->get();
+
+        // Add availability information for each service
+        $services->each(function($service) {
+            $service->available_for_user = $service->isAvailableForUser(Auth::id());
+            $service->active_bookings_count = $service->getActiveBookingsCount();
+        });
+
         return view('customer.services', compact('services'));
     }
 }

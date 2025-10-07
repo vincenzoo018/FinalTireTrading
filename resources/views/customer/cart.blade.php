@@ -259,21 +259,34 @@ function updateQuantity(button, change) {
     // Auto-submit the form to update the database
     const form = input.closest('form');
     if (form) {
+        // Show loading indicator
+        const loadingOverlay = document.createElement('div');
+        loadingOverlay.className = 'position-fixed w-100 h-100 bg-dark bg-opacity-25 d-flex justify-content-center align-items-center';
+        loadingOverlay.style.top = '0';
+        loadingOverlay.style.left = '0';
+        loadingOverlay.style.zIndex = '9999';
+        loadingOverlay.innerHTML = '<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>';
+        document.body.appendChild(loadingOverlay);
+        
         form.submit();
     }
 }
 
 function updateItemTotal(button) {
     const itemRow = button.closest('.cart-item');
-    const priceElement = itemRow.querySelector('.col-md-2 .product-price');
-    const quantityInput = itemRow.querySelector('input');
-    const totalElement = itemRow.querySelector('.col-md-2 .product-price:last-child');
+    const priceElements = itemRow.querySelectorAll('.product-price');
+    const quantityInput = itemRow.querySelector('input[name="quantity"]');
+    
+    // First price element is the unit price
+    const unitPriceElement = priceElements[0];
+    // Last price element is the total
+    const totalElement = priceElements[priceElements.length - 1];
 
-    const price = parseFloat(priceElement.textContent.replace('P', '').replace(',', ''));
+    const price = parseFloat(unitPriceElement.textContent.replace('P', '').replace(/,/g, ''));
     const quantity = parseInt(quantityInput.value);
     const total = price * quantity;
 
-    totalElement.textContent = 'P' + total.toLocaleString();
+    totalElement.textContent = 'P' + total.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
 }
 
 function applyPromoCode() {
@@ -352,8 +365,13 @@ function updateCartSummary() {
     let subtotal = 0;
 
     document.querySelectorAll('.cart-item').forEach(item => {
-        const totalElement = item.querySelector('.col-md-2 .product-price:last-child');
-        const itemTotal = parseFloat(totalElement.textContent.replace('P', '').replace(',', ''));
+        const priceElement = item.querySelector('.col-md-2 .product-price');
+        const quantityInput = item.querySelector('input');
+        
+        const price = parseFloat(priceElement.textContent.replace('P', '').replace(/,/g, ''));
+        const quantity = parseInt(quantityInput.value);
+        const itemTotal = price * quantity;
+        
         subtotal += itemTotal;
     });
 
@@ -361,13 +379,15 @@ function updateCartSummary() {
     const shipping = shippingOption === 'delivery' ? 200 : 0;
 
     const tax = Math.round(subtotal * 0.12);
+    const discountText = document.getElementById('discountAmount').textContent;
+    const discount = parseFloat(discountText.replace('-P', '').replace(/,/g, '') || 0);
 
-    const total = subtotal + shipping + tax;
+    const total = subtotal + shipping + tax - discount;
 
-    document.getElementById('subtotalAmount').textContent = 'P' + subtotal.toLocaleString();
-    document.getElementById('shippingAmount').textContent = shipping > 0 ? 'P' + shipping.toLocaleString() : 'Free';
-    document.getElementById('taxAmount').textContent = 'P' + tax.toLocaleString();
-    document.getElementById('totalAmount').textContent = 'P' + total.toLocaleString();
+    document.getElementById('subtotalAmount').textContent = 'P' + subtotal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    document.getElementById('shippingAmount').textContent = shipping > 0 ? 'P' + shipping.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) : 'Free';
+    document.getElementById('taxAmount').textContent = 'P' + tax.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    document.getElementById('totalAmount').textContent = 'P' + total.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
 
     const itemCount = document.querySelectorAll('.cart-item').length;
     document.getElementById('cartItemCount').textContent = itemCount + ' item' + (itemCount !== 1 ? 's' : '');
