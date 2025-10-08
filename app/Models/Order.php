@@ -31,7 +31,7 @@ class Order extends Model
     }
     
     public function payments()
-    {
+    {       
         return $this->hasMany(\App\Models\Payment::class, 'order_id');
     }
     
