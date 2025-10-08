@@ -38,10 +38,15 @@ class SalesController extends Controller
         $salesData = $this->getSalesData($filterType, $date);
         $chartData = $this->prepareChartData($salesData, $filterType, $date);
         
-        // Get regular sales data with eager loading of relationships
+        // Get ALL sales data (both orders and bookings) with eager loading of relationships
         $sales = Sale::with(['order.user', 'booking.user', 'booking.service', 'order.items'])
             ->orderBy('created_at', 'desc')
             ->paginate(10);
+        
+        // Debug: Log sales count
+        \Log::info('Total sales records: ' . Sale::count());
+        \Log::info('Booking sales: ' . Sale::whereNotNull('booking_id')->count());
+        \Log::info('Order sales: ' . Sale::whereNotNull('order_id')->count());
 
         // Calculate totals based on the filter
         $totalRevenue = $salesData->sum('total_amount');
@@ -158,10 +163,10 @@ class SalesController extends Controller
 
     private function getSalesData($filterType, $date)
     {
-        // Get order sales
-        $orderSales = Sale::select(
+        // Get all sales and mark their source
+        $sales = Sale::select(
                 'sales.*',
-                DB::raw("'order' as source"),
+                DB::raw("CASE WHEN booking_id IS NOT NULL THEN 'booking' ELSE 'order' END as source"),
                 DB::raw('DATE(created_at) as sale_date')
             )
             ->when($filterType == 'day', function($query) use ($date) {
@@ -176,27 +181,7 @@ class SalesController extends Controller
             })
             ->get();
 
-        // Get booking sales (assuming bookings have a price/cost)
-        $bookingSales = Sale::select(
-                'sales.*',
-                DB::raw("'booking' as source"),
-                DB::raw('DATE(created_at) as sale_date')
-            )
-            ->whereNotNull('booking_id')
-            ->when($filterType == 'day', function($query) use ($date) {
-                return $query->whereDate('created_at', $date);
-            })
-            ->when($filterType == 'month', function($query) use ($date) {
-                return $query->whereYear('created_at', $date->year)
-                            ->whereMonth('created_at', $date->month);
-            })
-            ->when($filterType == 'year', function($query) use ($date) {
-                return $query->whereYear('created_at', $date->year);
-            })
-            ->get();
-
-        // Combine both collections
-        return $orderSales->concat($bookingSales);
+        return $sales;
     }
 
     private function prepareChartData($salesData, $filterType, $date)

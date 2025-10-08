@@ -28,4 +28,24 @@ class ServiceController extends Controller
 
         return view('customer.services', compact('services'));
     }
+
+    /**
+     * Check time slot availability for a service on a specific date
+     */
+    public function checkAvailability(Request $request)
+    {
+        $request->validate([
+            'service_id' => 'required|exists:services,service_id',
+            'date' => 'required|date',
+        ]);
+
+        $service = Service::findOrFail($request->service_id);
+        $bookedTimes = $service->getBookedTimeSlotsForDate($request->date);
+
+        return response()->json([
+            'success' => true,
+            'booked_times' => $bookedTimes,
+            'available_count' => 8 - count($bookedTimes), // Assuming 8 total time slots
+        ]);
+    }
 }

@@ -17,7 +17,7 @@ class BookingController extends Controller
             return redirect()->route('login')->withErrors(['auth' => 'Please login as a customer.']);
         }
 
-        $bookings = Booking::with(['service'])->where('user_id', Auth::id())->latest()->get();
+        $bookings = Booking::with(['service', 'sale'])->where('user_id', Auth::id())->latest()->get();
         return view('customer.booking', compact('bookings'));
     }
 
@@ -41,6 +41,16 @@ class BookingController extends Controller
 
         // Get service to calculate payment amount
         $service = Service::findOrFail($validated['service_id']);
+
+        // Check if the service is available
+        if (!$service->is_available) {
+            return back()->withErrors(['service' => 'This service is currently unavailable.'])->withInput();
+        }
+
+        // Check if the selected date/time slot is already booked
+        if (!$service->isTimeSlotAvailable($validated['booking_date'], $validated['booking_time'])) {
+            return back()->withErrors(['booking_time' => 'This time slot is already booked. Please select a different date or time.'])->withInput();
+        }
 
         $booking = Booking::create([
             'user_id' => Auth::id(),

@@ -142,6 +142,19 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
+                    <!-- Error Messages -->
+                    @if($errors->any())
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <strong><i class="fas fa-exclamation-triangle me-2"></i>Booking Error!</strong>
+                            <ul class="mb-0 mt-2">
+                                @foreach($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    @endif
+                    
                     <input type="hidden" name="service_id" id="modalServiceId">
 
                     <!-- Service Summary -->
@@ -196,6 +209,7 @@
                                     <option value="15:00">3:00 PM</option>
                                     <option value="16:00">4:00 PM</option>
                                 </select>
+                                <small class="text-muted d-block mt-1" id="timeSlotHint">Select a date first to see available time slots</small>
                             </div>
                         </div>
                     </div>
@@ -474,6 +488,16 @@
 @section('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    // Reopen modal if there are errors (from previous submission)
+    @if($errors->any() && old('service_id'))
+        const serviceId = "{{ old('service_id') }}";
+        // Find the service button and trigger it
+        const serviceBtn = document.querySelector(`[data-id="${serviceId}"]`);
+        if (serviceBtn) {
+            serviceBtn.click();
+        }
+    @endif
+
     // Initialize booking modal
     document.querySelectorAll('.book-btn').forEach(function (button) {
         button.addEventListener('click', function () {
@@ -491,6 +515,58 @@ document.addEventListener('DOMContentLoaded', function () {
     // Set minimum date to today
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('bookingDate').min = today;
+
+    // Current service ID being booked
+    let currentServiceId = null;
+
+    // Check time slot availability when date changes
+    document.getElementById('bookingDate').addEventListener('change', function() {
+        const selectedDate = this.value;
+        const serviceId = document.getElementById('modalServiceId').value;
+        
+        if (!selectedDate || !serviceId) {
+            return;
+        }
+
+        // Fetch booked time slots for this service and date
+        fetch(`{{ route('customer.services.check-availability') }}?service_id=${serviceId}&date=${selectedDate}`)
+            .then(response => response.json())
+            .then(data => {
+                const timeSelect = document.getElementById('bookingTime');
+                const timeOptions = timeSelect.querySelectorAll('option');
+                const hint = document.getElementById('timeSlotHint');
+                
+                // Reset all options
+                timeOptions.forEach(option => {
+                    if (option.value) {
+                        option.disabled = false;
+                        option.textContent = option.textContent.replace(' (Booked)', '');
+                    }
+                });
+                
+                // Disable booked time slots
+                if (data.booked_times && data.booked_times.length > 0) {
+                    data.booked_times.forEach(bookedTime => {
+                        timeOptions.forEach(option => {
+                            if (option.value === bookedTime) {
+                                option.disabled = true;
+                                option.textContent += ' (Booked)';
+                            }
+                        });
+                    });
+                    hint.textContent = `${data.booked_times.length} time slot(s) already booked for this date`;
+                    hint.classList.remove('text-muted');
+                    hint.classList.add('text-warning');
+                } else {
+                    hint.textContent = 'All time slots are available for this date';
+                    hint.classList.remove('text-warning');
+                    hint.classList.add('text-success');
+                }
+            })
+            .catch(error => {
+                console.error('Error checking availability:', error);
+            });
+    });
 
     // Payment method change handler - show/hide card fields
     document.getElementById('paymentMethod').addEventListener('change', function() {

@@ -48,4 +48,33 @@ class Service extends Model
             ->whereIn('status', ['pending', 'confirmed'])
             ->count();
     }
+    
+    /**
+     * Check if a specific date/time slot is available for booking
+     * Returns true if the slot is available, false if already booked
+     */
+    public function isTimeSlotAvailable($date, $time)
+    {
+        // Check if there's an active booking for this service at the specified date/time
+        $existingBooking = $this->bookings()
+            ->where('booking_date', $date)
+            ->where('booking_time', $time)
+            ->whereIn('status', ['pending', 'confirmed'])
+            ->first();
+        
+        return $existingBooking === null;
+    }
+    
+    /**
+     * Get all booked time slots for a specific date
+     * Returns array of booked times
+     */
+    public function getBookedTimeSlotsForDate($date)
+    {
+        return $this->bookings()
+            ->where('booking_date', $date)
+            ->whereIn('status', ['pending', 'confirmed'])
+            ->pluck('booking_time')
+            ->toArray();
+    }
 }

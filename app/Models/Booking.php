@@ -33,4 +33,12 @@ class Booking extends Model
     {
         return $this->hasOne(Payment::class, 'booking_id')->latest();
     }
+
+    /**
+     * Check if booking has a sale record
+     */
+    public function hasSale()
+    {
+        return $this->sale()->exists();
+    }
 }

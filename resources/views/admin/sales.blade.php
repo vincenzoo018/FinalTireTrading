@@ -235,9 +235,13 @@
                             </td>
                             <td>
                                 @if($sale->order_id)
-                                    <span class="badge bg-primary">Order</span>
+                                    <span class="badge bg-primary">
+                                        <i class="fas fa-shopping-cart me-1"></i>Order
+                                    </span>
                                 @elseif($sale->booking_id)
-                                    <span class="badge bg-success">Booking</span>
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-calendar-check me-1"></i>Booking
+                                    </span>
                                 @else
                                     <span class="badge bg-secondary">Other</span>
                                 @endif

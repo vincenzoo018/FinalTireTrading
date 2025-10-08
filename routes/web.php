@@ -107,6 +107,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth')->group(function () {
     Route::get('/customer/products', [\App\Http\Controllers\Customer\ProductController::class, 'index'])->name('customer.products');
     Route::get('/customer/services', [App\Http\Controllers\Customer\ServiceController::class, 'index'])->name('customer.services');
+    Route::get('/customer/services/check-availability', [App\Http\Controllers\Customer\ServiceController::class, 'checkAvailability'])->name('customer.services.check-availability');
     Route::get('/customer/cart', [App\Http\Controllers\Customer\CartController::class, 'index'])->name('customer.cart');
     Route::post('/customer/cart/add', [App\Http\Controllers\Customer\CartController::class, 'add'])->name('customer.cart.add');
     Route::put('/customer/cart/update/{cart}', [App\Http\Controllers\Customer\CartController::class, 'updateQuantity'])->name('customer.cart.update');

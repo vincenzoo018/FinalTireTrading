@@ -48,7 +48,7 @@ class Product extends Model
      */
     public function getStockQuantity()
     {
-        return $this->inventory ? $this->inventory->quantity : 0;
+        return $this->inventory ? $this->inventory->quantity_on_hand : 0;
     }
     
     /**

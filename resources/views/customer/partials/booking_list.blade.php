@@ -106,6 +106,20 @@
                         <i class="fas fa-check me-1"></i>Mark as Completed
                     </button>
                 </form>
+            @elseif(strtolower($booking->status) === 'completed')
+                <div class="alert alert-success d-flex align-items-center mt-3 mb-0">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <div>
+                        <strong>Service Completed!</strong>
+                        @if($booking->sale()->exists())
+                            <small class="d-block text-muted">
+                                <i class="fas fa-receipt me-1"></i>Sale Record: #{{ $booking->sale->sale_id }} (₱{{ number_format($booking->sale->total_amount, 2) }})
+                            </small>
+                        @else
+                            <small class="d-block text-muted">Sale record will be generated automatically</small>
+                        @endif
+                    </div>
+                </div>
             @endif
         </div>
     </div>

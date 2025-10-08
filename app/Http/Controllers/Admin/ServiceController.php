@@ -44,6 +44,9 @@ class ServiceController extends Controller
             $validated['image'] = 'images/' . $imageName;
         }
 
+        // Set service as available by default
+        $validated['is_available'] = true;
+
         Service::create($validated);
 
         return redirect()->back()->with('success', 'Service added successfully!');
