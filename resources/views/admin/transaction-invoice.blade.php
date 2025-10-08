@@ -389,9 +389,9 @@
         <div class="invoice-header">
             <div class="header-top">
                 <div class="company-info">
-                    <h1><i class="fas fa-store"></i> Your Company Name</h1>
-                    <p>123 Business Street, City, Country</p>
-                    <p>Phone: (123) 456-7890 | Email: info@company.com</p>
+                    <h1><i class="fas fa-store"></i>KS PLY TIRE TRADING</h1>
+                    <p>Maa, Davao City</p>
+                    <p>Phone: (123) 456-7890 | Email: ksply@company.com</p>
                 </div>
                 <div class="invoice-title">
                     <h2>INVOICE</h2>

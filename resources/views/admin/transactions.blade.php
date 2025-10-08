@@ -35,25 +35,22 @@
 
     <div class="content-card">
         <div class="table-controls">
-            <form method="GET" style="display:flex; gap:1rem; width:100%;">
-                <div class="search-wrapper" style="flex:1;">
+            <div style="display:flex; gap:1rem; width:100%;">
+                <div class="search-wrapper" style="flex:1; position: relative;">
                     <i class="fas fa-search search-icon"></i>
-                    <input type="text" name="search" value="{{ request('search') }}" class="search-input" placeholder="Search by reference or supplier...">
+                    <input type="text" id="transactionSearchInput" class="search-input" placeholder="Search by reference or supplier..." autocomplete="off">
+                    <div id="searchSuggestions" class="search-suggestions" style="display: none;"></div>
                 </div>
 
                 <div class="filter-wrapper">
-                    <select class="btn-filter" name="supplier_id" onchange="this.form.submit()" style="padding-right: 2rem;">
+                    <select class="btn-filter" id="supplierFilter" style="padding-right: 2rem;">
                         <option value="">All Suppliers</option>
                         @foreach(($suppliers ?? []) as $s)
                             <option value="{{ $s->supplier_id }}" {{ (string)request('supplier_id') === (string)$s->supplier_id ? 'selected' : '' }}>{{ $s->supplier_name }}</option>
                         @endforeach
                     </select>
-                    <button class="btn-filter" type="submit">
-                        <i class="fas fa-filter"></i>
-                        Apply
-                    </button>
                 </div>
-            </form>
+            </div>
         </div>
 
         <div class="table-responsive">
@@ -68,6 +65,7 @@
                         <th>Reference Number</th>
                         <th>Order Date</th>
                         <th>Delivery Date</th>
+                        <th>Status</th>
                         <th>Overall Total</th>
                         <th>Tax</th>
                         <th class="actions-header">Actions <i class="fas fa-info-circle tooltip-icon"></i></th>
@@ -82,6 +80,17 @@
                         <td>{{ $txn->reference_num }}</td>
                         <td>{{ \Carbon\Carbon::parse($txn->order_date)->format('M d, Y') }}</td>
                         <td>{{ $txn->delivery_date ? \Carbon\Carbon::parse($txn->delivery_date)->format('M d, Y') : '-' }}</td>
+                        <td>
+                            @if($txn->delivery_received)
+                                <span class="status-badge status-received">
+                                    <i class="fas fa-check-circle"></i> Received
+                                </span>
+                            @else
+                                <span class="status-badge status-pending">
+                                    <i class="fas fa-clock"></i> Pending
+                                </span>
+                            @endif
+                        </td>
                         <td class="transaction-amount">₱{{ number_format($txn->overall_total, 2) }}</td>
                         <td>₱{{ number_format($txn->tax, 2) }}</td>
                         <td class="actions-cell">
@@ -90,9 +99,9 @@
                                    class="btn-action btn-view" title="View Invoice" target="_blank">
                                     <i class="fas fa-eye"></i>
                                 </a>
-                                <button class="btn-action btn-edit" title="Edit Transaction" 
+                                <button class="btn-action btn-edit" title="Update Status" 
                                         onclick="editTransaction({{ $txn->transaction_id }})">
-                                    <i class="fas fa-edit"></i>
+                                    <i class="fas fa-clipboard-check"></i>
                                 </button>
                                 <button class="btn-action btn-delete-action" title="Delete Transaction" 
                                         onclick="deleteTransaction({{ $txn->transaction_id }})">
@@ -103,7 +112,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="9" style="text-align: center; padding: 1rem; color: #64748b;">
+                        <td colspan="10" style="text-align: center; padding: 1rem; color: #64748b;">
                             No transactions found.
                         </td>
                     </tr>
@@ -214,22 +223,14 @@
                             </div>
 
                             <div class="form-group">
-                                <label class="form-label"><i class="fas fa-shipping-fast"></i> Delivery Status <span class="required">*</span></label>
-                                <div class="radio-group">
-                                    <label class="radio-card">
-                                        <input type="radio" name="delivery_received" value="1" onchange="toggleDeliveryFields(true)">
-                                        <div class="radio-content">
-                                            <i class="fas fa-check-circle"></i>
-                                            <span>Received</span>
-                                        </div>
-                                    </label>
-                                    <label class="radio-card">
-                                        <input type="radio" name="delivery_received" value="0" checked onchange="toggleDeliveryFields(false)">
-                                        <div class="radio-content">
-                                            <i class="fas fa-clock"></i>
-                                            <span>Pending</span>
-                                        </div>
-                                    </label>
+                                <label class="form-label"><i class="fas fa-shipping-fast"></i> Delivery Status</label>
+                                <input type="hidden" name="delivery_received" value="0">
+                                <div style="padding: 0.75rem 1rem; background: #fef3c7; border: 1px solid #f59e0b; border-radius: 0.5rem; display: flex; align-items: center; gap: 0.75rem;">
+                                    <i class="fas fa-clock" style="color: #d97706; font-size: 1.25rem;"></i>
+                                    <div>
+                                        <strong style="color: #92400e;">Pending Delivery</strong>
+                                        <p style="margin: 0.25rem 0 0 0; font-size: 0.8125rem; color: #78350f;">New transactions are created as pending. Mark as received after editing.</p>
+                                    </div>
                                 </div>
                             </div>
 
@@ -410,6 +411,162 @@
                         <i class="fas fa-check"></i> Create Transaction
                     </button>
                 </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Edit Transaction Modal -->
+<div class="modal-overlay" id="editTxnModal">
+    <div class="modal-content" style="max-width: 900px;">
+        <div class="modal-header">
+            <h2><i class="fas fa-clipboard-check"></i> Update Transaction Status</h2>
+            <button type="button" class="modal-close-btn" onclick="closeEditTransactionModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <form method="POST" id="editTxnForm">
+            @csrf
+            @method('PUT')
+            <input type="hidden" id="edit_transaction_id" name="transaction_id">
+            
+            <div class="modal-body">
+                <div class="wizard-section">
+                    <h3 class="section-title"><i class="fas fa-info-circle"></i> Transaction Details</h3>
+                    <p class="section-desc">View transaction details and update delivery status</p>
+                    
+                    <div class="form-grid-2col">
+                        <div class="form-group">
+                            <label class="form-label"><i class="fas fa-truck"></i> Supplier</label>
+                            <select class="form-select" name="supplier_id" id="edit_supplier_id" required style="background: #f8fafc;" disabled>
+                                <option value="">Select supplier</option>
+                                @foreach(($suppliers ?? []) as $s)
+                                    <option value="{{ $s->supplier_id }}">{{ $s->supplier_name }} - {{ $s->company_name }}</option>
+                                @endforeach
+                            </select>
+                            <input type="hidden" name="supplier_id" id="edit_supplier_id_hidden">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label"><i class="fas fa-hashtag"></i> Reference Number</label>
+                            <input type="text" class="form-input" name="reference_num" id="edit_reference_num" required style="background: #f8fafc;" readonly>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label"><i class="fas fa-calendar"></i> Order Date</label>
+                            <input type="date" class="form-input" name="order_date" id="edit_order_date" required style="background: #f8fafc;" readonly>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label"><i class="fas fa-shipping-fast"></i> Delivery Status <span class="required">*</span></label>
+                            <div class="radio-group">
+                                <label class="radio-card">
+                                    <input type="radio" name="delivery_received" value="1" onchange="toggleEditDeliveryFields(true)">
+                                    <div class="radio-content">
+                                        <i class="fas fa-check-circle"></i>
+                                        <span>Mark as Received</span>
+                                    </div>
+                                </label>
+                                <label class="radio-card">
+                                    <input type="radio" name="delivery_received" value="0" onchange="toggleEditDeliveryFields(false)">
+                                    <div class="radio-content">
+                                        <i class="fas fa-clock"></i>
+                                        <span>Keep Pending</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group" id="editDeliveryDateGroup" style="display:none;">
+                            <label class="form-label"><i class="fas fa-calendar-check"></i> Delivery Date <span class="required">*</span></label>
+                            <input type="date" class="form-input" name="delivery_date" id="edit_delivery_date">
+                        </div>
+
+                        <div class="form-group" id="editEstimatedDateGroup">
+                            <label class="form-label"><i class="fas fa-calendar-alt"></i> Estimated Delivery</label>
+                            <input type="date" class="form-input" name="estimated_date" id="edit_estimated_date" style="background: #f8fafc;" readonly>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label"><i class="fas fa-dollar-sign"></i> Delivery Fee</label>
+                            <input type="number" step="0.01" class="form-input" name="delivery_fee" id="edit_delivery_fee" value="0" min="0" style="background: #f8fafc;" readonly>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label"><i class="fas fa-percent"></i> Tax Amount</label>
+                            <input type="number" step="0.01" class="form-input" name="tax" id="edit_tax" value="0" min="0" required style="background: #f8fafc;" readonly>
+                        </div>
+                    </div>
+
+                    <!-- Products List (Read-only) -->
+                    <div style="margin-top: 2rem;">
+                        <h4 style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                            <i class="fas fa-boxes"></i> Products in this Transaction
+                        </h4>
+                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.75rem; padding: 1rem; overflow-x: auto;">
+                            <table class="summary-table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Product Name</th>
+                                        <th class="text-right">Quantity</th>
+                                        <th class="text-right">Unit Price</th>
+                                        <th class="text-right">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="editProductsList">
+                                    <tr>
+                                        <td colspan="5" class="text-center">Loading...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Totals Summary -->
+                    <div class="totals-summary" style="margin-top: 1.5rem;">
+                        <div class="total-row">
+                            <span><i class="fas fa-boxes"></i> Products Subtotal:</span>
+                            <strong id="editSubtotal">₱0.00</strong>
+                        </div>
+                        <div class="total-row">
+                            <span><i class="fas fa-truck"></i> Delivery Fee:</span>
+                            <strong id="editDeliveryFee">₱0.00</strong>
+                        </div>
+                        <div class="total-row">
+                            <span><i class="fas fa-receipt"></i> Tax:</span>
+                            <strong id="editTax">₱0.00</strong>
+                        </div>
+                        <div class="total-row grand-total">
+                            <span><i class="fas fa-calculator"></i> Grand Total:</span>
+                            <strong id="editGrandTotal">₱0.00</strong>
+                        </div>
+                    </div>
+
+                    <div class="review-note" style="margin-top: 1.5rem;">
+                        <div class="note-icon">
+                            <i class="fas fa-info-circle"></i>
+                        </div>
+                        <div class="note-content">
+                            <strong>What can you edit?</strong>
+                            <ul style="margin: 0.5rem 0 0 0; padding-left: 1.5rem; font-size: 0.875rem;">
+                                <li><strong>Delivery Status:</strong> Mark transaction as received and set delivery date</li>
+                                <li><strong>View Only:</strong> Supplier, reference number, order date, products, and totals are locked</li>
+                                <li><strong>Stock Update:</strong> Marking as "Received" will automatically add products to inventory</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn-cancel" onclick="closeEditTransactionModal()">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+                <button type="submit" class="btn-save">
+                    <i class="fas fa-check"></i> Update Status
+                </button>
             </div>
         </form>
     </div>
@@ -1192,6 +1349,132 @@
 }
 
 /* Responsive */
+/* Status Badges */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.375rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.status-received {
+    background: #d1fae5;
+    color: #065f46;
+    border: 1px solid #10b981;
+}
+
+.status-received i {
+    color: #10b981;
+}
+
+.status-pending {
+    background: #fef3c7;
+    color: #92400e;
+    border: 1px solid #f59e0b;
+}
+
+.status-pending i {
+    color: #f59e0b;
+}
+
+/* Search Suggestions */
+.search-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    margin-top: 0.25rem;
+    max-height: 300px;
+    overflow-y: auto;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+}
+
+.suggestion-item {
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    border-bottom: 1px solid #f1f5f9;
+    transition: background 0.2s;
+}
+
+.suggestion-item:hover {
+    background: #f8fafc;
+}
+
+.suggestion-item:last-child {
+    border-bottom: none;
+}
+
+.suggestion-highlight {
+    font-weight: 600;
+    color: #667eea;
+}
+
+.suggestion-meta {
+    font-size: 0.8125rem;
+    color: #64748b;
+    margin-top: 0.25rem;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-action {
+    padding: 0.5rem;
+    border: none;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+}
+
+.btn-action i {
+    font-size: 14px;
+}
+
+.btn-view {
+    background: #eff6ff;
+    color: #2563eb;
+}
+
+.btn-view:hover {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.btn-edit {
+    background: #fef3c7;
+    color: #d97706;
+}
+
+.btn-edit:hover {
+    background: #fde68a;
+    color: #b45309;
+}
+
+.btn-delete-action {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.btn-delete-action:hover {
+    background: #fecaca;
+    color: #b91c1c;
+}
+
 @media (max-width: 768px) {
     .form-grid-2col,
     .review-grid {
@@ -1328,7 +1611,7 @@ function validateStep(step) {
     switch(step) {
         case 1:
             if (!document.querySelector('input[name="supplier_id"]:checked')) {
-                alert('Please select a supplier');
+                showToast('Please select a supplier', 'error');
                 return false;
             }
             return true;
@@ -1336,20 +1619,21 @@ function validateStep(step) {
             const refNum = document.getElementById('referenceNum').value.trim();
             const orderDate = document.getElementById('orderDate').value;
             if (!refNum) {
-                alert('Please enter a reference number');
+                showToast('Please enter a reference number', 'error');
                 return false;
             }
             if (!orderDate) {
-                alert('Please select an order date');
+                showToast('Please select an order date', 'error');
                 return false;
             }
             return true;
         case 3:
-            const hasProducts = productsData.some(p => p.quantity > 0);
+            const hasProducts = productsData && Array.isArray(productsData) && productsData.some(p => p.quantity > 0);
             if (!hasProducts) {
-                alert('Please add at least one product with quantity > 0');
+                showToast('Please add at least one product with quantity > 0', 'error');
                 return false;
             }
+            console.log('Step 3 validated, products:', productsData.filter(p => p.quantity > 0));
             return true;
         default:
             return true;
@@ -1375,17 +1659,32 @@ function selectSupplier(id, name, company, contact, phone) {
 function loadSupplierProducts() {
     if (!selectedSupplierData) {
         console.error('No supplier selected');
+        showToast('No supplier selected', 'error');
         return;
     }
     
     console.log('Loading products for supplier ID:', selectedSupplierData.id);
+    console.log('All products available:', allProducts);
     
     // Filter products by supplier
     const supplierProducts = allProducts.filter(p => {
         return p.supplier_id == selectedSupplierData.id;
     });
     
-    console.log('Found products:', supplierProducts);
+    console.log('Found products for supplier:', supplierProducts);
+    
+    if (supplierProducts.length === 0) {
+        const container = document.getElementById('productsTableContainer');
+        container.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-box-open"></i>
+                <p>No products found for this supplier</p>
+                <p style="font-size: 0.875rem; color: #94a3b8; margin-top: 0.5rem;">Please add products for this supplier first.</p>
+            </div>
+        `;
+        productsData = [];
+        return;
+    }
     
     // Initialize products data with quantity 0
     productsData = supplierProducts.map(p => ({
@@ -1548,7 +1847,8 @@ function populateReview() {
     document.getElementById('reviewReference').textContent = document.getElementById('referenceNum').value;
     document.getElementById('reviewOrderDate').textContent = new Date(document.getElementById('orderDate').value).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
     
-    const deliveryStatus = document.querySelector('input[name="delivery_received"]:checked').value;
+    const deliveryStatusInput = document.querySelector('input[name="delivery_received"]:checked') || document.querySelector('input[name="delivery_received"]');
+    const deliveryStatus = deliveryStatusInput ? deliveryStatusInput.value : '0';
     const isReceived = deliveryStatus === '1';
     
     document.getElementById('reviewStatus').innerHTML = isReceived
@@ -1676,25 +1976,255 @@ document.getElementById('txnWizardForm').addEventListener('submit', function(e) 
 
 // ========== ACTION BUTTON FUNCTIONS ==========
 function editTransaction(id) {
-    // Load transaction data and open modal in edit mode
-    fetch(`/admin/transactions/${id}`)
+    fetch(`/admin/transactions/${id}/edit`)
         .then(res => res.json())
         .then(data => {
-            // Populate the wizard with existing data
-            openTxnModal();
-            // TODO: Fill form fields with data
-            showToast('Edit functionality - coming soon', 'info');
+            openEditTransactionModal(data);
         })
         .catch(err => {
+            console.error('Error:', err);
             showToast('Failed to load transaction data', 'error');
         });
 }
 
+function openEditTransactionModal(transaction) {
+    document.getElementById('editTxnModal').classList.add('active');
+    document.body.style.overflow = 'hidden';
+    
+    // Populate form fields (most are read-only)
+    document.getElementById('editTxnForm').action = `/admin/transactions/${transaction.transaction_id}`;
+    document.getElementById('edit_transaction_id').value = transaction.transaction_id;
+    document.getElementById('edit_reference_num').value = transaction.reference_num;
+    document.getElementById('edit_order_date').value = transaction.order_date;
+    document.getElementById('edit_delivery_date').value = transaction.delivery_date || '';
+    document.getElementById('edit_estimated_date').value = transaction.estimated_date || '';
+    document.getElementById('edit_delivery_fee').value = transaction.delivery_fee || 0;
+    document.getElementById('edit_tax').value = transaction.tax;
+    document.getElementById('edit_supplier_id').value = transaction.supplier_id;
+    document.getElementById('edit_supplier_id_hidden').value = transaction.supplier_id;
+    
+    // Set delivery status - check if elements exist
+    const deliveryReceived = transaction.delivery_received;
+    const receivedRadio = document.querySelector(`input[name="delivery_received"][value="${deliveryReceived ? '1' : '0'}"]`);
+    if (receivedRadio) {
+        receivedRadio.checked = true;
+    }
+    toggleEditDeliveryFields(deliveryReceived);
+    
+    // Display products (read-only)
+    let productsHTML = '';
+    if (transaction.supp_order_prods && transaction.supp_order_prods.length > 0) {
+        transaction.supp_order_prods.forEach((item, index) => {
+            const product = item.product;
+            const unitPrice = item.quantity > 0 ? (item.total / item.quantity) : 0;
+            
+            productsHTML += `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${product ? product.product_name : 'N/A'}</td>
+                    <td class="text-right"><strong>${item.quantity}</strong></td>
+                    <td class="text-right">₱${unitPrice.toFixed(2)}</td>
+                    <td class="text-right"><strong>₱${parseFloat(item.total).toFixed(2)}</strong></td>
+                </tr>
+            `;
+        });
+    }
+    document.getElementById('editProductsList').innerHTML = productsHTML || '<tr><td colspan="5" class="text-center">No products</td></tr>';
+    
+    // Display totals
+    const subtotal = transaction.sub_total;
+    const deliveryFee = parseFloat(transaction.delivery_fee) || 0;
+    const tax = parseFloat(transaction.tax);
+    const grandTotal = parseFloat(transaction.overall_total);
+    
+    document.getElementById('editSubtotal').textContent = `₱${subtotal.toFixed(2)}`;
+    document.getElementById('editDeliveryFee').textContent = `₱${deliveryFee.toFixed(2)}`;
+    document.getElementById('editTax').textContent = `₱${tax.toFixed(2)}`;
+    document.getElementById('editGrandTotal').textContent = `₱${grandTotal.toFixed(2)}`;
+}
+
+function closeEditTransactionModal() {
+    document.getElementById('editTxnModal').classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+function toggleEditDeliveryFields(isReceived) {
+    const deliveryDateGroup = document.getElementById('editDeliveryDateGroup');
+    const estimatedDateGroup = document.getElementById('editEstimatedDateGroup');
+    const deliveryDateInput = document.getElementById('edit_delivery_date');
+    const estimatedDateInput = document.getElementById('edit_estimated_date');
+    
+    if (isReceived) {
+        deliveryDateGroup.style.display = 'block';
+        estimatedDateGroup.style.display = 'none';
+        if (deliveryDateInput) {
+            deliveryDateInput.required = true;
+            // Set to today if empty
+            if (!deliveryDateInput.value) {
+                deliveryDateInput.value = new Date().toISOString().split('T')[0];
+            }
+        }
+        if (estimatedDateInput) estimatedDateInput.required = false;
+    } else {
+        deliveryDateGroup.style.display = 'none';
+        estimatedDateGroup.style.display = 'block';
+        if (deliveryDateInput) deliveryDateInput.required = false;
+        if (estimatedDateInput) estimatedDateInput.required = false;
+    }
+}
+
 function deleteTransaction(id) {
-    openDeleteModal(`/admin/transactions/${id}`, () => {
-        // Refresh the page after successful delete
-        location.reload();
+    if (confirm('⚠️ Are you sure you want to delete this transaction?\n\nThis action cannot be undone!')) {
+        fetch(`/admin/transactions/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showToast('Transaction deleted successfully', 'success');
+                setTimeout(() => {
+                    location.reload();
+                }, 1000);
+            } else {
+                showToast('Error deleting transaction', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showToast('Error deleting transaction', 'error');
+        });
+    }
+}
+
+// Toast notification function
+function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.textContent = message;
+    toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 12px 24px;
+        background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
+        color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        z-index: 10000;
+        animation: slideIn 0.3s ease-out;
+    `;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.animation = 'slideOut 0.3s ease-out';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
+// Close edit modal on outside click
+document.addEventListener('DOMContentLoaded', function() {
+    const editModal = document.getElementById('editTxnModal');
+    if (editModal) {
+        editModal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeEditTransactionModal();
+            }
+        });
+    }
+    
+    // Initialize search functionality
+    initializeSearch();
+});
+
+// ========== SEARCH FUNCTIONALITY ==========
+function initializeSearch() {
+    const searchInput = document.getElementById('transactionSearchInput');
+    const supplierFilter = document.getElementById('supplierFilter');
+    const suggestionsDiv = document.getElementById('searchSuggestions');
+    let searchTimeout;
+    let allTransactions = @json($transactions->items());
+    
+    // Search with suggestions
+    searchInput.addEventListener('input', function(e) {
+        clearTimeout(searchTimeout);
+        const searchValue = e.target.value.trim().toLowerCase();
+        
+        if (searchValue.length >= 2) {
+            // Show suggestions
+            const matches = allTransactions.filter(txn => {
+                const refNum = (txn.reference_num || '').toLowerCase();
+                const supplierName = (txn.supplier?.supplier_name || '').toLowerCase();
+                return refNum.includes(searchValue) || supplierName.includes(searchValue);
+            });
+            
+            displaySuggestions(matches, searchValue);
+        } else {
+            suggestionsDiv.style.display = 'none';
+        }
+        
+        // Perform search after delay
+        searchTimeout = setTimeout(() => {
+            performSearch(searchValue, supplierFilter.value);
+        }, 500);
     });
+    
+    // Supplier filter change
+    supplierFilter.addEventListener('change', function() {
+        performSearch(searchInput.value, this.value);
+    });
+    
+    // Close suggestions when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!searchInput.contains(e.target) && !suggestionsDiv.contains(e.target)) {
+            suggestionsDiv.style.display = 'none';
+        }
+    });
+}
+
+function displaySuggestions(matches, searchTerm) {
+    const suggestionsDiv = document.getElementById('searchSuggestions');
+    
+    if (matches.length === 0) {
+        suggestionsDiv.innerHTML = '<div class="suggestion-item" style="cursor: default;">No matches found</div>';
+        suggestionsDiv.style.display = 'block';
+        return;
+    }
+    
+    const html = matches.slice(0, 5).map(txn => {
+        const refNum = txn.reference_num || '';
+        const supplierName = txn.supplier?.supplier_name || 'N/A';
+        const highlightedRef = refNum.replace(new RegExp(searchTerm, 'gi'), match => `<span class="suggestion-highlight">${match}</span>`);
+        const highlightedSupplier = supplierName.replace(new RegExp(searchTerm, 'gi'), match => `<span class="suggestion-highlight">${match}</span>`);
+        
+        return `
+            <div class="suggestion-item" onclick="selectSuggestion('${refNum}')">
+                <div><strong>${highlightedRef}</strong></div>
+                <div class="suggestion-meta">${highlightedSupplier} • ₱${parseFloat(txn.overall_total).toFixed(2)}</div>
+            </div>
+        `;
+    }).join('');
+    
+    suggestionsDiv.innerHTML = html;
+    suggestionsDiv.style.display = 'block';
+}
+
+function selectSuggestion(refNum) {
+    document.getElementById('transactionSearchInput').value = refNum;
+    document.getElementById('searchSuggestions').style.display = 'none';
+    performSearch(refNum, document.getElementById('supplierFilter').value);
+}
+
+function performSearch(search, supplierId) {
+    const url = new URL(window.location.href);
+    url.searchParams.set('search', search);
+    url.searchParams.set('supplier_id', supplierId);
+    window.location.href = url.toString();
 }
 </script>
 @endsection

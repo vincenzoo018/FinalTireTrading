@@ -111,4 +111,49 @@ class InventoryController extends Controller
         }
         return response()->json(['success' => false, 'message' => 'No matching product found']);
     }
+
+    // Show single inventory record
+    public function show($id)
+    {
+        if (!Auth::check() || !in_array(Auth::user()->role_id, [1,2])) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $inventory = Inventory::with(['product.supplier', 'product.category'])->findOrFail($id);
+        return response()->json($inventory);
+    }
+
+    // Update inventory quantity
+    public function update(Request $request, $id)
+    {
+        if (!Auth::check() || !in_array(Auth::user()->role_id, [1,2])) {
+            return redirect()->route('auth.login')->withErrors(['auth' => 'Access denied.']);
+        }
+
+        $validated = $request->validate([
+            'quantity_on_hand' => 'required|integer|min:0',
+        ]);
+
+        $inventory = Inventory::findOrFail($id);
+        $inventory->update([
+            'quantity_on_hand' => $validated['quantity_on_hand'],
+            'last_updated' => now(),
+        ]);
+
+        return redirect()->route('admin.inventory.index')
+            ->with('success', 'Inventory updated successfully.');
+    }
+
+    // Delete inventory record
+    public function destroy($id)
+    {
+        if (!Auth::check() || !in_array(Auth::user()->role_id, [1,2])) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $inventory = Inventory::findOrFail($id);
+        $inventory->delete();
+
+        return response()->json(['success' => true, 'message' => 'Inventory deleted successfully.']);
+    }
 }

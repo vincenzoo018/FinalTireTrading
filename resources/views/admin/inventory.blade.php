@@ -45,22 +45,18 @@
 
     <div class="content-card">
         <div class="table-controls">
-            <div class="search-wrapper">
+            <div class="search-wrapper" style="position: relative; flex: 1;">
                 <i class="fas fa-search search-icon"></i>
-                <input type="text" class="search-input" placeholder="Search inventory...">
+                <input type="text" id="inventorySearchInput" class="search-input" placeholder="Search by product name, brand, or serial..." autocomplete="off">
+                <div id="inventorySearchSuggestions" class="search-suggestions" style="display: none;"></div>
             </div>
             <div class="filter-wrapper">
-                <select class="btn-filter" style="padding-right: 2rem;">
-                    <option>All Status</option>
-                    <option>In Stock</option>
-                    <option>Low Stock</option>
-                    <option>Out of Stock</option>
+                <select class="btn-filter" id="statusFilter" style="padding-right: 2rem;">
+                    <option value="">All Status</option>
+                    <option value="in_stock">In Stock</option>
+                    <option value="low_stock">Low Stock</option>
+                    <option value="out_of_stock">Out of Stock</option>
                 </select>
-                <button class="btn-filter">
-                    <i class="fas fa-filter"></i>
-                    Filters
-                    <i class="fas fa-chevron-down"></i>
-                </button>
             </div>
         </div>
 
@@ -123,12 +119,20 @@
                             @endif
                         </td>
                         <td class="actions-cell">
-                            <button class="btn-icon btn-edit" title="Update Stock">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn-icon btn-view" title="View History">
-                                <i class="fas fa-eye"></i>
-                            </button>
+                            <div class="action-buttons">
+                                <button class="btn-action btn-view" title="View Details" 
+                                        onclick="viewInventory({{ $inv->inventory_id }})">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn-action btn-edit" title="Update Stock" 
+                                        onclick="editInventory({{ $inv->inventory_id }})">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn-action btn-delete-action" title="Delete Inventory" 
+                                        onclick="deleteInventory({{ $inv->inventory_id }})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
                         </td>
                     </tr>
                     @endforeach
@@ -144,6 +148,114 @@
                 {{ $inventories->links() }}
             </div>
         </div>
+    </div>
+</div>
+
+<!-- View Inventory Modal -->
+<div id="viewInventoryModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content" style="max-width: 800px;">
+        <div class="modal-header-view">
+            <h2><i class="fas fa-eye"></i> Inventory Details</h2>
+            <button class="modal-close-btn" onclick="closeViewInventoryModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body-view">
+            <div class="view-section-product">
+                <div class="view-image-container" id="viewInventoryImage">
+                    <!-- Image will be inserted here -->
+                </div>
+                <div class="view-details-product">
+                    <div class="detail-row">
+                        <span class="detail-label">Inventory ID:</span>
+                        <span class="detail-value" id="view_inventory_id"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Product Name:</span>
+                        <span class="detail-value" id="view_product_name"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Category:</span>
+                        <span class="detail-value" id="view_category"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Supplier:</span>
+                        <span class="detail-value" id="view_supplier"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Brand:</span>
+                        <span class="detail-value" id="view_brand"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Size:</span>
+                        <span class="detail-value" id="view_size"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Quantity On Hand:</span>
+                        <span class="detail-value" id="view_quantity"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Last Updated:</span>
+                        <span class="detail-value" id="view_last_updated"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" onclick="closeViewInventoryModal()" class="btn-cancel">Close</button>
+            <button type="button" onclick="editFromViewInventory()" class="btn-save">
+                <i class="fas fa-edit"></i> Update Stock
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Inventory Modal -->
+<div id="editInventoryModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content" style="max-width: 600px;">
+        <div class="modal-header">
+            <h2><i class="fas fa-edit"></i> Update Inventory Stock</h2>
+            <p class="required-text">Adjust the quantity on hand for this product</p>
+        </div>
+        <form id="editInventoryForm" method="POST">
+            @csrf
+            @method('PUT')
+            <input type="hidden" id="edit_inventory_id" name="inventory_id">
+            
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Product Name</label>
+                    <input type="text" id="edit_product_name_display" class="form-input" readonly style="background: #f8fafc;">
+                </div>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Current Stock</label>
+                        <input type="text" id="edit_current_stock" class="form-input" readonly style="background: #f8fafc;">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">New Quantity <span class="required">*</span></label>
+                        <input type="number" id="edit_quantity_on_hand" name="quantity_on_hand" class="form-input" min="0" required>
+                    </div>
+                </div>
+                
+                <div class="review-note" style="margin-top: 1rem;">
+                    <div class="note-icon">
+                        <i class="fas fa-info-circle"></i>
+                    </div>
+                    <div class="note-content">
+                        <strong>Note:</strong>
+                        <p style="margin: 0.5rem 0 0 0; font-size: 0.875rem;">Enter the new total quantity. This will replace the current stock level.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn-cancel" onclick="closeEditInventoryModal()">Cancel</button>
+                <button type="submit" class="btn-save">Update Stock</button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -549,6 +661,239 @@
 .text-muted {
     color: #6c757d;
 }
+
+/* View Modal Styles */
+.modal-header-view {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    border-bottom: 2px solid #f1f5f9;
+}
+
+.modal-header-view h2 {
+    margin: 0;
+    color: #1e293b;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.modal-header-view h2 i {
+    color: #3b82f6;
+}
+
+.modal-close-btn {
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: #64748b;
+    cursor: pointer;
+    padding: 5px;
+    transition: all 0.2s;
+}
+
+.modal-close-btn:hover {
+    color: #ef4444;
+    transform: rotate(90deg);
+}
+
+.modal-body-view {
+    padding: 2rem;
+}
+
+.view-section-product {
+    display: flex;
+    gap: 20px;
+}
+
+.view-image-container {
+    flex-shrink: 0;
+    width: 200px;
+    height: 200px;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #f8fafc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #e2e8f0;
+}
+
+.view-image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.view-details-product {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.detail-row {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.detail-row.full-width {
+    grid-column: span 2;
+}
+
+.detail-label {
+    font-size: 12px;
+    color: #64748b;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.detail-value {
+    font-size: 15px;
+    color: #1e293b;
+    font-weight: 500;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-action {
+    padding: 0.5rem;
+    border: none;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+}
+
+.btn-action i {
+    font-size: 14px;
+}
+
+.btn-view {
+    background: #eff6ff;
+    color: #2563eb;
+}
+
+.btn-view:hover {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.btn-edit {
+    background: #fef3c7;
+    color: #d97706;
+}
+
+.btn-edit:hover {
+    background: #fde68a;
+    color: #b45309;
+}
+
+.btn-delete-action {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.btn-delete-action:hover {
+    background: #fecaca;
+    color: #b91c1c;
+}
+
+/* Search Suggestions */
+.search-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    margin-top: 0.25rem;
+    max-height: 300px;
+    overflow-y: auto;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+}
+
+.suggestion-item {
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    border-bottom: 1px solid #f1f5f9;
+    transition: background 0.2s;
+}
+
+.suggestion-item:hover {
+    background: #f8fafc;
+}
+
+.suggestion-item:last-child {
+    border-bottom: none;
+}
+
+.suggestion-highlight {
+    font-weight: 600;
+    color: #667eea;
+}
+
+.suggestion-meta {
+    font-size: 0.8125rem;
+    color: #64748b;
+    margin-top: 0.25rem;
+}
+
+.review-note {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(37, 99, 235, 0.1) 100%);
+    border: 1px solid #3b82f6;
+    border-radius: 0.75rem;
+    padding: 1rem;
+    display: flex;
+    gap: 1rem;
+}
+
+.note-icon {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #3b82f6;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+}
+
+.note-content {
+    flex: 1;
+}
+
+.note-content strong {
+    display: block;
+    color: #1e293b;
+    margin-bottom: 0.25rem;
+    font-size: 0.9375rem;
+}
+
+@media (max-width: 768px) {
+    .view-section-product {
+        flex-direction: column;
+    }
+    .view-details-product {
+        grid-template-columns: 1fr;
+    }
+}
 </style>
 
 <script>
@@ -743,6 +1088,212 @@ document.getElementById('stockForm').addEventListener('submit', function(e) {
     
     // Submit form
     this.submit();
+});
+
+// ========== VIEW INVENTORY ==========
+function viewInventory(id) {
+    fetch(`/admin/inventory/${id}`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('view_inventory_id').textContent = '#INV' + String(data.inventory_id).padStart(3, '0');
+            document.getElementById('view_product_name').textContent = data.product.product_name;
+            document.getElementById('view_category').textContent = data.product.category ? data.product.category.category_name : 'N/A';
+            document.getElementById('view_supplier').textContent = data.product.supplier ? data.product.supplier.company_name : 'N/A';
+            document.getElementById('view_brand').textContent = data.product.brand || 'N/A';
+            document.getElementById('view_size').textContent = data.product.size || 'N/A';
+            document.getElementById('view_quantity').textContent = data.quantity_on_hand;
+            document.getElementById('view_last_updated').textContent = new Date(data.last_updated).toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric'});
+            
+            // Set image
+            const imageContainer = document.getElementById('viewInventoryImage');
+            if (data.product.image) {
+                imageContainer.innerHTML = `<img src="/${data.product.image}" alt="${data.product.product_name}">`;
+            } else {
+                imageContainer.innerHTML = `<i class="fas fa-image" style="font-size: 48px; color: #cbd5e1;"></i>`;
+            }
+            
+            window.currentInventoryData = data;
+            document.getElementById('viewInventoryModal').style.display = 'flex';
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showToast('Error loading inventory details', 'error');
+        });
+}
+
+function closeViewInventoryModal() {
+    document.getElementById('viewInventoryModal').style.display = 'none';
+}
+
+// ========== EDIT INVENTORY ==========
+function editInventory(id) {
+    fetch(`/admin/inventory/${id}`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('editInventoryModal').style.display = 'flex';
+            
+            document.getElementById('editInventoryForm').action = `/admin/inventory/${id}`;
+            document.getElementById('edit_inventory_id').value = data.inventory_id;
+            document.getElementById('edit_product_name_display').value = data.product.product_name;
+            document.getElementById('edit_current_stock').value = data.quantity_on_hand;
+            document.getElementById('edit_quantity_on_hand').value = data.quantity_on_hand;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showToast('Error loading inventory for editing', 'error');
+        });
+}
+
+function closeEditInventoryModal() {
+    document.getElementById('editInventoryModal').style.display = 'none';
+    document.getElementById('editInventoryForm').reset();
+}
+
+function editFromViewInventory() {
+    closeViewInventoryModal();
+    if (window.currentInventoryData) {
+        editInventory(window.currentInventoryData.inventory_id);
+    }
+}
+
+// ========== DELETE INVENTORY ==========
+function deleteInventory(id) {
+    if (confirm('⚠️ Are you sure you want to delete this inventory record?\n\nThis action cannot be undone!')) {
+        fetch(`/admin/inventory/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showToast('Inventory deleted successfully', 'success');
+                setTimeout(() => {
+                    location.reload();
+                }, 1000);
+            } else {
+                showToast('Error deleting inventory', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showToast('Error deleting inventory', 'error');
+        });
+    }
+}
+
+// ========== SEARCH WITH SUGGESTIONS ==========
+const allInventories = @json($inventories->items());
+
+document.getElementById('inventorySearchInput').addEventListener('input', function(e) {
+    const searchValue = e.target.value.trim().toLowerCase();
+    const suggestionsDiv = document.getElementById('inventorySearchSuggestions');
+    
+    if (searchValue.length >= 2) {
+        const matches = allInventories.filter(inv => {
+            const productName = (inv.product?.product_name || '').toLowerCase();
+            const brand = (inv.product?.brand || '').toLowerCase();
+            const serial = (inv.product?.serial_number || '').toLowerCase();
+            return productName.includes(searchValue) || brand.includes(searchValue) || serial.includes(searchValue);
+        });
+        
+        displayInventorySuggestions(matches, searchValue);
+    } else {
+        suggestionsDiv.style.display = 'none';
+    }
+});
+
+function displayInventorySuggestions(matches, searchTerm) {
+    const suggestionsDiv = document.getElementById('inventorySearchSuggestions');
+    
+    if (matches.length === 0) {
+        suggestionsDiv.innerHTML = '<div class="suggestion-item" style="cursor: default;">No matches found</div>';
+        suggestionsDiv.style.display = 'block';
+        return;
+    }
+    
+    const html = matches.slice(0, 5).map(inv => {
+        const productName = inv.product?.product_name || '';
+        const brand = inv.product?.brand || '';
+        const qty = inv.quantity_on_hand;
+        const highlightedName = productName.replace(new RegExp(searchTerm, 'gi'), match => `<span class="suggestion-highlight">${match}</span>`);
+        
+        return `
+            <div class="suggestion-item" onclick="selectInventorySuggestion('${productName}')">
+                <div><strong>${highlightedName}</strong></div>
+                <div class="suggestion-meta">${brand} • Stock: ${qty}</div>
+            </div>
+        `;
+    }).join('');
+    
+    suggestionsDiv.innerHTML = html;
+    suggestionsDiv.style.display = 'block';
+}
+
+function selectInventorySuggestion(productName) {
+    document.getElementById('inventorySearchInput').value = productName;
+    document.getElementById('inventorySearchSuggestions').style.display = 'none';
+    performInventorySearch(productName);
+}
+
+function performInventorySearch(search) {
+    const url = new URL(window.location.href);
+    url.searchParams.set('search', search);
+    window.location.href = url.toString();
+}
+
+// Close suggestions when clicking outside
+document.addEventListener('click', function(e) {
+    const searchInput = document.getElementById('inventorySearchInput');
+    const suggestionsDiv = document.getElementById('inventorySearchSuggestions');
+    if (!searchInput.contains(e.target) && !suggestionsDiv.contains(e.target)) {
+        suggestionsDiv.style.display = 'none';
+    }
+});
+
+// Status filter
+document.getElementById('statusFilter').addEventListener('change', function() {
+    const url = new URL(window.location.href);
+    url.searchParams.set('status', this.value);
+    window.location.href = url.toString();
+});
+
+// Toast notification function
+function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.textContent = message;
+    toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 12px 24px;
+        background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
+        color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        z-index: 10000;
+        animation: slideIn 0.3s ease-out;
+    `;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.animation = 'slideOut 0.3s ease-out';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
+// Modal click outside to close
+document.getElementById('viewInventoryModal').addEventListener('click', function(e) {
+    if (e.target === this) closeViewInventoryModal();
+});
+
+document.getElementById('editInventoryModal').addEventListener('click', function(e) {
+    if (e.target === this) closeEditInventoryModal();
 });
 </script>
 @endsection

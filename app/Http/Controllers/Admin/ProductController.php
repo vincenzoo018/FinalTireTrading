@@ -72,4 +72,80 @@ class ProductController extends Controller
 
         return redirect()->route('admin.products.index')->with('success', 'Product created successfully.');
     }
+
+    // Show single product (for view modal)
+    public function show($id)
+    {
+        // Only allow authenticated admins (role_id == 1 or 2)
+        if (!Auth::check() || !in_array(Auth::user()->role_id, [1, 2])) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $product = Product::with(['category', 'supplier', 'inventory'])->findOrFail($id);
+        return response()->json($product);
+    }
+
+    // Update product
+    public function update(Request $request, $id)
+    {
+        // Only allow authenticated admins (role_id == 1 or 2)
+        if (!Auth::check() || !in_array(Auth::user()->role_id, [1, 2])) {
+            return redirect()->route('login')->withErrors(['auth' => 'Please login as an admin to edit products.']);
+        }
+
+        $product = Product::findOrFail($id);
+
+        $request->validate([
+            'category_id' => 'required|exists:categories,category_id',
+            'supplier_id' => 'required|exists:suppliers,supplier_id',
+            'product_name' => 'required|string|max:255',
+            'brand' => 'nullable|string|max:255',
+            'size' => 'nullable|string|max:255',
+            'length' => 'nullable|string|max:255',
+            'width' => 'nullable|string|max:255',
+            'description' => 'nullable|string',
+            'base_price' => 'required|numeric|min:0',
+            'selling_price' => 'required|numeric|min:0',
+            'serial_number' => 'nullable|string|max:255',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $data = $request->all();
+
+        if ($request->hasFile('image')) {
+            // Delete old image if exists
+            if ($product->image && file_exists(public_path($product->image))) {
+                unlink(public_path($product->image));
+            }
+
+            $image = $request->file('image');
+            $imageName = time() . '_' . $image->getClientOriginalName();
+            $image->move(public_path('images'), $imageName);
+            $data['image'] = 'images/' . $imageName;
+        }
+
+        $product->update($data);
+
+        return redirect()->route('admin.products.index')->with('success', 'Product updated successfully.');
+    }
+
+    // Delete product
+    public function destroy($id)
+    {
+        // Only allow authenticated admins (role_id == 1 or 2)
+        if (!Auth::check() || !in_array(Auth::user()->role_id, [1, 2])) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $product = Product::findOrFail($id);
+
+        // Delete image if exists
+        if ($product->image && file_exists(public_path($product->image))) {
+            unlink(public_path($product->image));
+        }
+
+        $product->delete();
+
+        return response()->json(['success' => true, 'message' => 'Product deleted successfully.']);
+    }
 }

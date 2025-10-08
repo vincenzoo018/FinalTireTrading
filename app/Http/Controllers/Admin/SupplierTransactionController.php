@@ -22,18 +22,22 @@ class SupplierTransactionController extends Controller
         }
 
         $query = SuppTransOrder::with(['supplier','suppOrderProds.product'])->orderBy('created_at','desc');
+        
         if ($request->filled('supplier_id')) {
             $query->where('supplier_id', $request->supplier_id);
         }
+        
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search){
                 $q->where('reference_num','like',"%{$search}%")
                   ->orWhereHas('supplier', function($sq) use ($search){
-                      $sq->where('supplier_name','like',"%{$search}%");
+                      $sq->where('supplier_name','like',"%{$search}%")
+                        ->orWhere('company_name','like',"%{$search}%");
                   });
             });
         }
+        
         $transactions = $query->paginate(10)->appends($request->only('supplier_id','search'));
         $suppliers = Supplier::all();
         
@@ -205,6 +209,131 @@ class SupplierTransactionController extends Controller
             ->limit(10)
             ->get(['transaction_id','reference_num','order_date','delivery_date','overall_total','tax']);
         return response()->json(['success'=>true,'data'=>$history]);
+    }
+
+    // Get single transaction for editing
+    public function edit($id)
+    {
+        if (!Auth::check() || !in_array(Auth::user()->role_id, [1,2])) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $transaction = SuppTransOrder::with(['supplier', 'suppOrderProds.product'])->findOrFail($id);
+        return response()->json($transaction);
+    }
+
+    // Update transaction
+    public function update(Request $request, $id)
+    {
+        if (!Auth::check() || Auth::user()->role_id != 1) {
+            return redirect()->route('auth.login')->withErrors(['auth' => 'Access denied. Admin privileges required.']);
+        }
+
+        $validated = $request->validate([
+            'reference_num'   => 'required|string|max:255',
+            'order_date'      => 'required|date',
+            'delivery_date'   => 'nullable|date',
+            'delivery_fee'    => 'nullable|numeric|min:0',
+            'delivery_received'=> 'required|in:0,1',
+            'estimated_date'  => 'nullable|date',
+            'tax'             => 'required|numeric|min:0',
+            'supplier_id'     => 'required|exists:suppliers,supplier_id',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $transaction = SuppTransOrder::findOrFail($id);
+            
+            // Calculate totals from existing items (quantities not editable)
+            $itemsTotal = $transaction->suppOrderProds->sum('total');
+            $deliveryFee = (float)($request->input('delivery_fee', 0));
+            $tax = (float)$validated['tax'];
+            $subTotal = $itemsTotal;
+            $overallTotal = $subTotal + $tax + $deliveryFee;
+            
+            $deliveryReceived = (bool)$validated['delivery_received'];
+            $wasDeliveryReceived = (bool)$transaction->delivery_received;
+
+            // Update transaction
+            $transaction->update([
+                'reference_num'    => $validated['reference_num'],
+                'order_date'       => $validated['order_date'],
+                'delivery_date'    => $validated['delivery_date'] ?? null,
+                'delivery_fee'     => $deliveryFee,
+                'delivery_received'=> $deliveryReceived,
+                'estimated_date'   => $validated['estimated_date'] ?? null,
+                'tax'              => $tax,
+                'sub_total'        => $subTotal,
+                'overall_total'    => $overallTotal,
+                'supplier_id'      => $validated['supplier_id'],
+            ]);
+
+            // If delivery status changed from pending to received, create StockProd records
+            if (!$wasDeliveryReceived && $deliveryReceived) {
+                foreach ($transaction->suppOrderProds as $orderProd) {
+                    $quantity = $orderProd->quantity;
+                    $unitPrice = $quantity > 0 ? ((float)$orderProd->total / $quantity) : 0;
+                    
+                    StockProd::create([
+                        'supplier_id'  => $validated['supplier_id'],
+                        'product_id'   => $orderProd->product_id,
+                        'quantity'     => $quantity,
+                        'unit_price'   => $unitPrice,
+                        'total_cost'   => $orderProd->total,
+                        'date'         => $validated['delivery_date'] ?? now(),
+                        'status'       => 'In Stock',
+                    ]);
+                }
+            }
+
+            // Update invoice if exists
+            if ($transaction->invoice) {
+                $transaction->invoice->update([
+                    'subtotal' => $subTotal,
+                    'tax' => $tax,
+                    'delivery_fee' => $deliveryFee,
+                    'total_amount' => $overallTotal,
+                ]);
+            }
+
+            DB::commit();
+            
+            return redirect()->route('admin.transactions')
+                ->with('success', 'Transaction updated successfully.');
+                
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error('Transaction update failed: ' . $e->getMessage());
+            return back()->withErrors(['error' => 'Failed to update transaction: ' . $e->getMessage()]);
+        }
+    }
+
+    // Delete transaction
+    public function destroy($id)
+    {
+        if (!Auth::check() || Auth::user()->role_id != 1) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        DB::beginTransaction();
+        try {
+            $transaction = SuppTransOrder::findOrFail($id);
+            
+            // Delete related records
+            $transaction->suppOrderProds()->delete();
+            if ($transaction->invoice) {
+                $transaction->invoice->delete();
+            }
+            
+            $transaction->delete();
+            
+            DB::commit();
+            return response()->json(['success' => true, 'message' => 'Transaction deleted successfully.']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error('Transaction deletion failed: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Failed to delete transaction.'], 500);
+        }
     }
 }
 

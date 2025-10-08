@@ -14,14 +14,26 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/categories', [AdminController::class, 'categories'])->name('categories');
     Route::get('/product', [\App\Http\Controllers\Admin\ProductController::class, 'index'])->name('products.index');
     Route::post('/product', [\App\Http\Controllers\Admin\ProductController::class, 'store'])->name('products.store');
+    Route::get('/product/{id}', [\App\Http\Controllers\Admin\ProductController::class, 'show'])->name('products.show');
+    Route::put('/product/{id}', [\App\Http\Controllers\Admin\ProductController::class, 'update'])->name('products.update');
+    Route::delete('/product/{id}', [\App\Http\Controllers\Admin\ProductController::class, 'destroy'])->name('products.destroy');
     Route::get('/inventory', [\App\Http\Controllers\Admin\InventoryController::class, 'index'])->name('inventory.index');
     Route::post('/inventory', [\App\Http\Controllers\Admin\InventoryController::class, 'store'])->name('inventory.store');
+    Route::get('/inventory/{id}', [\App\Http\Controllers\Admin\InventoryController::class, 'show'])->name('inventory.show');
+    Route::put('/inventory/{id}', [\App\Http\Controllers\Admin\InventoryController::class, 'update'])->name('inventory.update');
+    Route::delete('/inventory/{id}', [\App\Http\Controllers\Admin\InventoryController::class, 'destroy'])->name('inventory.destroy');
     Route::get('/stockadjustments', [\App\Http\Controllers\Admin\StockAdjustmentController::class, 'index'])->name('stockadjustments.index');
     Route::get('/suppliers', [\App\Http\Controllers\Admin\SupplierController::class, 'index'])->name('suppliers.index');
     Route::post('/suppliers', [\App\Http\Controllers\Admin\SupplierController::class, 'store'])->name('suppliers.store');
+    Route::get('/suppliers/{id}', [\App\Http\Controllers\Admin\SupplierController::class, 'show'])->name('suppliers.show');
+    Route::put('/suppliers/{id}', [\App\Http\Controllers\Admin\SupplierController::class, 'update'])->name('suppliers.update');
+    Route::delete('/suppliers/{id}', [\App\Http\Controllers\Admin\SupplierController::class, 'destroy'])->name('suppliers.destroy');
     Route::get('/transactions', [\App\Http\Controllers\Admin\SupplierTransactionController::class, 'index'])->name('transactions');
     Route::post('/transactions', [\App\Http\Controllers\Admin\SupplierTransactionController::class, 'store'])->name('transactions.store');
     Route::get('/transactions/{id}', [\App\Http\Controllers\Admin\SupplierTransactionController::class, 'show'])->name('transactions.show');
+    Route::get('/transactions/{id}/edit', [\App\Http\Controllers\Admin\SupplierTransactionController::class, 'edit'])->name('transactions.edit');
+    Route::put('/transactions/{id}', [\App\Http\Controllers\Admin\SupplierTransactionController::class, 'update'])->name('transactions.update');
+    Route::delete('/transactions/{id}', [\App\Http\Controllers\Admin\SupplierTransactionController::class, 'destroy'])->name('transactions.destroy');
     Route::get('/transactions/supplier/{supplierId}/history', [\App\Http\Controllers\Admin\SupplierTransactionController::class, 'supplierHistory'])->name('transactions.supplier.history');
     Route::get('/services', [AdminController::class, 'services'])->name('services');
     Route::get('/bookings', [\App\Http\Controllers\Admin\BookingsController::class, 'index'])->name('bookings');
@@ -71,6 +83,8 @@ use App\Http\Controllers\Admin\CategoriesController;
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/categories', [CategoriesController::class, 'index'])->name('categories.index');
     Route::post('/categories', [CategoriesController::class, 'store'])->name('categories.store');
+    Route::get('/categories/{id}', [CategoriesController::class, 'show'])->name('categories.show');
+    Route::put('/categories/{id}', [CategoriesController::class, 'update'])->name('categories.update');
     Route::delete('/categories/{id}', [CategoriesController::class, 'destroy'])->name('categories.destroy');
 });
 
@@ -81,6 +95,9 @@ use App\Http\Controllers\Admin\ServiceController;
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/services', [ServiceController::class, 'index'])->name('services.index');
     Route::post('/services', [ServiceController::class, 'store'])->name('services.store');
+    Route::get('/services/{id}', [ServiceController::class, 'show'])->name('services.show');
+    Route::put('/services/{id}', [ServiceController::class, 'update'])->name('services.update');
+    Route::delete('/services/{id}', [ServiceController::class, 'destroy'])->name('services.destroy');
 });
 
 use App\Http\Controllers\Admin\EmployeeController;
