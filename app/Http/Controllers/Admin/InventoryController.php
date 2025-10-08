@@ -33,8 +33,8 @@ class InventoryController extends Controller
         }
 
         $inventories = $query->paginate(10);
-        // Fetch all products for the stock modal
-        $products = Product::with('supplier')->get();
+        // Fetch all products for the stock modal with inventory and category data
+        $products = Product::with(['supplier', 'category', 'inventory'])->get();
         // Fetch all categories and suppliers to use in the form dropdowns
         $categories = Category::all();
         $suppliers  = Supplier::all();
@@ -45,55 +45,58 @@ class InventoryController extends Controller
     // Store a new stock record and update inventory
     public function store(Request $request)
     {
-        $previewRows = json_decode($request->preview_rows, true);
+        $stockData = json_decode($request->stock_data, true);
 
-        if (!$previewRows || !is_array($previewRows)) {
+        if (!$stockData || !is_array($stockData)) {
             return back()->with('error', 'No stock data provided.');
         }
 
-        foreach ($previewRows as $row) {
-            // Validate each row
-            $validated = \Validator::make($row, [
-                'productId'   => 'required|exists:products,product_id',
-                'supplierText'=> 'required|string',
-                'categoryText'=> 'required|string',
-                'basePrice'   => 'required|numeric|min:0',
-                'sellingPrice'=> 'required|numeric|min:0',
-                'quantity'    => 'required|integer|min:1',
+        $addedCount = 0;
+
+        foreach ($stockData as $item) {
+            // Validate each item
+            $validated = \Validator::make($item, [
+                'product_id'   => 'required|exists:products,product_id',
+                'supplier_id'  => 'required|exists:suppliers,supplier_id',
+                'base_price'   => 'required|numeric|min:0',
+                'quantity'     => 'required|integer|min:1',
             ])->validate();
 
-            // Find product, supplier, category by name (or use IDs if you pass them)
-            $product = \App\Models\Product::find($row['productId']);
-            $supplier = $product->supplier;
-            $category = $product->category;
+            $productId = $item['product_id'];
+            $supplierId = $item['supplier_id'];
+            $quantity = $item['quantity'];
+            $basePrice = $item['base_price'];
 
             // Create StockProd record
             StockProd::create([
-                'product_id'   => $product->product_id,
-                'supplier_id'  => $supplier ? $supplier->supplier_id : null,
-                'quantity'     => $row['quantity'],
-                'unit_price'   => $row['basePrice'],
-                'total_cost'   => $row['quantity'] * $row['basePrice'],
-                'date'         => $request->date ?? now(),
-                'status'       => $request->status ?? 'In Stock',
+                'product_id'   => $productId,
+                'supplier_id'  => $supplierId,
+                'quantity'     => $quantity,
+                'unit_price'   => $basePrice,
+                'total_cost'   => $quantity * $basePrice,
+                'date'         => now(),
+                'status'       => 'In Stock',
             ]);
 
             // Update Inventory
-            $inventory = Inventory::where('product_id', $product->product_id)->first();
+            $inventory = Inventory::where('product_id', $productId)->first();
             if ($inventory) {
-                $inventory->quantity_on_hand += $row['quantity'];
+                $inventory->quantity_on_hand += $quantity;
                 $inventory->last_updated = now();
                 $inventory->save();
             } else {
                 Inventory::create([
-                    'product_id'      => $product->product_id,
-                    'quantity_on_hand'=> $row['quantity'],
+                    'product_id'      => $productId,
+                    'quantity_on_hand'=> $quantity,
                     'last_updated'    => now(),
                 ]);
             }
+
+            $addedCount++;
         }
 
-        return redirect()->route('admin.inventory.index')->with('success', 'Stock added successfully.');
+        return redirect()->route('admin.inventory.index')
+            ->with('success', "Successfully added stock for {$addedCount} product(s).");
     }
 
     public function getProductBySerial(Request $request)

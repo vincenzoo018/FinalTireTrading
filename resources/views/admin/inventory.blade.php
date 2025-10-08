@@ -147,153 +147,94 @@
     </div>
 </div>
 
-<!-- Stock Add Modal -->
+<!-- Stock Add Modal - REDESIGNED -->
 <div class="modal-overlay" id="stockModal">
-    <div class="modal-content">
+    <div class="modal-content" style="max-width: 1200px;">
         <div class="modal-header">
-            <h2>Add Stock</h2>
+            <h2><i class="fas fa-boxes me-2"></i>Add Stock to Inventory</h2>
             <p class="required-text">
-                Fields marked with an asterisk <span class="asterisk">(*)</span> are required.
+                Select a supplier to view their products, then adjust quantities using +/- buttons
             </p>
         </div>
 
         <form id="stockForm" method="POST" action="{{ route('admin.inventory.store') }}">
             @csrf
             <div class="modal-body">
-                <div class="form-grid">
-                    <!-- Product Search/Input Field -->
-                    <div class="form-group full-width">
-                        <label class="form-label">Product Name <span class="required">*</span></label>
-                        <div class="input-with-icon">
-                            <i class="fas fa-search input-icon"></i>
-                            <select name="product_id" id="product_id" class="form-select" required>
-                                <option value="">Select product...</option>
-                                @foreach($products as $product)
-                                    <option value="{{ $product->product_id }}">{{ $product->product_name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Auto-fill fields (existing product data) -->
+                <!-- Supplier Selection & Reference Search -->
+                <div class="form-grid" style="margin-bottom: 2rem;">
                     <div class="form-group">
-                        <label class="form-label">Product Category <span class="required">*</span></label>
-                        <select name="category_id" id="category_id" class="form-select" required>
-                            <option value="">Select category</option>
-                            @foreach($categories as $category)
-                            <option value="{{ $category->category_id }}">{{ $category->category_name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Supplier Company Name <span class="required">*</span></label>
+                        <label class="form-label">
+                            <i class="fas fa-truck me-1"></i>Select Supplier <span class="required">*</span>
+                        </label>
                         <select name="supplier_id" id="supplier_id" class="form-select" required>
-                            <option value="">Select supplier</option>
+                            <option value="">Choose a supplier...</option>
                             @foreach($suppliers as $supplier)
                             <option value="{{ $supplier->supplier_id }}">{{ $supplier->company_name }}</option>
                             @endforeach
                         </select>
                     </div>
-
-                    <!-- Other product details input -->
+                    
                     <div class="form-group">
-                        <label class="form-label">Brand</label>
-                        <input type="text" name="brand" id="brand" class="form-input" placeholder="Enter brand name">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Size</label>
-                        <input type="text" name="size" id="size" class="form-input" placeholder="Enter size">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Length</label>
-                        <input type="text" name="length" id="length" class="form-input" placeholder="Enter length">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Width</label>
-                        <input type="text" name="width" id="width" class="form-input" placeholder="Enter width">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Base Price <span class="required">*</span></label>
-                        <input type="number" name="base_price" id="base_price" class="form-input" placeholder="Enter base price" min="0" step="0.01" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Selling Price <span class="required">*</span></label>
-                        <input type="number" name="selling_price" id="selling_price" class="form-input" placeholder="Enter selling price" min="0" step="0.01" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Serial Number</label>
-                        <input type="text" name="serial_number" id="serial_number" class="form-input" placeholder="XXXXXXXXX">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Quantity <span class="required">*</span>
-                            <i class="fas fa-info-circle info-icon" title="Amount to add"></i>
+                        <label class="form-label">
+                            <i class="fas fa-barcode me-1"></i>Search by Reference Number
                         </label>
-                        <select name="quantity" id="quantity" class="form-select" required>
-                            <option value="">Select quantity</option>
-                            <option value="10">10</option>
-                            <option value="25">25</option>
-                            <option value="50">50</option>
-                            <option value="100">100</option>
-                            <option value="250">250</option>
-                            <option value="500">500</option>
-                            <option value="999">999</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Date <span class="required">*</span></label>
-                        <input type="date" name="date" id="date" class="form-input" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Status <span class="required">*</span></label>
-                        <select name="status" id="status" class="form-select" required>
-                            <option value="In Stock">In Stock</option>
-                            <option value="Low Stock">Low Stock</option>
-                            <option value="Out of Stock">Out of Stock</option>
-                        </select>
-                    </div>
-                    <div class="form-group full-width">
-                        <label class="form-label">Product Description</label>
-                        <textarea name="description" id="description" class="form-textarea" placeholder="Enter product description (optional)"></textarea>
+                        <div class="input-with-icon">
+                            <i class="fas fa-search input-icon"></i>
+                            <input type="text" id="reference_search" class="form-input" placeholder="Type reference/serial number...">
+                        </div>
+                        <small class="text-muted" style="font-size: 0.75rem;">Live search will highlight matching products</small>
                     </div>
                 </div>
 
-                <!-- Button to preview the entered data -->
-                <div style="margin: 1rem 0;">
-                    <button type="button" id="previewBtn" class="btn-save" style="background:#1e3a8a;">Preview Data</button>
+                <!-- Products Table -->
+                <div id="products_table_container" style="display: none;">
+                    <div style="margin-bottom: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 0.5rem;">
+                        <h4 style="margin: 0; font-size: 1rem; color: #2c3e50;">
+                            <i class="fas fa-list-ul me-2"></i>Products from Selected Supplier
+                        </h4>
+                        <p style="margin: 0.5rem 0 0 0; font-size: 0.875rem; color: #6c757d;">
+                            Use the <strong>+</strong> and <strong>-</strong> buttons to adjust stock quantities for each product
+                        </p>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="supplier-table" id="productsTable">
+                            <thead>
+                                <tr>
+                                    <th style="width: 250px;">Product Name</th>
+                                    <th>Category</th>
+                                    <th>Brand</th>
+                                    <th>Size</th>
+                                    <th>Base Price</th>
+                                    <th>Selling Price</th>
+                                    <th>Serial #</th>
+                                    <th>Current Stock</th>
+                                    <th style="width: 180px;">Quantity to Add</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productsTableBody">
+                                <!-- Rows will be populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
-                <!-- Preview Table -->
-                <div class="table-responsive" style="margin-top:1rem;">
-                    <table class="supplier-table" id="previewTable">
-                        <thead>
-                            <tr>
-                                <th>Product Name</th>
-                                <th>Category</th>
-                                <th>Supplier</th>
-                                <th>Brand</th>
-                                <th>Size</th>
-                                <th>Length</th>
-                                <th>Width</th>
-                                <th>Base Price</th>
-                                <th>Selling Price</th>
-                                <th>Serial Number</th>
-                                <th>Quantity</th>
-                                <th>Description</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Preview rows will be appended here -->
-                        </tbody>
-                    </table>
+                <!-- Empty State -->
+                <div id="empty_state" style="text-align: center; padding: 3rem; color: #94a3b8;">
+                    <i class="fas fa-box-open" style="font-size: 4rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                    <p style="font-size: 1.1rem; margin: 0;">Select a supplier to view their products</p>
                 </div>
-
+            </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn-cancel" onclick="closeStockModal()">Cancel</button>
-                <button type="submit" class="btn-save">Save Stock</button>
+                <button type="button" class="btn-cancel" onclick="closeStockModal()">
+                    <i class="fas fa-times me-1"></i>Cancel
+                </button>
+                <button type="submit" class="btn-save" id="saveStockBtn" disabled>
+                    <i class="fas fa-save me-1"></i>Save Stock
+                </button>
             </div>
-            <input type="hidden" name="preview_rows" id="preview_rows">
+            <input type="hidden" name="stock_data" id="stock_data">
         </form>
     </div>
 </div>
@@ -518,145 +459,290 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* Quantity Controls */
+.quantity-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.qty-btn {
+    width: 32px;
+    height: 32px;
+    border: 2px solid #cbd5e1;
+    background: white;
+    color: #475569;
+    border-radius: 0.375rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.qty-btn:hover {
+    background: #f1f5f9;
+    border-color: #94a3b8;
+    transform: scale(1.1);
+}
+
+.qty-btn:active {
+    transform: scale(0.95);
+}
+
+.qty-btn.minus {
+    color: #ef4444;
+    border-color: #fecaca;
+}
+
+.qty-btn.minus:hover {
+    background: #fef2f2;
+    border-color: #ef4444;
+}
+
+.qty-btn.plus {
+    color: #10b981;
+    border-color: #d1fae5;
+}
+
+.qty-btn.plus:hover {
+    background: #f0fdf4;
+    border-color: #10b981;
+}
+
+.qty-input {
+    width: 60px;
+    text-align: center;
+    padding: 0.5rem;
+    border: 2px solid #cbd5e1;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.qty-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Highlight row on search */
+.highlight-row {
+    background-color: #fef3c7 !important;
+    animation: pulse-highlight 1.5s infinite;
+}
+
+@keyframes pulse-highlight {
+    0%, 100% {
+        background-color: #fef3c7;
+    }
+    50% {
+        background-color: #fde68a;
+    }
+}
+
+.text-muted {
+    color: #6c757d;
+}
 </style>
 
 <script>
-// Open/Close modal functions (existing)
+// All products data
+const allProducts = @json($products);
+let currentProducts = [];
+let productQuantities = {};
+
+// Open/Close modal functions
 function openStockModal() {
     document.getElementById('stockModal').classList.add('active');
     document.body.style.overflow = 'hidden';
 }
+
 function closeStockModal() {
     document.getElementById('stockModal').classList.remove('active');
     document.body.style.overflow = '';
     document.getElementById('stockForm').reset();
-    document.querySelector("#previewTable tbody").innerHTML = '';
-    previewRows = [];
+    document.getElementById('productsTableBody').innerHTML = '';
+    document.getElementById('products_table_container').style.display = 'none';
+    document.getElementById('empty_state').style.display = 'block';
+    document.getElementById('reference_search').value = '';
+    productQuantities = {};
+    currentProducts = [];
+    updateSaveButton();
 }
+
 document.getElementById('stockModal').addEventListener('click', function(e) {
     if (e.target === this) { closeStockModal(); }
 });
+
 document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') { closeStockModal(); }
-});
-
-// Auto-fill fields when a product is selected
-document.getElementById('product_id').addEventListener('change', function() {
-    var productId = this.value;
-    if (!productId) return;
-
-    var products = @json($products);
-    var product = products.find(p => p.product_id == productId);
-
-    if (product) {
-        document.getElementById('category_id').value = product.category_id || '';
-        document.getElementById('supplier_id').value = product.supplier_id || '';
-        document.getElementById('brand').value = product.brand || '';
-        document.getElementById('size').value = product.size || '';
-        document.getElementById('length').value = product.length || '';
-        document.getElementById('width').value = product.width || '';
-        document.getElementById('base_price').value = product.base_price || '';
-        document.getElementById('selling_price').value = product.selling_price || '';
-        document.getElementById('serial_number').value = product.serial_number || '';
-        document.getElementById('description').value = product.description || '';
-    } else {
-        document.getElementById('category_id').value = '';
-        document.getElementById('supplier_id').value = '';
-        document.getElementById('brand').value = '';
-        document.getElementById('size').value = '';
-        document.getElementById('length').value = '';
-        document.getElementById('width').value = '';
-        document.getElementById('base_price').value = '';
-        document.getElementById('selling_price').value = '';
-        document.getElementById('serial_number').value = '';
-        document.getElementById('description').value = '';
+    if (e.key === 'Escape' && document.getElementById('stockModal').classList.contains('active')) { 
+        closeStockModal(); 
     }
 });
 
-// Store preview rows in an array
-let previewRows = [];
-
-// Add product to preview table (multi-row support)
-document.getElementById('previewBtn').addEventListener('click', function(){
-    var productSelect = document.getElementById('product_id');
-    var productId = productSelect.value;
-    var productName = productSelect.options[productSelect.selectedIndex].text;
-
-    if (!productId) {
-        alert('Please select a product.');
+// When supplier is selected, load their products
+document.getElementById('supplier_id').addEventListener('change', function() {
+    const supplierId = this.value;
+    
+    if (!supplierId) {
+        document.getElementById('products_table_container').style.display = 'none';
+        document.getElementById('empty_state').style.display = 'block';
+        currentProducts = [];
+        productQuantities = {};
         return;
     }
 
-    var categorySelect = document.getElementById('category_id');
-    var categoryText = categorySelect.options[categorySelect.selectedIndex].text;
-    var supplierSelect = document.getElementById('supplier_id');
-    var supplierText = supplierSelect.options[supplierSelect.selectedIndex].text;
-    var brand = document.getElementById('brand').value;
-    var size = document.getElementById('size').value;
-    var length = document.getElementById('length').value;
-    var width = document.getElementById('width').value;
-    var basePrice = document.getElementById('base_price').value;
-    var sellingPrice = document.getElementById('selling_price').value;
-    var serialNumber = document.getElementById('serial_number').value;
-    var quantity = document.getElementById('quantity').value;
-    var description = document.getElementById('description').value;
-
-    // Validate required fields
-    if (!categorySelect.value || !supplierSelect.value || !basePrice || !sellingPrice || !quantity) {
-        alert('Please fill all required fields.');
+    // Filter products by supplier
+    currentProducts = allProducts.filter(p => p.supplier_id == supplierId);
+    
+    if (currentProducts.length === 0) {
+        document.getElementById('productsTableBody').innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 2rem; color: #94a3b8;"><i class="fas fa-inbox me-2"></i>No products found for this supplier</td></tr>';
+        document.getElementById('products_table_container').style.display = 'block';
+        document.getElementById('empty_state').style.display = 'none';
         return;
     }
 
-    // Add to previewRows array
-    previewRows.push({
-        productId, productName, categoryText, supplierText, brand, size, length, width,
-        basePrice, sellingPrice, serialNumber, quantity, description
-    });
-
-    renderPreviewTable();
-    // Optionally, reset fields for next entry
-    document.getElementById('stockForm').reset();
+    renderProductsTable();
+    document.getElementById('products_table_container').style.display = 'block';
+    document.getElementById('empty_state').style.display = 'none';
 });
 
-// Render preview table with all rows
-function renderPreviewTable() {
-    var tbody = document.querySelector("#previewTable tbody");
+// Render products table
+function renderProductsTable() {
+    const tbody = document.getElementById('productsTableBody');
     tbody.innerHTML = '';
-    previewRows.forEach(function(row, idx){
-        var tr = document.createElement('tr');
+
+    currentProducts.forEach(product => {
+        const currentStock = product.inventory ? product.inventory.quantity_on_hand : 0;
+        const qty = productQuantities[product.product_id] || 0;
+        
+        const tr = document.createElement('tr');
+        tr.setAttribute('data-product-id', product.product_id);
+        tr.setAttribute('data-serial', product.serial_number || '');
         tr.innerHTML = `
-            <td>${row.productName}</td>
-            <td>${row.categoryText}</td>
-            <td>${row.supplierText}</td>
-            <td>${row.brand}</td>
-            <td>${row.size}</td>
-            <td>${row.length}</td>
-            <td>${row.width}</td>
-            <td>₱${parseFloat(row.basePrice || 0).toFixed(2)}</td>
-            <td>₱${parseFloat(row.sellingPrice || 0).toFixed(2)}</td>
-            <td>${row.serialNumber}</td>
-            <td>${row.quantity}</td>
-            <td>${row.description}</td>
-            <td><button type="button" class="btn-cancel" onclick="removePreviewRow(${idx})">Remove</button></td>
+            <td class="supplier-name">${product.product_name}</td>
+            <td>${product.category ? product.category.category_name : 'N/A'}</td>
+            <td>${product.brand || '-'}</td>
+            <td>${product.size || '-'}</td>
+            <td>₱${parseFloat(product.base_price || 0).toFixed(2)}</td>
+            <td>₱${parseFloat(product.selling_price || 0).toFixed(2)}</td>
+            <td><code>${product.serial_number || 'N/A'}</code></td>
+            <td><span class="stock-badge">${currentStock}</span></td>
+            <td>
+                <div class="quantity-controls">
+                    <button type="button" class="qty-btn minus" onclick="adjustQuantity(${product.product_id}, -1)">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <input type="number" class="qty-input" value="${qty}" min="0" 
+                           onchange="setQuantity(${product.product_id}, this.value)" readonly>
+                    <button type="button" class="qty-btn plus" onclick="adjustQuantity(${product.product_id}, 1)">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+            </td>
         `;
         tbody.appendChild(tr);
     });
 }
 
-// Remove a row from preview
-window.removePreviewRow = function(idx) {
-    previewRows.splice(idx, 1);
-    renderPreviewTable();
+// Adjust quantity with +/- buttons
+window.adjustQuantity = function(productId, delta) {
+    const currentQty = productQuantities[productId] || 0;
+    const newQty = Math.max(0, currentQty + delta);
+    productQuantities[productId] = newQty;
+    
+    // Update the input field
+    const row = document.querySelector(`tr[data-product-id="${productId}"]`);
+    if (row) {
+        const input = row.querySelector('.qty-input');
+        input.value = newQty;
+    }
+    
+    updateSaveButton();
 };
 
+// Set quantity directly
+window.setQuantity = function(productId, value) {
+    const qty = Math.max(0, parseInt(value) || 0);
+    productQuantities[productId] = qty;
+    updateSaveButton();
+};
+
+// Update save button state
+function updateSaveButton() {
+    const hasQuantity = Object.values(productQuantities).some(qty => qty > 0);
+    document.getElementById('saveStockBtn').disabled = !hasQuantity;
+}
+
+// Live search by reference number
+document.getElementById('reference_search').addEventListener('input', function() {
+    const searchTerm = this.value.toLowerCase().trim();
+    
+    // Remove all highlights first
+    document.querySelectorAll('.highlight-row').forEach(row => {
+        row.classList.remove('highlight-row');
+    });
+    
+    if (!searchTerm) return;
+    
+    // Find and highlight matching rows
+    const rows = document.querySelectorAll('#productsTableBody tr');
+    rows.forEach(row => {
+        const serial = row.getAttribute('data-serial')?.toLowerCase() || '';
+        if (serial.includes(searchTerm)) {
+            row.classList.add('highlight-row');
+            // Scroll to first match
+            if (!document.querySelector('.highlight-row[data-scrolled]')) {
+                row.setAttribute('data-scrolled', 'true');
+                row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+    });
+});
+
+// Form submission
 document.getElementById('stockForm').addEventListener('submit', function(e) {
-    // Only allow submit if there is at least one preview row
-    if (previewRows.length === 0) {
-        alert('Please add at least one product to preview before saving.');
-        e.preventDefault();
+    e.preventDefault();
+    
+    // Prepare stock data
+    const stockData = [];
+    
+    for (const [productId, quantity] of Object.entries(productQuantities)) {
+        if (quantity > 0) {
+            const product = allProducts.find(p => p.product_id == productId);
+            if (product) {
+                stockData.push({
+                    product_id: productId,
+                    product_name: product.product_name,
+                    category_id: product.category_id,
+                    supplier_id: product.supplier_id,
+                    brand: product.brand,
+                    size: product.size,
+                    base_price: product.base_price,
+                    selling_price: product.selling_price,
+                    serial_number: product.serial_number,
+                    quantity: quantity
+                });
+            }
+        }
+    }
+    
+    if (stockData.length === 0) {
+        alert('Please add quantity to at least one product.');
         return false;
     }
-    document.getElementById('preview_rows').value = JSON.stringify(previewRows);
+    
+    // Set hidden field with stock data
+    document.getElementById('stock_data').value = JSON.stringify(stockData);
+    
+    // Submit form
+    this.submit();
 });
 </script>
 @endsection
