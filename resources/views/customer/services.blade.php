@@ -8,10 +8,18 @@
             <div class="col-lg-8">
                 <h1 class="section-title text-start mb-2">Our Services</h1>
                 <p class="lead mb-0">Professional automotive services to keep your vehicle in top condition and ensure your safety on the road</p>
+                <div class="mt-3">
+                    <span class="badge bg-success me-2">
+                        <i class="fas fa-check-circle me-1"></i>All Services Available for Booking
+                    </span>
+                    <span class="badge bg-info">
+                        <i class="fas fa-users me-1"></i>{{ Auth::user()->fname ?? 'Customer' }}, Book Your Service Now!
+                    </span>
+                </div>
             </div>
             <div class="col-lg-4 text-lg-end">
-                <a href="{{ route('customer.booking') }}" class="btn btn-primary btn-lg">
-                    <i class="fas fa-calendar-plus me-2"></i>Book Appointment
+                <a href="{{ route('customer.booking') }}" class="btn btn-primary btn-lg pulse-animation">
+                    <i class="fas fa-calendar-plus me-2"></i>View My Bookings
                 </a>
             </div>
         </div>
@@ -55,7 +63,7 @@
         <div class="row">
             @forelse($services as $service)
             <div class="col-lg-4 col-md-6 mb-4">
-                <div class="card service-card text-center h-100 {{ !$service->available_for_user ? 'service-unavailable' : '' }}">
+                <div class="card service-card text-center h-100">
                     <div class="card-body">
                         <div class="service-icon mb-3">
                             @if($service->image)
@@ -69,13 +77,13 @@
                         
                         <!-- Availability Status -->
                         <div class="availability-status mb-2">
-                            @if($service->available_for_user)
+                            @if($service->is_available)
                                 <span class="badge bg-success">
                                     <i class="fas fa-check-circle me-1"></i>Available
                                 </span>
                             @else
-                                <span class="badge bg-warning">
-                                    <i class="fas fa-clock me-1"></i>Already Booked
+                                <span class="badge bg-danger">
+                                    <i class="fas fa-times-circle me-1"></i>Not Available
                                 </span>
                             @endif
                         </div>
@@ -89,21 +97,24 @@
                             </div>
                         </div>
                         
-                        @if($service->available_for_user)
-                            <button class="btn btn-primary book-btn w-100"
+                        @if($service->is_available)
+                            <button class="btn btn-success book-btn w-100"
                                     data-id="{{ $service->service_id }}"
                                     data-name="{{ $service->service_name }}"
                                     data-price="{{ $service->service_price }}"
                                     data-description="{{ $service->description }}"
                                     data-duration="N/A">
-                                <i class="fas fa-calendar-check me-2"></i>Book Now
+                                <i class="fas fa-calendar-check me-2"></i>Book This Service
                             </button>
+                            <small class="text-success d-block mt-2">
+                                <i class="fas fa-check-circle me-1"></i>Available for all customers
+                            </small>
                         @else
                             <button class="btn btn-secondary w-100" disabled>
-                                <i class="fas fa-ban me-2"></i>Unavailable
+                                <i class="fas fa-ban me-2"></i>Temporarily Unavailable
                             </button>
                             <small class="text-muted d-block mt-2">
-                                You already have a booking for this service
+                                <i class="fas fa-info-circle me-1"></i>Check back later
                             </small>
                         @endif
                     </div>
@@ -204,7 +215,7 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="specialRequests" class="form-label">Notes</label>
-                                <input type="text" class="form-control" id="specialRequests" name="notes" placeholder="What needs to be fixed?">
+                                <input type="text" class="form-control" id="bookingNotes" name="notes" placeholder="What needs to be fixed?">
                             </div>
                         </div>
                     </div>
@@ -213,12 +224,44 @@
                         <label for="specialRequests" class="form-label">Special Requests</label>
                         <textarea class="form-control" id="specialRequests" name="special_requests" rows="3" placeholder="Any additional information or special requirements..."></textarea>
                     </div>
+
+                    <!-- Payment Details Section (Hidden by default) -->
+                    <div id="bookingPaymentDetails" style="display: none;">
+                        <hr>
+                        <h6 class="mb-3"><i class="fas fa-credit-card me-2"></i>Payment Details</h6>
+                        
+                        <div class="mb-3">
+                            <label for="bookingCardNumber" class="form-label">Card Number <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="bookingCardNumber" name="card_number" placeholder="1234 5678 9012 3456" maxlength="19">
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="bookingCardName" class="form-label">Cardholder Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="bookingCardName" name="card_name" placeholder="John Doe">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label for="bookingCardExpiry" class="form-label">Expiry <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="bookingCardExpiry" name="card_expiry" placeholder="MM/YY" maxlength="5">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label for="bookingCardCvv" class="form-label">CVV <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="bookingCardCvv" name="card_cvv" placeholder="123" maxlength="4">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                         <i class="fas fa-times me-2"></i>Cancel
                     </button>
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" class="btn btn-primary" id="confirmBookingBtn">
                         <i class="fas fa-calendar-check me-2"></i>Confirm Booking
                     </button>
                 </div>
@@ -286,14 +329,17 @@
 @section('styles')
 <style>
 .service-card {
-    transition: all 0.3s ease;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     border: none;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    overflow: hidden;
 }
 
 .service-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 12px 35px rgba(52, 152, 219, 0.2);
 }
 
 .service-unavailable {
@@ -307,17 +353,34 @@
 }
 
 .service-icon {
-    color: #3498db;
+    width: 90px;
+    height: 90px;
+    margin: 0 auto 1.5rem;
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 2.5rem;
+    box-shadow: 0 8px 25px rgba(52, 152, 219, 0.3);
+    transition: all 0.3s ease;
+}
+
+.service-card:hover .service-icon {
+    transform: rotate(15deg) scale(1.1);
 }
 
 .availability-status .badge {
-    font-size: 0.75rem;
-    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
+    padding: 0.6rem 1rem;
+    border-radius: 50px;
+    font-weight: 700;
 }
 
 .feature-icon {
-    width: 80px;
-    height: 80px;
+    width: 90px;
+    height: 90px;
     background: linear-gradient(135deg, #3498db, #2980b9);
     border-radius: 50%;
     display: flex;
@@ -325,7 +388,85 @@
     justify-content: center;
     margin: 0 auto;
     color: white;
-    font-size: 2rem;
+    font-size: 2.5rem;
+    box-shadow: 0 8px 25px rgba(52, 152, 219, 0.3);
+    transition: all 0.3s ease;
+}
+
+.feature-icon:hover {
+    transform: rotate(15deg) scale(1.1);
+}
+
+/* Pulse Animation for CTA */
+.pulse-animation {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 6px 25px rgba(52, 152, 219, 0.5);
+    }
+}
+
+/* Book Button Enhancement */
+.book-btn {
+    font-weight: 700;
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.book-btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.book-btn:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+.book-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+}
+
+/* Badge Enhancements */
+.badge {
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    font-weight: 600;
+}
+
+.service-details {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    padding: 1.25rem;
+    border-radius: 12px;
+}
+
+.service-details strong {
+    font-size: 1.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 </style>
 @endsection
@@ -351,12 +492,91 @@ document.addEventListener('DOMContentLoaded', function () {
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('bookingDate').min = today;
 
-        // Prefill hidden service_id when opening modal
-        document.querySelectorAll('.book-btn').forEach(function (button) {
-            button.addEventListener('click', function () {
-                document.getElementById('modalServiceId').value = this.getAttribute('data-id');
+    // Payment method change handler - show/hide card fields
+    document.getElementById('paymentMethod').addEventListener('change', function() {
+        const paymentDetails = document.getElementById('bookingPaymentDetails');
+        const cardFields = ['bookingCardNumber', 'bookingCardName', 'bookingCardExpiry', 'bookingCardCvv'];
+        
+        if (this.value === 'Credit Card' || this.value === 'Debit Card') {
+            paymentDetails.style.display = 'block';
+            // Make card fields required
+            cardFields.forEach(function(fieldId) {
+                document.getElementById(fieldId).setAttribute('required', 'required');
             });
+        } else {
+            paymentDetails.style.display = 'none';
+            // Remove required attribute
+            cardFields.forEach(function(fieldId) {
+                document.getElementById(fieldId).removeAttribute('required');
+                document.getElementById(fieldId).value = '';
+            });
+        }
+    });
+
+    // Card number formatting for booking
+    const bookingCardNumber = document.getElementById('bookingCardNumber');
+    if (bookingCardNumber) {
+        bookingCardNumber.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+            let matches = value.match(/\d{4,16}/g);
+            let match = matches && matches[0] || '';
+            let parts = [];
+
+            for (let i = 0, len = match.length; i < len; i += 4) {
+                parts.push(match.substring(i, i + 4));
+            }
+
+            if (parts.length) {
+                e.target.value = parts.join(' ');
+            } else {
+                e.target.value = value;
+            }
         });
+    }
+
+    // Expiry date formatting for booking
+    const bookingCardExpiry = document.getElementById('bookingCardExpiry');
+    if (bookingCardExpiry) {
+        bookingCardExpiry.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = value.substring(0, 2) + '/' + value.substring(2, 4);
+            }
+            e.target.value = value;
+        });
+    }
+
+    // CVV formatting for booking
+    const bookingCardCvv = document.getElementById('bookingCardCvv');
+    if (bookingCardCvv) {
+        bookingCardCvv.addEventListener('input', function(e) {
+            e.target.value = e.target.value.replace(/\D/g, '');
+        });
+    }
+
+    // Form submission handler
+    document.getElementById('bookingForm').addEventListener('submit', function(e) {
+        const paymentMethod = document.getElementById('paymentMethod').value;
+        
+        // Validate card fields if credit/debit card
+        if (paymentMethod === 'Credit Card' || paymentMethod === 'Debit Card') {
+            const cardNumber = document.getElementById('bookingCardNumber').value;
+            const cardName = document.getElementById('bookingCardName').value;
+            const expiry = document.getElementById('bookingCardExpiry').value;
+            const cvv = document.getElementById('bookingCardCvv').value;
+            
+            if (!cardNumber || !cardName || !expiry || !cvv) {
+                e.preventDefault();
+                alert('Please fill in all card details.');
+                return;
+            }
+        }
+        
+        // Show processing state
+        const btn = document.getElementById('confirmBookingBtn');
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
+        btn.disabled = true;
+    });
 });
 </script>
 @endsection

@@ -54,9 +54,10 @@ class CheckoutController extends Controller
             'user_id' => Auth::id(),
             'total_amount' => $total,
             'discount' => 0,
-            'payment_method' => $request->payment_method,
+            'payment_method' => $request->payment_method ?? 'Credit Card',
             'order_date' => now()->toDateString(),
             'status' => 'pending',
+            'payment_status' => 'paid', // Mark as paid after payment processing
         ]);
 
         foreach ($cartItems as $cart) {
@@ -68,11 +69,24 @@ class CheckoutController extends Controller
             ]);
         }
 
+        // Create payment record
+        \App\Models\Payment::create([
+            'user_id' => Auth::id(),
+            'order_id' => $order->order_id,
+            'booking_id' => null,
+            'amount' => $total,
+            'payment_method' => $request->payment_method ?? 'Credit Card',
+            'payment_status' => 'completed',
+            'transaction_id' => 'TXN-' . strtoupper(\Illuminate\Support\Str::random(12)),
+            'payment_details' => null,
+            'payment_date' => now(),
+        ]);
+
         // Do NOT deduct inventory or create Sale yet; handled on admin approval
 
         // Clear the cart
         Cart::where('user_id', Auth::id())->delete();
 
-        return redirect()->route('customer.orders')->with('success', 'Your order has been placed successfully!');
+        return redirect()->route('customer.orders')->with('success', 'Your order has been placed and payment processed successfully!');
     }
 }

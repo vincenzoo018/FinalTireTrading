@@ -2,55 +2,64 @@
 
 @section('styles')
 <style>
-    /* Order Card Styles */
+    /* Enhanced Order Card Styles */
     .booking-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 15px;
-        padding-bottom: 15px;
-        border-bottom: 1px solid #eee;
+        margin-bottom: 20px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #e9ecef;
     }
 
     .booking-id {
-        font-weight: bold;
-        font-size: 18px;
-        color: #6a11cb;
+        font-weight: 800;
+        font-size: 1.5rem;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        letter-spacing: -0.5px;
     }
 
     .booking-status {
-        padding: 5px 12px;
-        border-radius: 20px;
-        font-size: 12px;
-        font-weight: 600;
+        padding: 0.65rem 1.5rem;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 700;
         text-transform: uppercase;
+        letter-spacing: 0.5px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     }
 
     .status-pending {
-        background-color: #fff3e0;
-        color: #ff9800;
+        background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+        color: #e65100;
     }
 
     .status-confirmed {
-        background-color: #e3f2fd;
-        color: #2196f3;
+        background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+        color: #01579b;
     }
 
     .status-completed {
-        background-color: #e8f5e9;
-        color: #4caf50;
+        background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+        color: #1b5e20;
     }
 
     .status-cancelled {
-        background-color: #ffebee;
-        color: #f44336;
+        background: linear-gradient(135deg, #ffebee, #ffcdd2);
+        color: #b71c1c;
     }
 
     .booking-details {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 15px;
-        margin-bottom: 20px;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 20px;
+        margin-bottom: 25px;
+        padding: 1.5rem;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 12px;
     }
 
     .detail-item {
@@ -59,41 +68,107 @@
     }
 
     .detail-label {
-        font-size: 12px;
-        color: #888;
-        margin-bottom: 5px;
+        font-size: 0.8rem;
+        color: #6c757d;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
     .detail-value {
-        font-size: 14px;
-        font-weight: 500;
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #2c3e50;
     }
 
     .service-info {
-        margin-top: 15px;
-        padding: 15px;
-        background-color: #f9f9f9;
-        border-radius: 8px;
+        margin-top: 20px;
+        padding: 20px;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 12px;
+        border-left: 4px solid #3498db;
     }
 
     .service-name {
-        font-weight: 600;
-        font-size: 16px;
-        margin-bottom: 5px;
+        font-weight: 700;
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+        color: #2c3e50;
     }
 
     .service-price {
-        font-weight: 600;
-        color: #6a11cb;
-        font-size: 16px;
+        font-weight: 800;
+        font-size: 1.5rem;
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
     }
 
     .order-card {
-        transition: transform 0.3s ease;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        animation: fadeInUp 0.6s ease forwards;
+        opacity: 0;
     }
 
+    .order-card:nth-child(1) { animation-delay: 0.1s; }
+    .order-card:nth-child(2) { animation-delay: 0.2s; }
+    .order-card:nth-child(3) { animation-delay: 0.3s; }
+
     .order-card:hover {
-        transform: translateY(-5px);
+        transform: translateY(-8px) scale(1.01);
+        box-shadow: 0 15px 40px rgba(52, 152, 219, 0.2) !important;
+    }
+
+    /* Product Image in Orders */
+    .product-image-wrapper {
+        position: relative;
+        overflow: hidden;
+        border-radius: 12px;
+    }
+
+    .product-image {
+        width: 90px;
+        height: 90px;
+        object-fit: cover;
+        object-position: center;
+        transition: transform 0.3s ease;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    }
+
+    .order-item-card:hover .product-image {
+        transform: scale(1.1);
+    }
+
+    .order-item-card {
+        transition: all 0.3s ease;
+        border: 1px solid #e9ecef !important;
+    }
+
+    .order-item-card:hover {
+        border-color: #3498db !important;
+        box-shadow: 0 4px 15px rgba(52, 152, 219, 0.15);
+    }
+
+    .product-name {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #2c3e50;
+    }
+
+    .product-specs .spec-item {
+        transition: all 0.2s ease;
+    }
+
+    .product-specs .spec-item:hover {
+        transform: translateX(5px);
+    }
+
+    .pricing-info {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        padding: 1rem;
+        border-radius: 12px;
     }
 </style>
 @endsection

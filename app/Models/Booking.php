@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Booking extends Model
 {
     protected $primaryKey = 'booking_id';
-    protected $fillable = ['user_id','booking_date','booking_time','status','payment_method','service_id','notes'];
+    protected $fillable = ['user_id','booking_date','booking_time','status','payment_method','service_id','notes','payment_status'];
 
     public function service()
     {
@@ -22,5 +22,15 @@ class Booking extends Model
     public function sale()
     {
         return $this->hasOne(Sale::class, 'booking_id', 'booking_id');
+    }
+    
+    public function payments()
+    {
+        return $this->hasMany(Payment::class, 'booking_id');
+    }
+    
+    public function latestPayment()
+    {
+        return $this->hasOne(Payment::class, 'booking_id')->latest();
     }
 }

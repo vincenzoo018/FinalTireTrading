@@ -1,10 +1,18 @@
 <aside class="sidebar">
     <div class="sidebar-header">
-        <h2 class="logo">Admin Panel</h2>
+        <div class="logo-container">
+            <div class="logo-icon">
+                <i class="fas fa-tire"></i>
+            </div>
+            <div class="logo-text-container">
+                <span class="logo-text">8PLY</span>
+                <span class="logo-subtitle">Admin Panel</span>
+            </div>
+        </div>
     </div>
 
     <nav class="sidebar-nav">
-        <ul class="nav-list">
+        <ul class="nav-list" style="position: relative; z-index: 1;">
 
             <!-- Dashboard -->
             <li class="nav-item">

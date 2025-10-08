@@ -1,14 +1,64 @@
 @extends('layouts.customer.app')
 
+@section('title', 'Home - Premium Tires & Services')
+
 @section('styles')
 <style>
+    .hero-section {
+        background: linear-gradient(135deg, rgba(44, 62, 80, 0.95), rgba(52, 73, 94, 0.9)),
+                    url('{{ asset("images/hero-bg.jpg") }}') center/cover;
+        min-height: 600px;
+        display: flex;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+        color: white;
+    }
+
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(circle at 20% 50%, rgba(79, 70, 229, 0.2) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 50%, rgba(14, 165, 233, 0.2) 0%, transparent 50%);
+        animation: pulse 8s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 0.5; }
+        50% { opacity: 1; }
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 2;
+        animation: fadeInUp 1s ease;
+    }
+
+    .hero-title {
+        font-size: 3.5rem;
+        font-weight: 800;
+        margin-bottom: 1.5rem;
+        text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .hero-subtitle {
+        font-size: 1.3rem;
+        margin-bottom: 2rem;
+        opacity: 0.95;
+    }
+
     .stats-counter {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border-radius: 1rem;
-        padding: 2rem;
+        border-radius: 1.25rem;
+        padding: 2.5rem;
         color: white;
         text-align: center;
         margin-bottom: 2rem;
+        box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
     }
 
     .stat-number {
@@ -25,6 +75,48 @@
 @endsection
 
 @section('content')
+
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-7 hero-content">
+                <h1 class="hero-title">Premium Tires & Professional Services</h1>
+                <p class="hero-subtitle">Your trusted partner for quality tires and expert automotive care. Experience excellence on every journey.</p>
+                <div class="d-flex gap-3 flex-wrap">
+                    <a href="{{ route('customer.products') }}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-shopping-cart me-2"></i>Shop Tires
+                    </a>
+                    <a href="{{ route('customer.booking') }}" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-calendar-check me-2"></i>Book Service
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-5 d-none d-lg-block">
+                <div class="stats-counter">
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <span class="stat-number" data-count="1000">0</span>
+                            <span class="stat-label">Happy Customers</span>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <span class="stat-number" data-count="500">0</span>
+                            <span class="stat-label">Products</span>
+                        </div>
+                        <div class="col-6">
+                            <span class="stat-number" data-count="50">0</span>
+                            <span class="stat-label">Services</span>
+                        </div>
+                        <div class="col-6">
+                            <span class="stat-number" data-count="10">0</span>
+                            <span class="stat-label">Years Experience</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
 
 

@@ -18,7 +18,7 @@ class ProductController extends Controller
         }
 
         // Optional: Add filtering, searching, sorting here
-        $query = Product::query();
+        $query = Product::with('inventory');
 
         // Search
         if ($request->filled('search')) {

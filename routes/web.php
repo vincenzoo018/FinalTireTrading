@@ -118,6 +118,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/customer/orders/{order}/cancel', [App\Http\Controllers\Customer\OrderController::class, 'cancel'])->name('customer.orders.cancel');
     Route::post('/customer/orders/{order}/receive', [App\Http\Controllers\Customer\OrderController::class, 'receive'])->name('customer.orders.receive');
     Route::get('/customer/order/{order}/items', [App\Http\Controllers\Customer\OrderItemController::class, 'index'])->name('customer.order.items');
+    
+    // Payment routes
+    Route::post('/customer/payment/order/{order}', [App\Http\Controllers\Customer\PaymentController::class, 'processOrderPayment'])->name('customer.payment.order');
+    Route::post('/customer/payment/booking/{booking}', [App\Http\Controllers\Customer\PaymentController::class, 'processBookingPayment'])->name('customer.payment.booking');
+    Route::get('/customer/payment/{payment}', [App\Http\Controllers\Customer\PaymentController::class, 'show'])->name('customer.payment.show');
 });
 Route::get('/admin/orders', [App\Http\Controllers\Admin\OrdersController::class, 'index'])->name('admin.orders');
 Route::post('/admin/orders/{order}/approve', [App\Http\Controllers\Admin\OrdersController::class, 'approve'])->name('admin.orders.approve');

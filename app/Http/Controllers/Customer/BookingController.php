@@ -33,7 +33,14 @@ class BookingController extends Controller
             'booking_time' => 'required',
             'payment_method' => 'nullable|string|in:Cash,GCash,Credit Card,Debit Card',
             'notes' => 'nullable|string|max:1000',
+            'card_number' => 'required_if:payment_method,Credit Card,Debit Card',
+            'card_name' => 'required_if:payment_method,Credit Card,Debit Card',
+            'card_expiry' => 'required_if:payment_method,Credit Card,Debit Card',
+            'card_cvv' => 'required_if:payment_method,Credit Card,Debit Card',
         ]);
+
+        // Get service to calculate payment amount
+        $service = Service::findOrFail($validated['service_id']);
 
         $booking = Booking::create([
             'user_id' => Auth::id(),
@@ -43,9 +50,38 @@ class BookingController extends Controller
             'payment_method' => $validated['payment_method'] ?? 'Cash',
             'notes' => $validated['notes'] ?? null,
             'status' => 'pending',
+            'payment_status' => 'paid', // Mark as paid after payment processing
         ]);
 
-        return redirect()->route('customer.booking')->with('success', 'Booking submitted successfully!')->with('highlight_booking_id', $booking->booking_id);
+        // Create payment record if payment method requires it
+        $paymentMethod = $validated['payment_method'] ?? 'Cash';
+        $paymentDetails = null;
+
+        if (in_array($paymentMethod, ['Credit Card', 'Debit Card'])) {
+            // Mask card number for security
+            $cardNumber = $validated['card_number'];
+            $maskedCard = '****-****-****-' . substr(str_replace(' ', '', $cardNumber), -4);
+            
+            $paymentDetails = [
+                'card_number' => $maskedCard,
+                'card_name' => $validated['card_name'],
+                'card_expiry' => $validated['card_expiry'],
+            ];
+        }
+
+        \App\Models\Payment::create([
+            'user_id' => Auth::id(),
+            'order_id' => null,
+            'booking_id' => $booking->booking_id,
+            'amount' => $service->service_price,
+            'payment_method' => $paymentMethod,
+            'payment_status' => 'completed',
+            'transaction_id' => 'TXN-' . strtoupper(\Illuminate\Support\Str::random(12)),
+            'payment_details' => $paymentDetails,
+            'payment_date' => now(),
+        ]);
+
+        return redirect()->route('customer.booking')->with('success', 'Booking submitted and payment processed successfully!')->with('highlight_booking_id', $booking->booking_id);
     }
 
     public function cancel(Booking $booking, Request $request)

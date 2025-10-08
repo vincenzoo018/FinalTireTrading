@@ -42,4 +42,29 @@ class Product extends Model
     {
         return $this->hasMany(Cart::class, 'product_id');
     }
+    
+    /**
+     * Get the available stock quantity for this product
+     */
+    public function getStockQuantity()
+    {
+        return $this->inventory ? $this->inventory->quantity : 0;
+    }
+    
+    /**
+     * Check if product is in stock
+     */
+    public function isInStock()
+    {
+        return $this->getStockQuantity() > 0;
+    }
+    
+    /**
+     * Check if product is low stock (less than 10 items)
+     */
+    public function isLowStock()
+    {
+        $quantity = $this->getStockQuantity();
+        return $quantity > 0 && $quantity < 10;
+    }
 }

@@ -9,7 +9,7 @@ class Order extends Model
     protected $primaryKey = 'order_id';
 
     protected $fillable = [
-        'user_id', 'total_amount', 'discount', 'payment_method', 'order_date', 'status',
+        'user_id', 'total_amount', 'discount', 'payment_method', 'order_date', 'status', 'payment_status',
     ];
 
     public function cart()
@@ -23,5 +23,15 @@ class Order extends Model
     public function user()
     {
         return $this->belongsTo(\App\Models\User::class, 'user_id');
+    }
+    
+    public function payments()
+    {
+        return $this->hasMany(\App\Models\Payment::class, 'order_id');
+    }
+    
+    public function latestPayment()
+    {
+        return $this->hasOne(\App\Models\Payment::class, 'order_id')->latest();
     }
 }

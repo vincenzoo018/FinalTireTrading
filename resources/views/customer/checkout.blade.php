@@ -256,8 +256,8 @@
                             @csrf
                             <input type="hidden" name="payment_method" id="selectedPaymentMethod" value="Credit Card">
                             <input type="hidden" name="delivery_vehicle_id" id="selectedDeliveryVehicle" value="">
-                            <button type="submit" id="completePurchaseBtn" class="btn btn-primary btn-lg w-100">
-                                <i class="fas fa-lock me-2"></i>Complete Purchase
+                            <button type="button" id="completePurchaseBtn" class="btn btn-primary btn-lg w-100" onclick="showPaymentModal()">
+                                <i class="fas fa-lock me-2"></i>Proceed to Payment
                             </button>
                         </form>
                     </div>
@@ -269,6 +269,98 @@
         </div>
     </div>
 </section>
+
+<!-- Payment Modal -->
+<div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="paymentModalLabel">
+                    <i class="fas fa-credit-card me-2"></i>Complete Payment
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Payment Summary -->
+                <div class="card bg-light mb-4">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="mb-1">Order Total</h6>
+                                <h3 class="text-primary mb-0" id="paymentTotal">₱{{ number_format($subtotal + 200 + ($subtotal * 0.12), 2) }}</h3>
+                            </div>
+                            <div class="col-md-6 text-end">
+                                <small class="text-muted d-block">Payment Method</small>
+                                <strong id="paymentMethodDisplay">Credit Card</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Form -->
+                <form id="paymentForm">
+                    @csrf
+                    <div id="cardPaymentFields">
+                        <div class="mb-3">
+                            <label for="paymentCardNumber" class="form-label">Card Number <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="paymentCardNumber" placeholder="1234 5678 9012 3456" maxlength="19" required>
+                            <div class="card-icons mt-2">
+                                <img src="https://img.icons8.com/color/48/000000/visa.png" alt="Visa" style="height: 25px;">
+                                <img src="https://img.icons8.com/color/48/000000/mastercard.png" alt="Mastercard" style="height: 25px;">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="paymentCardName" class="form-label">Cardholder Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="paymentCardName" placeholder="John Doe" required>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label for="paymentExpiryDate" class="form-label">Expiry <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="paymentExpiryDate" placeholder="MM/YY" maxlength="5" required>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label for="paymentCvv" class="form-label">CVV <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="paymentCvv" placeholder="123" maxlength="4" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="otherPaymentInfo" style="display: none;">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <span id="otherPaymentMessage">Please follow the instructions for your selected payment method.</span>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-success" id="paymentSuccess" style="display: none;">
+                        <i class="fas fa-check-circle me-2"></i>
+                        <span id="paymentSuccessMessage">Payment processed successfully!</span>
+                    </div>
+
+                    <div class="alert alert-danger" id="paymentError" style="display: none;">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        <span id="paymentErrorMessage">Payment failed. Please try again.</span>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>Cancel
+                </button>
+                <button type="button" class="btn btn-primary" id="processPaymentBtn" onclick="processPayment()">
+                    <i class="fas fa-lock me-2"></i>Pay Now
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 @section('scripts')
@@ -315,32 +407,46 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('selectedDeliveryVehicle').value = this.value;
     });
 
-    // Card number formatting
-    document.getElementById('cardNumber').addEventListener('input', function(e) {
-        let value = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
-        let matches = value.match(/\d{4,16}/g);
-        let match = matches && matches[0] || '';
-        let parts = [];
+    // Payment card number formatting
+    const paymentCardNumber = document.getElementById('paymentCardNumber');
+    if (paymentCardNumber) {
+        paymentCardNumber.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+            let matches = value.match(/\d{4,16}/g);
+            let match = matches && matches[0] || '';
+            let parts = [];
 
-        for (let i = 0, len = match.length; i < len; i += 4) {
-            parts.push(match.substring(i, i + 4));
-        }
+            for (let i = 0, len = match.length; i < len; i += 4) {
+                parts.push(match.substring(i, i + 4));
+            }
 
-        if (parts.length) {
-            e.target.value = parts.join(' ');
-        } else {
+            if (parts.length) {
+                e.target.value = parts.join(' ');
+            } else {
+                e.target.value = value;
+            }
+        });
+    }
+
+    // Payment expiry date formatting
+    const paymentExpiryDate = document.getElementById('paymentExpiryDate');
+    if (paymentExpiryDate) {
+        paymentExpiryDate.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = value.substring(0, 2) + '/' + value.substring(2, 4);
+            }
             e.target.value = value;
-        }
-    });
-
-    // Expiry date formatting
-    document.getElementById('expiryDate').addEventListener('input', function(e) {
-        let value = e.target.value.replace(/\D/g, '');
-        if (value.length >= 2) {
-            value = value.substring(0, 2) + '/' + value.substring(2, 4);
-        }
-        e.target.value = value;
-    });
+        });
+    }
+    
+    // Payment CVV formatting
+    const paymentCvv = document.getElementById('paymentCvv');
+    if (paymentCvv) {
+        paymentCvv.addEventListener('input', function(e) {
+            e.target.value = e.target.value.replace(/\D/g, '');
+        });
+    }
 });
 
 function applyCheckoutPromo() {
@@ -400,33 +506,71 @@ function processPayPal() {
     // Form validation completed
 }
 
-// Form submission handler
-document.getElementById('checkoutForm').addEventListener('submit', function(e) {
-    // Validate forms
-    const shippingForm = document.getElementById('shippingForm');
-    if (!shippingForm.checkValidity()) {
-        e.preventDefault();
-        shippingForm.reportValidity();
-        return;
+// Show payment modal
+function showPaymentModal() {
+    const paymentMethod = document.getElementById('selectedPaymentMethod').value;
+    document.getElementById('paymentMethodDisplay').textContent = paymentMethod;
+    
+    // Show/hide card fields based on payment method
+    if (paymentMethod === 'Credit Card' || paymentMethod === 'Debit Card') {
+        document.getElementById('cardPaymentFields').style.display = 'block';
+        document.getElementById('otherPaymentInfo').style.display = 'none';
+    } else {
+        document.getElementById('cardPaymentFields').style.display = 'none';
+        document.getElementById('otherPaymentInfo').style.display = 'block';
+        
+        let message = '';
+        if (paymentMethod === 'PayPal') {
+            message = 'You will be redirected to PayPal to complete your payment.';
+        } else if (paymentMethod === 'Bank Transfer') {
+            message = 'Please transfer the amount to our bank account. Your order will be processed after payment confirmation.';
+        }
+        document.getElementById('otherPaymentMessage').textContent = message;
     }
+    
+    const modal = new bootstrap.Modal(document.getElementById('paymentModal'));
+    modal.show();
+}
 
-    // Validate delivery vehicle selection
-    const deliveryVehicle = document.getElementById('deliveryVehicle');
-    if (deliveryVehicle && !deliveryVehicle.value) {
-        e.preventDefault();
-        alert('Please select a delivery vehicle.');
-        deliveryVehicle.focus();
-        return;
+// Process payment
+function processPayment() {
+    const paymentMethod = document.getElementById('selectedPaymentMethod').value;
+    const btn = document.getElementById('processPaymentBtn');
+    
+    // Validate card fields if credit/debit card
+    if (paymentMethod === 'Credit Card' || paymentMethod === 'Debit Card') {
+        const cardNumber = document.getElementById('paymentCardNumber').value;
+        const cardName = document.getElementById('paymentCardName').value;
+        const expiry = document.getElementById('paymentExpiryDate').value;
+        const cvv = document.getElementById('paymentCvv').value;
+        
+        if (!cardNumber || !cardName || !expiry || !cvv) {
+            document.getElementById('paymentError').style.display = 'block';
+            document.getElementById('paymentErrorMessage').textContent = 'Please fill in all card details.';
+            return;
+        }
     }
-
+    
     // Show processing state
-    const btn = document.getElementById('completePurchaseBtn');
-    const originalText = btn.innerHTML;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
     btn.disabled = true;
-
-    // Let the form submit naturally
-});
+    
+    // Hide previous messages
+    document.getElementById('paymentSuccess').style.display = 'none';
+    document.getElementById('paymentError').style.display = 'none';
+    
+    // Simulate payment processing (in real app, this would call the payment API)
+    setTimeout(function() {
+        // Show success message
+        document.getElementById('paymentSuccess').style.display = 'block';
+        document.getElementById('paymentSuccessMessage').textContent = 'Payment processed successfully! Completing your order...';
+        
+        // Submit the checkout form after successful payment
+        setTimeout(function() {
+            document.getElementById('checkoutForm').submit();
+        }, 1500);
+    }, 2000);
+}
 
 // Generate random reference number
 document.getElementById('transferReference').textContent = '8PLY-' +

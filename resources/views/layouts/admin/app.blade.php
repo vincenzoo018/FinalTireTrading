@@ -251,14 +251,26 @@
                 });
             }
 
-            // Dropdown functionality
-            document.querySelectorAll('.dropdown-toggle').forEach(item => {
-                item.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    const dropdown = this.closest('.dropdown');
-                    dropdown.classList.toggle('active');
-                });
+            // Enhanced Dropdown functionality with smooth animations
+            document.querySelectorAll('.nav-item.dropdown').forEach(dropdown => {
+                const toggle = dropdown.querySelector('.dropdown-toggle');
+                const menu = dropdown.querySelector('.dropdown-menu');
+                
+                if (toggle && menu) {
+                    toggle.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        // Close other dropdowns
+                        document.querySelectorAll('.nav-item.dropdown').forEach(otherDropdown => {
+                            if (otherDropdown !== dropdown && otherDropdown.classList.contains('active')) {
+                                otherDropdown.classList.remove('active');
+                            }
+                        });
+                        
+                        dropdown.classList.toggle('active');
+                    });
+                }
             });
 
             // User profile dropdown
@@ -287,6 +299,31 @@
                         mainContent.classList.remove('sidebar-collapsed');
                     }
                 });
+            });
+
+            // Add fade-in animation to content
+            const contentWrapper = document.querySelector('.content-wrapper');
+            if (contentWrapper) {
+                contentWrapper.style.animation = 'fadeInUp 0.5s ease';
+            }
+
+            // Animate stat cards on scroll
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.animation = 'fadeInUp 0.6s ease forwards';
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.stat-card, .card, .content-card').forEach(card => {
+                observer.observe(card);
             });
         });
 
