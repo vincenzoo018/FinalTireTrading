@@ -18,4 +18,9 @@ class SuppTransOrder extends Model
     {
         return $this->hasMany(SuppOrderProd::class, 'transaction_id');
     }
+
+    public function invoice()
+    {
+        return $this->hasOne(SupplierInvoice::class, 'transaction_id', 'transaction_id');
+    }
 }

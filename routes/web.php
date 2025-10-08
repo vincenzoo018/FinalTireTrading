@@ -21,7 +21,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/suppliers', [\App\Http\Controllers\Admin\SupplierController::class, 'store'])->name('suppliers.store');
     Route::get('/transactions', [\App\Http\Controllers\Admin\SupplierTransactionController::class, 'index'])->name('transactions');
     Route::post('/transactions', [\App\Http\Controllers\Admin\SupplierTransactionController::class, 'store'])->name('transactions.store');
-Route::get('/transactions/supplier/{supplierId}/history', [\App\Http\Controllers\Admin\SupplierTransactionController::class, 'supplierHistory'])->name('transactions.supplier.history');
+    Route::get('/transactions/{id}', [\App\Http\Controllers\Admin\SupplierTransactionController::class, 'show'])->name('transactions.show');
+    Route::get('/transactions/supplier/{supplierId}/history', [\App\Http\Controllers\Admin\SupplierTransactionController::class, 'supplierHistory'])->name('transactions.supplier.history');
     Route::get('/services', [AdminController::class, 'services'])->name('services');
     Route::get('/bookings', [\App\Http\Controllers\Admin\BookingsController::class, 'index'])->name('bookings');
     Route::post('/bookings/{booking}/approve', [\App\Http\Controllers\Admin\BookingsController::class, 'approve'])->name('bookings.approve');
