@@ -25,6 +25,11 @@ class Order extends Model
         return $this->belongsTo(\App\Models\User::class, 'user_id');
     }
     
+    public function payment()
+    {
+        return $this->hasOne(\App\Models\Payment::class, 'order_id')->latestOfMany('payment_id');
+    }
+    
     public function payments()
     {
         return $this->hasMany(\App\Models\Payment::class, 'order_id');

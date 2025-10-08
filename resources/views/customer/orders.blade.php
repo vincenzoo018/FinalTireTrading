@@ -388,24 +388,32 @@
                                     </div>
                                 @endforelse
 
-                                @if(strtolower($order->status) === 'pending')
-                                    <form action="{{ route('customer.orders.cancel', $order) }}" method="POST" onsubmit="return confirm('Cancel this pending order?')">
-                                        @csrf
-                                        <div class="d-flex align-items-center gap-2 mt-3">
+                                <div class="d-flex gap-2 mt-3 flex-wrap">
+                                    <!-- View Receipt Button - Always Show -->
+                                    <a href="{{ route('customer.orders.receipt', $order->order_id) }}" 
+                                       class="btn btn-outline-primary" target="_blank">
+                                        <i class="fas fa-receipt me-1"></i>View Receipt
+                                    </a>
+
+                                    @if(strtolower($order->status) === 'pending')
+                                        <form action="{{ route('customer.orders.cancel', $order) }}" method="POST" 
+                                              onsubmit="return confirm('Cancel this pending order?')" class="d-flex gap-2 flex-grow-1">
+                                            @csrf
                                             <input type="text" name="cancelled_reason" class="form-control" placeholder="Optional reason">
                                             <button class="btn btn-outline-danger">
                                                 <i class="fas fa-times me-1"></i>Cancel Order
                                             </button>
-                                        </div>
-                                    </form>
-                                @elseif(in_array(strtolower($order->status), ['approved','shipped']))
-                                    <form action="{{ route('customer.orders.receive', $order) }}" method="POST" onsubmit="return confirm('Mark this order as received?')">
-                                        @csrf
-                                        <button class="btn btn-success mt-3">
-                                            <i class="fas fa-box-open me-1"></i>Received
-                                        </button>
-                                    </form>
-                                @endif
+                                        </form>
+                                    @elseif(in_array(strtolower($order->status), ['approved','shipped']))
+                                        <form action="{{ route('customer.orders.receive', $order) }}" method="POST" 
+                                              onsubmit="return confirm('Mark this order as received?')">
+                                            @csrf
+                                            <button class="btn btn-success">
+                                                <i class="fas fa-box-open me-1"></i>Mark as Received
+                                            </button>
+                                        </form>
+                                    @endif
+                                </div>
                             </div>
                         </div>
                     @endforeach

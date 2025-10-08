@@ -50,6 +50,7 @@ Route::prefix('customer')->name('customer.')->middleware('auth')->group(function
     Route::post('/booking', [\App\Http\Controllers\Customer\BookingController::class, 'store'])->name('booking.store');
     Route::post('/booking/{booking}/cancel', [\App\Http\Controllers\Customer\BookingController::class, 'cancel'])->name('booking.cancel');
     Route::post('/booking/{booking}/completed', [\App\Http\Controllers\Customer\BookingController::class, 'markCompleted'])->name('booking.completed');
+    Route::get('/booking/{booking}/receipt', [\App\Http\Controllers\Customer\BookingController::class, 'receipt'])->name('booking.receipt');
     Route::get('/cart', [CustomerController::class, 'cart'])->name('cart');
     Route::get('/checkout', [CustomerController::class, 'checkout'])->name('checkout');
     Route::get('/orders', [CustomerController::class, 'orders'])->name('orders');
@@ -119,6 +120,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/customer/orders', [App\Http\Controllers\Customer\OrderController::class, 'index'])->name('customer.orders');
     Route::post('/customer/orders/{order}/cancel', [App\Http\Controllers\Customer\OrderController::class, 'cancel'])->name('customer.orders.cancel');
     Route::post('/customer/orders/{order}/receive', [App\Http\Controllers\Customer\OrderController::class, 'receive'])->name('customer.orders.receive');
+    Route::get('/customer/orders/{order}/receipt', [App\Http\Controllers\Customer\OrderController::class, 'receipt'])->name('customer.orders.receipt');
     Route::get('/customer/order/{order}/items', [App\Http\Controllers\Customer\OrderItemController::class, 'index'])->name('customer.order.items');
     
     // Payment routes

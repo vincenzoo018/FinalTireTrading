@@ -53,4 +53,18 @@ class OrderController extends Controller
 
         return back()->with('success', 'Thanks! Order marked as received.');
     }
+
+    public function receipt(Order $order)
+    {
+        if (!Auth::check() || Auth::user()->role_id != 3) {
+            return redirect()->route('login')->withErrors(['auth' => 'Please login as a customer.']);
+        }
+        if ($order->user_id !== Auth::id()) {
+            return back()->withErrors(['order' => 'Unauthorized action.']);
+        }
+
+        $order->load(['items.product.category', 'user', 'payment']);
+
+        return view('customer.order-receipt', compact('order'));
+    }
 }

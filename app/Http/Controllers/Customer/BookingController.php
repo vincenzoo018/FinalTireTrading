@@ -155,6 +155,23 @@ class BookingController extends Controller
 
         return back()->with('success', 'Booking marked as completed and sale recorded.');
     }
+
+    public function receipt(Booking $booking)
+    {
+        if (!Auth::check() || Auth::user()->role_id != 3) {
+            return redirect()->route('login')->withErrors(['auth' => 'Please login as a customer.']);
+        }
+        if ($booking->user_id !== Auth::id()) {
+            return back()->withErrors(['booking' => 'Unauthorized action.']);
+        }
+
+        $booking->load(['service', 'user', 'sale']);
+        
+        // Get payment for this booking
+        $payment = \App\Models\Payment::where('booking_id', $booking->booking_id)->first();
+
+        return view('customer.booking-receipt', compact('booking', 'payment'));
+    }
 }
 
 

@@ -106,14 +106,19 @@
 .logo-icon {
     width: 50px;
     height: 50px;
-    background: linear-gradient(135deg, #4f46e5 0%, #0ea5e9 100%);
+    background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
     border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
     font-size: 24px;
-    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+    box-shadow: 0 4px 12px rgba(249, 115, 22, 0.4);
+    transition: transform 0.3s ease;
+}
+
+.logo-icon:hover {
+    transform: rotate(360deg) scale(1.05);
 }
 
 .logo-text-container {
@@ -123,21 +128,25 @@
 
 .logo-text {
     font-size: 24px;
-    font-weight: 700;
-    color: #1e293b;
+    font-weight: 800;
+    background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
     line-height: 1;
     letter-spacing: -0.5px;
 }
 
 .logo-subtitle {
     font-size: 11px;
-    color: #64748b;
-    font-weight: 500;
+    color: #78716c;
+    font-weight: 600;
     letter-spacing: 0.5px;
+    text-transform: uppercase;
 }
 
 .nav-link {
-    color: #475569 !important;
+    color: #57534e !important;
     font-weight: 500;
     padding: 0.5rem 1rem !important;
     border-radius: 8px;
@@ -148,13 +157,13 @@
 }
 
 .nav-link:hover {
-    color: #4f46e5 !important;
-    background-color: #f1f5f9;
+    color: #f97316 !important;
+    background-color: #fff7ed;
 }
 
 .nav-link.active {
-    color: #4f46e5 !important;
-    background-color: #e0e7ff;
+    color: #f97316 !important;
+    background-color: #ffedd5;
     font-weight: 600;
 }
 
@@ -183,25 +192,27 @@
 .user-avatar-small {
     width: 32px;
     height: 32px;
-    background: linear-gradient(135deg, #4f46e5 0%, #0ea5e9 100%);
+    background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
     font-size: 14px;
+    box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);
 }
 
 .user-avatar-dropdown {
     width: 48px;
     height: 48px;
-    background: linear-gradient(135deg, #4f46e5 0%, #0ea5e9 100%);
+    background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
     font-size: 20px;
+    box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
 }
 
 .modern-dropdown {
@@ -214,7 +225,7 @@
 
 .modern-dropdown .dropdown-header {
     padding: 1rem 1.25rem;
-    background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%);
+    background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
     border-radius: 12px 12px 0 0;
     margin-bottom: 0.5rem;
 }

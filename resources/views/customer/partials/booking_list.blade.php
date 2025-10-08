@@ -89,38 +89,46 @@
                 </div>
             </div>
 
-            @if(strtolower($booking->status) === 'pending')
-                <form method="POST" action="{{ route('customer.booking.cancel', $booking) }}" onsubmit="return confirm('Cancel this pending booking?')">
-                    @csrf
-                    <div class="d-flex align-items-center gap-2 mt-3">
+            <div class="d-flex gap-2 mt-3 flex-wrap">
+                <!-- View Receipt Button - Always Show -->
+                <a href="{{ route('customer.booking.receipt', $booking->booking_id) }}" 
+                   class="btn btn-outline-success" target="_blank">
+                    <i class="fas fa-receipt me-1"></i>View Receipt
+                </a>
+
+                @if(strtolower($booking->status) === 'pending')
+                    <form method="POST" action="{{ route('customer.booking.cancel', $booking) }}" 
+                          onsubmit="return confirm('Cancel this pending booking?')" class="d-flex gap-2 flex-grow-1">
+                        @csrf
                         <input type="text" name="cancelled_reason" class="form-control" placeholder="Optional reason">
                         <button class="btn btn-outline-danger">
                             <i class="fas fa-times me-1"></i>Cancel Booking
                         </button>
+                    </form>
+                @elseif(strtolower($booking->status) === 'confirmed')
+                    <form method="POST" action="{{ route('customer.booking.completed', $booking) }}" 
+                          onsubmit="return confirm('Mark this booking as completed?')">
+                        @csrf
+                        <button class="btn btn-success">
+                            <i class="fas fa-check me-1"></i>Mark as Completed
+                        </button>
+                    </form>
+                @elseif(strtolower($booking->status) === 'completed')
+                    <div class="alert alert-success d-flex align-items-center mb-0 flex-grow-1">
+                        <i class="fas fa-check-circle me-2"></i>
+                        <div>
+                            <strong>Service Completed!</strong>
+                            @if($booking->sale()->exists())
+                                <small class="d-block text-muted">
+                                    <i class="fas fa-receipt me-1"></i>Sale Record: #{{ $booking->sale->sale_id }} (₱{{ number_format($booking->sale->total_amount, 2) }})
+                                </small>
+                            @else
+                                <small class="d-block text-muted">Sale record will be generated automatically</small>
+                            @endif
+                        </div>
                     </div>
-                </form>
-            @elseif(strtolower($booking->status) === 'confirmed')
-                <form method="POST" action="{{ route('customer.booking.completed', $booking) }}" onsubmit="return confirm('Mark this booking as completed?')">
-                    @csrf
-                    <button class="btn btn-success mt-3">
-                        <i class="fas fa-check me-1"></i>Mark as Completed
-                    </button>
-                </form>
-            @elseif(strtolower($booking->status) === 'completed')
-                <div class="alert alert-success d-flex align-items-center mt-3 mb-0">
-                    <i class="fas fa-check-circle me-2"></i>
-                    <div>
-                        <strong>Service Completed!</strong>
-                        @if($booking->sale()->exists())
-                            <small class="d-block text-muted">
-                                <i class="fas fa-receipt me-1"></i>Sale Record: #{{ $booking->sale->sale_id }} (₱{{ number_format($booking->sale->total_amount, 2) }})
-                            </small>
-                        @else
-                            <small class="d-block text-muted">Sale record will be generated automatically</small>
-                        @endif
-                    </div>
-                </div>
-            @endif
+                @endif
+            </div>
         </div>
     </div>
 @endforeach
