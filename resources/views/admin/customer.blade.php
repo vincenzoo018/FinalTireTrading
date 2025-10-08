@@ -9,37 +9,7 @@
         
     </div>
 
-    <div class="stats-grid">
-        <div class="stat-card">
-            <div class="stat-icon" style="background: #3498db;">
-                <i class="fas fa-users"></i>
-            </div>
-            <div class="stat-info">
-                <h3>1,254</h3>
-                <p>Total Customers</p>
-            </div>
-        </div>
-
-        <div class="stat-card">
-            <div class="stat-icon" style="background: #2ecc71;">
-                <i class="fas fa-user-check"></i>
-            </div>
-            <div class="stat-info">
-                <h3>1,089</h3>
-                <p>Active Customers</p>
-            </div>
-        </div>
-
-        <div class="stat-card">
-            <div class="stat-icon" style="background: #f39c12;">
-                <i class="fas fa-user-plus"></i>
-            </div>
-            <div class="stat-info">
-                <h3>45</h3>
-                <p>New This Month</p>
-            </div>
-        </div>
-    </div>
+    
 
     <div class="content-card">
         <div class="table-controls">

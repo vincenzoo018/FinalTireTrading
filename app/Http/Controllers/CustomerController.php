@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CustomerController extends Controller
 {
@@ -59,8 +60,13 @@ class CustomerController extends Controller
     {
         return view('customer.feedback');
     }
-    public function logout()
+    public function logout(Request $request)
     {
-        return view('customer.logout');
+        Auth::logout();
+        
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        
+        return redirect('/')->with('success', 'You have been logged out successfully.');
     }
 }

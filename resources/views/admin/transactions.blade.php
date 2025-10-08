@@ -85,9 +85,20 @@
                         <td class="transaction-amount">₱{{ number_format($txn->overall_total, 2) }}</td>
                         <td>₱{{ number_format($txn->tax, 2) }}</td>
                         <td class="actions-cell">
-                            <a href="{{ route('admin.transactions.show', $txn->transaction_id) }}" class="btn-icon btn-view" title="View Invoice" target="_blank">
-                                <i class="fas fa-file-invoice"></i>
-                            </a>
+                            <div class="action-buttons">
+                                <a href="{{ route('admin.transactions.show', $txn->transaction_id) }}" 
+                                   class="btn-action btn-view" title="View Invoice" target="_blank">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <button class="btn-action btn-edit" title="Edit Transaction" 
+                                        onclick="editTransaction({{ $txn->transaction_id }})">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn-action btn-delete-action" title="Delete Transaction" 
+                                        onclick="deleteTransaction({{ $txn->transaction_id }})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
                         </td>
                     </tr>
                     @empty
@@ -1662,5 +1673,28 @@ document.getElementById('txnWizardForm').addEventListener('submit', function(e) 
     // Submit the form
     form.submit();
 });
+
+// ========== ACTION BUTTON FUNCTIONS ==========
+function editTransaction(id) {
+    // Load transaction data and open modal in edit mode
+    fetch(`/admin/transactions/${id}`)
+        .then(res => res.json())
+        .then(data => {
+            // Populate the wizard with existing data
+            openTxnModal();
+            // TODO: Fill form fields with data
+            showToast('Edit functionality - coming soon', 'info');
+        })
+        .catch(err => {
+            showToast('Failed to load transaction data', 'error');
+        });
+}
+
+function deleteTransaction(id) {
+    openDeleteModal(`/admin/transactions/${id}`, () => {
+        // Refresh the page after successful delete
+        location.reload();
+    });
+}
 </script>
 @endsection
